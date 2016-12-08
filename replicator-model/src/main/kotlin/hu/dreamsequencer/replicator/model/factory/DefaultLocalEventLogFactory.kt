@@ -15,14 +15,14 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package hu.dreamsequencer.replicator.boundary
+package hu.dreamsequencer.replicator.model.factory
 
-import hu.dreamsequencer.replicator.api.ReplicatorNode
-import hu.dreamsequencer.replicator.api.ReplicatorNodeFactory
-import hu.dreamsequencer.replicator.model.EventNode
+import hu.dreamsequencer.replicator.api.LocalEventLog
+import hu.dreamsequencer.replicator.api.LocalEventLogFactory
+import hu.dreamsequencer.replicator.model.EventLog
 
-internal class DefaultReplicatorNodeFactory : ReplicatorNodeFactory {
-	override fun create(nodeId: String, url: String, port: Int): ReplicatorNode {
-		return EventNode(nodeId, url, port)
+internal class DefaultLocalEventLogFactory : LocalEventLogFactory {
+	override fun create(log: String): LocalEventLog {
+		return EventLog("", 0L, log)
 	}
 }

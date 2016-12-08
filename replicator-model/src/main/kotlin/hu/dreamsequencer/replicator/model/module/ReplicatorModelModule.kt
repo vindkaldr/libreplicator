@@ -20,8 +20,8 @@ package hu.dreamsequencer.replicator.model.module
 import com.google.inject.PrivateModule
 import hu.dreamsequencer.replicator.api.LocalEventLogFactory
 import hu.dreamsequencer.replicator.api.ReplicatorNodeFactory
-import hu.dreamsequencer.replicator.boundary.DefaultLocalEventLogFactory
-import hu.dreamsequencer.replicator.boundary.DefaultReplicatorNodeFactory
+import hu.dreamsequencer.replicator.model.factory.DefaultLocalEventLogFactory
+import hu.dreamsequencer.replicator.model.factory.DefaultReplicatorNodeFactory
 
 class ReplicatorModelModule : PrivateModule() {
     override fun configure() {
