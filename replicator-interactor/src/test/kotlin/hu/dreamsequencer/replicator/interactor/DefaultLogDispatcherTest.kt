@@ -80,7 +80,7 @@ class DefaultLogDispatcherTest {
         whenever(mockRemoteNode2.nodeId).thenReturn(REMOTE_NODE_2_ID)
 
         logDispatcher = DefaultLogDispatcher(mockLogRouterFactory,
-                mockLocalNode, ImmutableList.of(mockRemoteNode1, mockRemoteNode2), mockObserver)
+                mockLocalNode, listOf(mockRemoteNode1, mockRemoteNode2), mockObserver)
     }
 
     @Test
