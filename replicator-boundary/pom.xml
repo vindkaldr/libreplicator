@@ -35,7 +35,6 @@
             <artifactId>replicator-api</artifactId>
             <version>0.1</version>
         </dependency>
-
         <dependency>
             <groupId>hu.dreamsequencer</groupId>
             <artifactId>replicator-interactor-api</artifactId>

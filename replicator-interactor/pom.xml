@@ -40,7 +40,6 @@
             <artifactId>replicator-interactor-api</artifactId>
             <version>0.1</version>
         </dependency>
-
         <dependency>
             <groupId>hu.dreamsequencer</groupId>
             <artifactId>replicator-model</artifactId>
@@ -63,7 +62,6 @@
         <dependency>
             <groupId>com.nhaarman</groupId>
             <artifactId>mockito-kotlin</artifactId>
-            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>

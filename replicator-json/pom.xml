@@ -39,7 +39,6 @@
             <artifactId>replicator-json-api</artifactId>
             <version>0.1</version>
         </dependency>
-
         <dependency>
             <groupId>hu.dreamsequencer</groupId>
             <artifactId>replicator-model</artifactId>
@@ -77,8 +76,8 @@
             <artifactId>junit</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
+            <groupId>com.nhaarman</groupId>
+            <artifactId>mockito-kotlin</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>

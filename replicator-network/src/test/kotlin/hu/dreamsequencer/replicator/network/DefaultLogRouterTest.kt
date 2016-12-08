@@ -17,6 +17,10 @@
 
 package hu.dreamsequencer.replicator.network
 
+import com.nhaarman.mockito_kotlin.times
+import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
+import com.nhaarman.mockito_kotlin.whenever
 import hu.dreamsequencer.replicator.interactor.api.LogDispatcher
 import hu.dreamsequencer.replicator.interactor.api.LogRouter
 import hu.dreamsequencer.replicator.json.api.JsonMapper
@@ -28,10 +32,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.verification.Timeout
 
@@ -53,8 +53,8 @@ class DefaultLogRouterTest {
 
     @Before
     fun setUp() {
-        `when`(mockJsonMapper.write(message)).thenReturn(serializedMessage)
-        `when`(mockJsonMapper.read(serializedMessage, ReplicatorMessage::class)).thenReturn(message)
+        whenever(mockJsonMapper.write(message)).thenReturn(serializedMessage)
+        whenever(mockJsonMapper.read(serializedMessage, ReplicatorMessage::class)).thenReturn(message)
 
         logRouter = DefaultLogRouter(mockJsonMapper, localNode, mockLogDispatcher1)
         logRouter2 = DefaultLogRouter(mockJsonMapper, localNode2, mockLogDispatcher2)
