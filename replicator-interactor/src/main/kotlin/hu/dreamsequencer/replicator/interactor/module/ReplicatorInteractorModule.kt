@@ -18,17 +18,16 @@
 package hu.dreamsequencer.replicator.interactor.module
 
 import com.google.inject.PrivateModule
-import com.google.inject.assistedinject.FactoryProvider
+import com.google.inject.assistedinject.FactoryModuleBuilder
 import hu.dreamsequencer.replicator.interactor.DefaultLogDispatcher
 import hu.dreamsequencer.replicator.interactor.api.LogDispatcher
 import hu.dreamsequencer.replicator.interactor.api.LogDispatcherFactory
-import javax.inject.Singleton
 
 class ReplicatorInteractorModule : PrivateModule() {
     override fun configure() {
         expose(LogDispatcherFactory::class.java)
-        bind(LogDispatcherFactory::class.java)
-                .toProvider(FactoryProvider.newFactory(LogDispatcherFactory::class.java, DefaultLogDispatcher::class.java))
-                .`in`(Singleton::class.java)
+        install(FactoryModuleBuilder()
+                .implement(LogDispatcher::class.java, DefaultLogDispatcher::class.java)
+                .build(LogDispatcherFactory::class.java))
     }
 }

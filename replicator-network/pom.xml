@@ -52,7 +52,7 @@
         </dependency>
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-assisted-inject</artifactId>
+            <artifactId>guice-assistedinject</artifactId>
         </dependency>
 
         <dependency>

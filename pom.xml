@@ -42,7 +42,7 @@
     <properties>
         <kotlin.version>1.0.5</kotlin.version>
         <guice.version>4.1.0</guice.version>
-        <guice-assisted-inject.version>2.0</guice-assisted-inject.version>
+        <guice-assistedinject.version>4.1.0</guice-assistedinject.version>
         <guava.version>20.0</guava.version>
         <rxjava.version>1.2.3</rxjava.version>
         <rxkotlin.version>0.60.0</rxkotlin.version>
@@ -75,8 +75,8 @@
             </dependency>
             <dependency>
                 <groupId>com.google.inject.extensions</groupId>
-                <artifactId>guice-assisted-inject</artifactId>
-                <version>${guice-assisted-inject.version}</version>
+                <artifactId>guice-assistedinject</artifactId>
+                <version>${guice-assistedinject.version}</version>
             </dependency>
 
             <dependency>

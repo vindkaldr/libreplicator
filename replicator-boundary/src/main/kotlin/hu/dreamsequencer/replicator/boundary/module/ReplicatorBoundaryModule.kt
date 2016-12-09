@@ -18,16 +18,16 @@
 package hu.dreamsequencer.replicator.boundary.module
 
 import com.google.inject.PrivateModule
-import com.google.inject.assistedinject.FactoryProvider
+import com.google.inject.assistedinject.FactoryModuleBuilder
+import hu.dreamsequencer.replicator.api.Replicator
 import hu.dreamsequencer.replicator.api.ReplicatorFactory
 import hu.dreamsequencer.replicator.boundary.DefaultReplicator
-import javax.inject.Singleton
 
 class ReplicatorBoundaryModule : PrivateModule() {
     override fun configure() {
         expose(ReplicatorFactory::class.java)
-        bind(ReplicatorFactory::class.java)
-                .toProvider(FactoryProvider.newFactory(ReplicatorFactory::class.java, DefaultReplicator::class.java))
-                .`in`(Singleton::class.java)
+        install(FactoryModuleBuilder()
+                .implement(Replicator::class.java, DefaultReplicator::class.java)
+                .build(ReplicatorFactory::class.java))
     }
 }
