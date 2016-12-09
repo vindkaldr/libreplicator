@@ -17,7 +17,7 @@
 
 package hu.dreamsequencer.replicator.network
 
-import com.nhaarman.mockito_kotlin.times
+import com.nhaarman.mockito_kotlin.timeout
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
 import com.nhaarman.mockito_kotlin.whenever
@@ -33,7 +33,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.verification.Timeout
 
 @RunWith(MockitoJUnitRunner::class)
 class DefaultLogRouterTest {
@@ -71,13 +70,13 @@ class DefaultLogRouterTest {
         logRouter.send(localNode2, message)
         logRouter.send(localNode2, message)
 
-        verify(mockLogDispatcher2, Timeout(2000, times(2))).receive(message)
+        verify(mockLogDispatcher2, timeout(1000).times(2)).receive(message)
         verifyNoMoreInteractions(mockLogDispatcher2)
 
         logRouter2.send(localNode, message)
         logRouter2.send(localNode, message)
 
-        verify(mockLogDispatcher1, Timeout(2000, times(2))).receive(message)
+        verify(mockLogDispatcher1, timeout(1000).times(2)).receive(message)
         verifyNoMoreInteractions(mockLogDispatcher1)
     }
 }
