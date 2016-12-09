@@ -53,7 +53,7 @@ internal class TimeTableDeserializer : StdDeserializer<TimeTable>(TimeTable::cla
 
     private fun getLong(node: JsonNode, fieldName: String): Long {
         val innerNode = getNode(node, fieldName)
-        if (innerNode.isInt) {
+        if (innerNode.canConvertToLong()) {
             return innerNode.longValue()
         }
         throw ExpectedLongException("Not an integer! $innerNode")

@@ -36,7 +36,6 @@ internal class DefaultLogDispatcher
 
     companion object {
         private val NUMBER_OF_LOCAL_NODES = 1
-        private val MILLIS_IN_SECOND = 1000
     }
 
     private val eventLogs = mutableSetOf<EventLog>()
@@ -61,7 +60,7 @@ internal class DefaultLogDispatcher
     }
 
     private fun getCurrentTime(): Long {
-        return System.currentTimeMillis() / MILLIS_IN_SECOND;
+        return System.currentTimeMillis();
     }
 
     private fun updateTimeTable(currentTime: Long) {
