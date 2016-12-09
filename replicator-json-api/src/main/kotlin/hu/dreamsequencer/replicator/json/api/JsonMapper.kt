@@ -21,5 +21,5 @@ import kotlin.reflect.KClass
 
 interface JsonMapper {
     fun write(any: Any): String
-    fun <T: Any> read(string: String, kClass: KClass<T>): T
+    fun <T: Any> read(string: String, kotlinType: KClass<T>): T
 }
