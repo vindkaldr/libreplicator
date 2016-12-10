@@ -31,6 +31,7 @@ import rx.lang.kotlin.observable
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
+import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import javax.inject.Inject
 import kotlin.concurrent.thread
@@ -42,10 +43,11 @@ internal class DefaultLogRouter
 
     private val logger = LoggerFactory.getLogger(DefaultLogRouter::class.java)
 
-    private val BUFFER_SIZE = 1024
+    private val BUFFER_SIZE_IN_BYTES = 1024
+    private val SOCKET_TIMEOUT_IN_MILLIS = 1000
 
     private val socket = DatagramSocket(localNode.port)
-    private val subscription = createReplicatorMessageObservable().subscribe { logDispatcher.receive(it) }
+    private val messageSubscription = createMessageObservable().subscribe { logDispatcher.receive(it) }
 
     override fun send(remoteNode: ReplicatorNode, message: ReplicatorMessage) {
         try {
@@ -59,7 +61,7 @@ internal class DefaultLogRouter
         }
     }
 
-    override fun close() = subscription.unsubscribe()
+    override fun close() = messageSubscription.unsubscribe()
 
     private fun createPacket(remoteNode: ReplicatorNode, message: ReplicatorMessage): DatagramPacket {
         val messageAsByteArray = jsonMapper.write(message).toByteArray()
@@ -68,16 +70,20 @@ internal class DefaultLogRouter
                 InetAddress.getByName(remoteNode.url), remoteNode.port)
     }
 
-    private fun createReplicatorMessageObservable(): Observable<ReplicatorMessage> {
+    private fun createMessageObservable(): Observable<ReplicatorMessage> {
         return observable<ReplicatorMessage> { subscriber ->
             thread {
+                setSocketTimeout(SOCKET_TIMEOUT_IN_MILLIS)
                 while (true) {
                     try {
                         if (subscriber.isUnsubscribed) {
-                            socket.close()
+                            closeSocket()
                             break
                         }
-                        subscriber.onNext(waitForSocketAndReadMessage())
+                        subscriber.onNext(readMessageFromSocket())
+                    }
+                    catch (socketTimeoutException: SocketTimeoutException) {
+                        // Ignore it. I have no better solution to have timeout on the socket.
                     }
                     catch (jsonReadException: JsonReadException) {
                         logger.error(jsonReadException.message, jsonReadException)
@@ -88,8 +94,14 @@ internal class DefaultLogRouter
         }
     }
 
-    private fun waitForSocketAndReadMessage(): ReplicatorMessage {
-        val packet = DatagramPacket(ByteArray(BUFFER_SIZE), BUFFER_SIZE)
+    private fun setSocketTimeout(timeout: Int) {
+        socket.soTimeout = timeout
+    }
+
+    private fun closeSocket() = socket.close()
+
+    private fun readMessageFromSocket(): ReplicatorMessage {
+        val packet = DatagramPacket(ByteArray(BUFFER_SIZE_IN_BYTES), BUFFER_SIZE_IN_BYTES)
 
         socket.receive(packet)
 

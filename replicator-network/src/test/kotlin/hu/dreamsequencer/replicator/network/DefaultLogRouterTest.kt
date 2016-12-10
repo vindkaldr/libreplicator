@@ -42,11 +42,11 @@ class DefaultLogRouterTest {
 
     @Mock private lateinit var mockJsonMapper: JsonMapper
 
-    private var localNode = EventNode("node1", "localhost", 12345)
+    private var node1 = EventNode("node1", "localhost", 12345)
     @Mock private lateinit var mockLogDispatcher1: LogDispatcher
     private lateinit var logRouter: LogRouter
 
-    private var localNode2 = EventNode("node2", "localhost", 12346)
+    private var node2 = EventNode("node2", "localhost", 12346)
     @Mock private lateinit var mockLogDispatcher2: LogDispatcher
     private lateinit var logRouter2: LogRouter
 
@@ -55,8 +55,8 @@ class DefaultLogRouterTest {
         whenever(mockJsonMapper.write(message)).thenReturn(serializedMessage)
         whenever(mockJsonMapper.read(serializedMessage, ReplicatorMessage::class)).thenReturn(message)
 
-        logRouter = DefaultLogRouter(mockJsonMapper, localNode, mockLogDispatcher1)
-        logRouter2 = DefaultLogRouter(mockJsonMapper, localNode2, mockLogDispatcher2)
+        logRouter = DefaultLogRouter(mockJsonMapper, node1, mockLogDispatcher1)
+        logRouter2 = DefaultLogRouter(mockJsonMapper, node2, mockLogDispatcher2)
     }
 
     @After
@@ -67,14 +67,14 @@ class DefaultLogRouterTest {
 
     @Test
     fun router_shouldRouteMessages() {
-        logRouter.send(localNode2, message)
-        logRouter.send(localNode2, message)
+        logRouter.send(node2, message)
+        logRouter.send(node2, message)
 
         verify(mockLogDispatcher2, timeout(1000).times(2)).receive(message)
         verifyNoMoreInteractions(mockLogDispatcher2)
 
-        logRouter2.send(localNode, message)
-        logRouter2.send(localNode, message)
+        logRouter2.send(node1, message)
+        logRouter2.send(node1, message)
 
         verify(mockLogDispatcher1, timeout(1000).times(2)).receive(message)
         verifyNoMoreInteractions(mockLogDispatcher1)
