@@ -42,6 +42,11 @@
         </dependency>
         <dependency>
             <groupId>hu.dreamsequencer</groupId>
+            <artifactId>replicator-log</artifactId>
+            <version>0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>hu.dreamsequencer</groupId>
             <artifactId>replicator-model</artifactId>
             <version>0.1</version>
         </dependency>

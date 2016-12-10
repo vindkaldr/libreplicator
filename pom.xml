@@ -35,6 +35,7 @@
         <module>replicator-interactor-api</module>
         <module>replicator-json</module>
         <module>replicator-json-api</module>
+        <module>replicator-log</module>
         <module>replicator-model</module>
         <module>replicator-network</module>
     </modules>

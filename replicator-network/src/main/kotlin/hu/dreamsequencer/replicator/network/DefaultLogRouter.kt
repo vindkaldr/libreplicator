@@ -18,18 +18,20 @@
 package hu.dreamsequencer.replicator.network
 
 import com.google.inject.assistedinject.Assisted
-import hu.dreamsequencer.replicator.json.api.JsonMapper
-import hu.dreamsequencer.replicator.json.api.JsonReadException
-import hu.dreamsequencer.replicator.json.api.JsonWriteException
 import hu.dreamsequencer.replicator.api.ReplicatorNode
 import hu.dreamsequencer.replicator.interactor.api.LogDispatcher
 import hu.dreamsequencer.replicator.interactor.api.LogRouter
+import hu.dreamsequencer.replicator.json.api.JsonMapper
+import hu.dreamsequencer.replicator.json.api.JsonReadException
+import hu.dreamsequencer.replicator.json.api.JsonWriteException
 import hu.dreamsequencer.replicator.model.ReplicatorMessage
+import org.slf4j.LoggerFactory
 import rx.Observable
 import rx.lang.kotlin.observable
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
+import java.net.UnknownHostException
 import javax.inject.Inject
 import kotlin.concurrent.thread
 
@@ -38,25 +40,28 @@ internal class DefaultLogRouter
                     @Assisted private val localNode: ReplicatorNode,
                     @Assisted private val logDispatcher: LogDispatcher) : LogRouter {
 
-    companion object {
-        private val BUFFER_SIZE = 1024
-    }
+    private val logger = LoggerFactory.getLogger(DefaultLogRouter::class.java)
+
+    private val BUFFER_SIZE = 1024
 
     private val socket = DatagramSocket(localNode.port)
     private val subscription = createReplicatorMessageObservable().subscribe { logDispatcher.receive(it) }
 
     override fun send(remoteNode: ReplicatorNode, message: ReplicatorMessage) {
         try {
-            socket.send(writeMessage(message, remoteNode))
+            socket.send(createPacket(remoteNode, message))
+        }
+        catch (unknownHostException: UnknownHostException) {
+            logger.error(unknownHostException.message, unknownHostException)
         }
         catch (jsonWriteException: JsonWriteException) {
-            error(jsonWriteException)
+            logger.error(jsonWriteException.message, jsonWriteException)
         }
     }
 
     override fun close() = subscription.unsubscribe()
 
-    private fun writeMessage(message: ReplicatorMessage, remoteNode: ReplicatorNode): DatagramPacket {
+    private fun createPacket(remoteNode: ReplicatorNode, message: ReplicatorMessage): DatagramPacket {
         val messageAsByteArray = jsonMapper.write(message).toByteArray()
 
         return DatagramPacket(messageAsByteArray, messageAsByteArray.size,
@@ -69,21 +74,19 @@ internal class DefaultLogRouter
                 while (true) {
                     try {
                         if (subscriber.isUnsubscribed) {
-                            closeSocket()
+                            socket.close()
                             break
                         }
                         subscriber.onNext(waitForSocketAndReadMessage())
                     }
                     catch (jsonReadException: JsonReadException) {
-                        error(jsonReadException)
+                        logger.error(jsonReadException.message, jsonReadException)
                         subscriber.onError(jsonReadException)
                     }
                 }
             }
         }
     }
-
-    private fun closeSocket() = socket.close()
 
     private fun waitForSocketAndReadMessage(): ReplicatorMessage {
         val packet = DatagramPacket(ByteArray(BUFFER_SIZE), BUFFER_SIZE)
