@@ -29,9 +29,10 @@ import hu.dreamsequencer.replicator.json.serializer.TimeTableSerializer
 import hu.dreamsequencer.replicator.model.EventLog
 import hu.dreamsequencer.replicator.model.ReplicatorMessage
 import hu.dreamsequencer.replicator.model.TimeTable
+import javax.inject.Inject
 import kotlin.reflect.KClass
 
-class DefaultJsonMapper : JsonMapper {
+class DefaultJsonMapper @Inject constructor() : JsonMapper {
     private val objectMapper = ObjectMapper()
             .registerModule(
                     SimpleModule()

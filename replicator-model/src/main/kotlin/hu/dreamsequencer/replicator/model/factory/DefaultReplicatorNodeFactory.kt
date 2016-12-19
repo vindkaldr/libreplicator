@@ -20,8 +20,9 @@ package hu.dreamsequencer.replicator.model.factory
 import hu.dreamsequencer.replicator.api.ReplicatorNode
 import hu.dreamsequencer.replicator.api.ReplicatorNodeFactory
 import hu.dreamsequencer.replicator.model.EventNode
+import javax.inject.Inject
 
-class DefaultReplicatorNodeFactory : ReplicatorNodeFactory {
+class DefaultReplicatorNodeFactory @Inject constructor() : ReplicatorNodeFactory {
 	override fun create(nodeId: String, url: String, port: Int): ReplicatorNode {
 		return EventNode(nodeId, url, port)
 	}

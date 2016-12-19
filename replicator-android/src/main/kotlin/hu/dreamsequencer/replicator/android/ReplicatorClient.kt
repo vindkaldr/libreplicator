@@ -15,15 +15,15 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package hu.dreamsequencer.replicator.model.factory
+package hu.dreamsequencer.replicator.android
 
-import hu.dreamsequencer.replicator.api.LocalEventLog
 import hu.dreamsequencer.replicator.api.LocalEventLogFactory
-import hu.dreamsequencer.replicator.model.EventLog
+import hu.dreamsequencer.replicator.api.ReplicatorFactory
+import hu.dreamsequencer.replicator.api.ReplicatorNodeFactory
 import javax.inject.Inject
 
-class DefaultLocalEventLogFactory @Inject constructor() : LocalEventLogFactory {
-	override fun create(log: String): LocalEventLog {
-		return EventLog("", 0L, log)
-	}
+class ReplicatorClient constructor() {
+    @Inject lateinit var replicatorFactory: ReplicatorFactory
+    @Inject lateinit var replicatorNodeFactory: ReplicatorNodeFactory
+    @Inject lateinit var localEventLogFactory: LocalEventLogFactory
 }
