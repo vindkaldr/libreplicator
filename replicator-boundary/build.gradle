@@ -18,5 +18,4 @@
 dependencies {
     compile project(':replicator-api'), project(':replicator-interactor-api')
     compile group: 'com.google.inject', name: 'guice', version: '4.1.0'
-    compile group: 'com.google.inject.extensions', name: 'guice-assistedinject', version: '4.1.0'
 }

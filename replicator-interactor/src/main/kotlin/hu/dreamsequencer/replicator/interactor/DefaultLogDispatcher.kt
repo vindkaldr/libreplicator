@@ -17,7 +17,6 @@
 
 package hu.dreamsequencer.replicator.interactor
 
-import com.google.inject.assistedinject.Assisted
 import hu.dreamsequencer.replicator.api.LocalEventLog
 import hu.dreamsequencer.replicator.api.RemoteEventLogObserver
 import hu.dreamsequencer.replicator.api.ReplicatorNode
@@ -30,9 +29,9 @@ import javax.inject.Inject
 
 internal class DefaultLogDispatcher
 @Inject constructor(logRouterFactory: LogRouterFactory,
-                    @Assisted private val localNode: ReplicatorNode,
-                    @Assisted private val remoteNodes: List<ReplicatorNode>,
-                    @Assisted private val remoteEventLogObserver: RemoteEventLogObserver) : LogDispatcher {
+                    private val localNode: ReplicatorNode,
+                    private val remoteNodes: List<ReplicatorNode>,
+                    private val remoteEventLogObserver: RemoteEventLogObserver) : LogDispatcher {
 
     companion object {
         private val NUMBER_OF_LOCAL_NODES = 1

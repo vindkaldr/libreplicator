@@ -18,16 +18,12 @@
 package hu.dreamsequencer.replicator.network.module
 
 import com.google.inject.PrivateModule
-import com.google.inject.assistedinject.FactoryModuleBuilder
-import hu.dreamsequencer.replicator.interactor.api.LogRouter
 import hu.dreamsequencer.replicator.interactor.api.LogRouterFactory
-import hu.dreamsequencer.replicator.network.DefaultLogRouter
+import hu.dreamsequencer.replicator.network.DefaultLogRouterFactory
 
 class ReplicatorNetworkModule : PrivateModule() {
     override fun configure() {
         expose(LogRouterFactory::class.java)
-        install(FactoryModuleBuilder()
-                .implement(LogRouter::class.java, DefaultLogRouter::class.java)
-                .build(LogRouterFactory::class.java))
+        bind(LogRouterFactory::class.java).to(DefaultLogRouterFactory::class.java)
     }
 }

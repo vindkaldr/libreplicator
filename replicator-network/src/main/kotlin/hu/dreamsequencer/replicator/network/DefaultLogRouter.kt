@@ -17,7 +17,6 @@
 
 package hu.dreamsequencer.replicator.network
 
-import com.google.inject.assistedinject.Assisted
 import hu.dreamsequencer.replicator.api.ReplicatorNode
 import hu.dreamsequencer.replicator.interactor.api.LogDispatcher
 import hu.dreamsequencer.replicator.interactor.api.LogRouter
@@ -38,8 +37,8 @@ import kotlin.concurrent.thread
 
 internal class DefaultLogRouter
 @Inject constructor(private val jsonMapper: JsonMapper,
-                    @Assisted private val localNode: ReplicatorNode,
-                    @Assisted private val logDispatcher: LogDispatcher) : LogRouter {
+                    localNode: ReplicatorNode,
+                    private val logDispatcher: LogDispatcher) : LogRouter {
 
     private val logger = LoggerFactory.getLogger(DefaultLogRouter::class.java)
 

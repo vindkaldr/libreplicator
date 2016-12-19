@@ -17,7 +17,6 @@
 
 package hu.dreamsequencer.replicator.boundary
 
-import com.google.inject.assistedinject.Assisted
 import hu.dreamsequencer.replicator.api.LocalEventLog
 import hu.dreamsequencer.replicator.api.RemoteEventLogObserver
 import hu.dreamsequencer.replicator.api.Replicator
@@ -27,9 +26,9 @@ import javax.inject.Inject
 
 internal class DefaultReplicator
 @Inject constructor(logDispatcherFactory: LogDispatcherFactory,
-                    @Assisted localNode: ReplicatorNode,
-                    @Assisted remoteNodes:List<ReplicatorNode>,
-                    @Assisted remoteEventLogObserver: RemoteEventLogObserver) : Replicator {
+                    localNode: ReplicatorNode,
+                    remoteNodes:List<ReplicatorNode>,
+                    remoteEventLogObserver: RemoteEventLogObserver) : Replicator {
 
     private val logDispatcher = logDispatcherFactory.create(localNode, remoteNodes, remoteEventLogObserver)
 
