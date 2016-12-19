@@ -21,7 +21,7 @@ import hu.dreamsequencer.replicator.api.LocalEventLog
 import hu.dreamsequencer.replicator.api.LocalEventLogFactory
 import hu.dreamsequencer.replicator.model.EventLog
 
-internal class DefaultLocalEventLogFactory : LocalEventLogFactory {
+class DefaultLocalEventLogFactory : LocalEventLogFactory {
 	override fun create(log: String): LocalEventLog {
 		return EventLog("", 0L, log)
 	}

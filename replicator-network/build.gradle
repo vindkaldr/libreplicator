@@ -21,7 +21,7 @@ dependencies {
     compile project(':replicator-log')
     compile project(':replicator-model')
 
-    compile group: 'com.google.inject', name: 'guice', version: '4.1.0'
+    compile group: 'javax.inject', name: 'javax.inject', version: '1'
 
     compile group: 'io.reactivex', name: 'rxjava', version: '1.2.3'
     compile group: 'io.reactivex', name: 'rxkotlin', version: '0.60.0'

@@ -15,15 +15,20 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package hu.dreamsequencer.replicator.json.module
+package hu.dreamsequencer.replicator.module
 
 import com.google.inject.PrivateModule
-import hu.dreamsequencer.replicator.json.DefaultJsonMapper
-import hu.dreamsequencer.replicator.json.api.JsonMapper
+import hu.dreamsequencer.replicator.api.LocalEventLogFactory
+import hu.dreamsequencer.replicator.api.ReplicatorNodeFactory
+import hu.dreamsequencer.replicator.model.factory.DefaultLocalEventLogFactory
+import hu.dreamsequencer.replicator.model.factory.DefaultReplicatorNodeFactory
 
-class ReplicatorJsonModule : PrivateModule() {
+class ReplicatorModelModule : PrivateModule() {
     override fun configure() {
-        expose(JsonMapper::class.java)
-        bind(JsonMapper::class.java).to(DefaultJsonMapper::class.java)
+        expose(LocalEventLogFactory::class.java)
+        bind(LocalEventLogFactory::class.java).to(DefaultLocalEventLogFactory::class.java)
+
+        expose(ReplicatorNodeFactory::class.java)
+        bind(ReplicatorNodeFactory::class.java).to(DefaultReplicatorNodeFactory::class.java)
     }
 }

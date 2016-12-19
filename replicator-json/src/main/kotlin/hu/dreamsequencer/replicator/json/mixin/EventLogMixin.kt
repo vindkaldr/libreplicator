@@ -20,7 +20,7 @@ package hu.dreamsequencer.replicator.json.mixin
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 
-internal class EventLogMixin
+class EventLogMixin
 @JsonCreator constructor(@JsonProperty("nodeId") private val nodeId: String,
                          @JsonProperty("time") private val time: Long,
                          @JsonProperty("log") private val log: String)

@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import hu.dreamsequencer.replicator.json.serializer.TimeTableSerializer
 import hu.dreamsequencer.replicator.model.TimeTable
 
-internal class TimeTableDeserializer : StdDeserializer<TimeTable>(TimeTable::class.java) {
+class TimeTableDeserializer : StdDeserializer<TimeTable>(TimeTable::class.java) {
 
     override fun deserialize(parser: JsonParser?, context: DeserializationContext?): TimeTable {
         val node = parser?.readValueAsTree<JsonNode>()

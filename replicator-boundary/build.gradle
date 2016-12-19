@@ -17,5 +17,5 @@
 
 dependencies {
     compile project(':replicator-api'), project(':replicator-interactor-api')
-    compile group: 'com.google.inject', name: 'guice', version: '4.1.0'
+    compile group: 'javax.inject', name: 'javax.inject', version: '1'
 }

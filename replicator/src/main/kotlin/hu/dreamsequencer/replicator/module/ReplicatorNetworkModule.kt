@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package hu.dreamsequencer.replicator.network.module
+package hu.dreamsequencer.replicator.module
 
 import com.google.inject.PrivateModule
 import hu.dreamsequencer.replicator.interactor.api.LogRouterFactory

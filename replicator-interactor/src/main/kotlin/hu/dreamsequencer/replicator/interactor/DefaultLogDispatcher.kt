@@ -27,7 +27,7 @@ import hu.dreamsequencer.replicator.model.ReplicatorMessage
 import hu.dreamsequencer.replicator.model.TimeTable
 import javax.inject.Inject
 
-internal class DefaultLogDispatcher
+class DefaultLogDispatcher
 @Inject constructor(logRouterFactory: LogRouterFactory,
                     private val localNode: ReplicatorNode,
                     private val remoteNodes: List<ReplicatorNode>,

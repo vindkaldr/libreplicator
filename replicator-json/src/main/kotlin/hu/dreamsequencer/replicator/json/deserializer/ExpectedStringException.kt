@@ -19,4 +19,4 @@ package hu.dreamsequencer.replicator.json.deserializer
 
 import com.fasterxml.jackson.core.JsonProcessingException
 
-internal class ExpectedStringException(message: String) : JsonProcessingException(message)
+class ExpectedStringException(message: String) : JsonProcessingException(message)

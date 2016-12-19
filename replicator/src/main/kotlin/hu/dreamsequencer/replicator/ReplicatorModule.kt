@@ -18,11 +18,11 @@
 package hu.dreamsequencer.replicator
 
 import com.google.inject.AbstractModule
-import hu.dreamsequencer.replicator.boundary.module.ReplicatorBoundaryModule
-import hu.dreamsequencer.replicator.interactor.module.ReplicatorInteractorModule
-import hu.dreamsequencer.replicator.json.module.ReplicatorJsonModule
-import hu.dreamsequencer.replicator.model.module.ReplicatorModelModule
-import hu.dreamsequencer.replicator.network.module.ReplicatorNetworkModule
+import hu.dreamsequencer.replicator.module.ReplicatorBoundaryModule
+import hu.dreamsequencer.replicator.module.ReplicatorInteractorModule
+import hu.dreamsequencer.replicator.module.ReplicatorJsonModule
+import hu.dreamsequencer.replicator.module.ReplicatorModelModule
+import hu.dreamsequencer.replicator.module.ReplicatorNetworkModule
 
 class ReplicatorModule : AbstractModule() {
     override fun configure() {

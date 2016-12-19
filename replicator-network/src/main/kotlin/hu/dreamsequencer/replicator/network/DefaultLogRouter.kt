@@ -35,7 +35,7 @@ import java.net.UnknownHostException
 import javax.inject.Inject
 import kotlin.concurrent.thread
 
-internal class DefaultLogRouter
+class DefaultLogRouter
 @Inject constructor(private val jsonMapper: JsonMapper,
                     localNode: ReplicatorNode,
                     private val logDispatcher: LogDispatcher) : LogRouter {

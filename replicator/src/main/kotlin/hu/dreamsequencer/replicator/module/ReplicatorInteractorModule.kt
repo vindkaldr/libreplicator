@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package hu.dreamsequencer.replicator.interactor.module
+package hu.dreamsequencer.replicator.module
 
 import com.google.inject.PrivateModule
 import hu.dreamsequencer.replicator.interactor.DefaultLogDispatcherFactory

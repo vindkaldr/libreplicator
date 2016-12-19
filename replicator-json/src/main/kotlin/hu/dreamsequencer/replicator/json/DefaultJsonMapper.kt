@@ -31,7 +31,7 @@ import hu.dreamsequencer.replicator.model.ReplicatorMessage
 import hu.dreamsequencer.replicator.model.TimeTable
 import kotlin.reflect.KClass
 
-internal class DefaultJsonMapper : JsonMapper {
+class DefaultJsonMapper : JsonMapper {
     private val objectMapper = ObjectMapper()
             .registerModule(
                     SimpleModule()

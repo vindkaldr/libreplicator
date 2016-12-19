@@ -22,6 +22,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import hu.dreamsequencer.replicator.model.EventLog
 import hu.dreamsequencer.replicator.model.TimeTable
 
-internal class ReplicatorMessageMixin
+class ReplicatorMessageMixin
 @JsonCreator constructor(@JsonProperty("eventLogs") val eventLogs: List<EventLog>,
                          @JsonProperty("timeTable") val timeTable: TimeTable)

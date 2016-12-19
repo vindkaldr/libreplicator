@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import com.google.common.collect.Table
 import hu.dreamsequencer.replicator.model.TimeTable
 
-internal class TimeTableSerializer : StdSerializer<TimeTable>(TimeTable::class.java) {
+class TimeTableSerializer : StdSerializer<TimeTable>(TimeTable::class.java) {
 
     companion object {
         val PROPERTY_ROW = "rowKey"

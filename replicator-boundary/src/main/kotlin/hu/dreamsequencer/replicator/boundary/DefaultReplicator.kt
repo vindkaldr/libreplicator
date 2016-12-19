@@ -24,7 +24,7 @@ import hu.dreamsequencer.replicator.api.ReplicatorNode
 import hu.dreamsequencer.replicator.interactor.api.LogDispatcherFactory
 import javax.inject.Inject
 
-internal class DefaultReplicator
+class DefaultReplicator
 @Inject constructor(logDispatcherFactory: LogDispatcherFactory,
                     localNode: ReplicatorNode,
                     remoteNodes:List<ReplicatorNode>,
