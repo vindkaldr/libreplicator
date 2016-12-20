@@ -16,7 +16,6 @@
  */
 
 dependencies {
-    compile project(':replicator-api')
     compile project(':replicator-boundary')
     compile project(':replicator-interactor')
     compile project(':replicator-json')

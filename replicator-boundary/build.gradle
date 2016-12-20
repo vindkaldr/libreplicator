@@ -16,6 +16,8 @@
  */
 
 dependencies {
-    compile project(':replicator-api'), project(':replicator-interactor-api')
+    compile project(':replicator-api')
+    compile project(':replicator-interactor-api')
+
     compile group: 'javax.inject', name: 'javax.inject', version: '1'
 }

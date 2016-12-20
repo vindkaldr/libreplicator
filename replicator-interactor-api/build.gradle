@@ -16,5 +16,6 @@
  */
 
 dependencies {
-    compile project(':replicator-api'), project(':replicator-model')
+    compile project(':replicator-api')
+    compile project(':replicator-model')
 }
