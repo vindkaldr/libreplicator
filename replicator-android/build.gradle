@@ -34,17 +34,3 @@ dependencies {
 sourceSets {
     main.java.srcDirs += 'build/generated/source/kapt/main'
 }
-
-apply plugin: 'maven-publish'
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId group
-            artifactId project.name
-            version version
-
-            from components.java
-        }
-    }
-}

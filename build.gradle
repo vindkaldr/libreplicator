@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-allprojects {
+subprojects {
     group 'hu.dreamsequencer'
     version '0.1.0'
 
@@ -27,6 +27,20 @@ allprojects {
 
     dependencies {
         compile "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+
+    apply plugin: 'maven-publish'
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                groupId group
+                artifactId project.name
+                version version
+
+                from components.java
+            }
+        }
     }
 }
 
