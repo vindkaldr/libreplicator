@@ -38,6 +38,10 @@ class ReplicatorAndroidIntegrationTest {
         private val LOG = "log"
     }
 
+    private lateinit var replicatorAndroidClient1: ReplicatorAndroidClient
+    private lateinit var replicatorAndroidClient2: ReplicatorAndroidClient
+    private lateinit var replicatorAndroidClient3: ReplicatorAndroidClient
+
     private lateinit var node1: ReplicatorNode
     private lateinit var node2: ReplicatorNode
     private lateinit var node3: ReplicatorNode
@@ -50,34 +54,30 @@ class ReplicatorAndroidIntegrationTest {
     @Mock private lateinit var mockObserver2: RemoteEventLogObserver
     @Mock private lateinit var mockObserver3: RemoteEventLogObserver
 
-    private lateinit var replicatorClient1: ReplicatorClient
-    private lateinit var replicatorClient2: ReplicatorClient
-    private lateinit var replicatorClient3: ReplicatorClient
-
     @Before
     fun setUp() {
-        replicatorClient1 = ReplicatorClient()
-        replicatorClient2 = ReplicatorClient()
-        replicatorClient3 = ReplicatorClient()
+        replicatorAndroidClient1 = ReplicatorAndroidClient()
+        replicatorAndroidClient2 = ReplicatorAndroidClient()
+        replicatorAndroidClient3 = ReplicatorAndroidClient()
 
-        DaggerReplicatorComponent.create().inject(replicatorClient1)
-        DaggerReplicatorComponent.create().inject(replicatorClient2)
-        DaggerReplicatorComponent.create().inject(replicatorClient3)
+        DaggerReplicatorAndroidComponent.create().inject(replicatorAndroidClient1)
+        DaggerReplicatorAndroidComponent.create().inject(replicatorAndroidClient2)
+        DaggerReplicatorAndroidComponent.create().inject(replicatorAndroidClient3)
 
-        node1 = replicatorClient1.replicatorNodeFactory.create("nodeId1", "localhost", 12345)
-        node2 = replicatorClient2.replicatorNodeFactory.create("nodeId2", "localhost", 12346)
-        node3 = replicatorClient3.replicatorNodeFactory.create("nodeId3", "localhost", 12347)
+        node1 = replicatorAndroidClient1.replicatorNodeFactory.create("nodeId1", "localhost", 12345)
+        node2 = replicatorAndroidClient2.replicatorNodeFactory.create("nodeId2", "localhost", 12346)
+        node3 = replicatorAndroidClient3.replicatorNodeFactory.create("nodeId3", "localhost", 12347)
 
-        replicator1 = replicatorClient1.replicatorFactory.create(node1, listOf(node2, node3), mockObserver1)
-        replicator2 = replicatorClient2.replicatorFactory.create(node2, listOf(node1, node3), mockObserver2)
-        replicator3 = replicatorClient3.replicatorFactory.create(node3, listOf(node1, node2), mockObserver3)
+        replicator1 = replicatorAndroidClient1.replicatorFactory.create(node1, listOf(node2, node3), mockObserver1)
+        replicator2 = replicatorAndroidClient2.replicatorFactory.create(node2, listOf(node1, node3), mockObserver2)
+        replicator3 = replicatorAndroidClient3.replicatorFactory.create(node3, listOf(node1, node2), mockObserver3)
     }
 
     @Test
     fun replicator_shouldReplicateLogsBetweenNodes() {
-        replicator1.replicate(replicatorClient1.localEventLogFactory.create(LOG))
-        replicator2.replicate(replicatorClient2.localEventLogFactory.create(LOG))
-        replicator3.replicate(replicatorClient3.localEventLogFactory.create(LOG))
+        replicator1.replicate(replicatorAndroidClient1.localEventLogFactory.create(LOG))
+        replicator2.replicate(replicatorAndroidClient2.localEventLogFactory.create(LOG))
+        replicator3.replicate(replicatorAndroidClient3.localEventLogFactory.create(LOG))
 
         verify(mockObserver1, timeout(1000).times(2)).observe(check { remoteEventLog ->
             assertThat(remoteEventLog.log, equalTo(LOG))

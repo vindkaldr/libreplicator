@@ -17,17 +17,13 @@
 
 package hu.dreamsequencer.replicator.android
 
-import dagger.Component
+import dagger.Module
 import hu.dreamsequencer.replicator.android.module.ReplicatorBoundaryAndroidModule
 import hu.dreamsequencer.replicator.android.module.ReplicatorInteractorAndroidModule
 import hu.dreamsequencer.replicator.android.module.ReplicatorJsonAndroidModule
 import hu.dreamsequencer.replicator.android.module.ReplicatorModelAndroidModule
 import hu.dreamsequencer.replicator.android.module.ReplicatorNetworkAndroidModule
-import javax.inject.Singleton
 
-@Singleton
-@Component(modules= arrayOf(ReplicatorBoundaryAndroidModule::class, ReplicatorInteractorAndroidModule::class,
+@Module(includes= arrayOf(ReplicatorBoundaryAndroidModule::class, ReplicatorInteractorAndroidModule::class,
         ReplicatorJsonAndroidModule::class, ReplicatorModelAndroidModule::class, ReplicatorNetworkAndroidModule::class))
-interface ReplicatorComponent {
-    fun inject(replicatorClient: ReplicatorClient)
-}
+class ReplicatorAndroidModule

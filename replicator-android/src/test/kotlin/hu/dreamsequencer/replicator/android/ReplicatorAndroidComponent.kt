@@ -17,13 +17,9 @@
 
 package hu.dreamsequencer.replicator.android
 
-import hu.dreamsequencer.replicator.api.LocalEventLogFactory
-import hu.dreamsequencer.replicator.api.ReplicatorFactory
-import hu.dreamsequencer.replicator.api.ReplicatorNodeFactory
-import javax.inject.Inject
+import dagger.Component
 
-class ReplicatorClient constructor() {
-    @Inject lateinit var replicatorFactory: ReplicatorFactory
-    @Inject lateinit var replicatorNodeFactory: ReplicatorNodeFactory
-    @Inject lateinit var localEventLogFactory: LocalEventLogFactory
+@Component(modules= arrayOf(ReplicatorAndroidModule::class))
+interface ReplicatorAndroidComponent {
+    fun inject(replicatorAndroidClient: ReplicatorAndroidClient)
 }
