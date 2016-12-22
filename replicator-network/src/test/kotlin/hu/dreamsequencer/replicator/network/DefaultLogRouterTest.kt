@@ -37,8 +37,8 @@ import org.mockito.junit.MockitoJUnitRunner
 @RunWith(MockitoJUnitRunner::class)
 class DefaultLogRouterTest {
 
-    private val message = ReplicatorMessage(listOf(), TimeTable())
-    private val serializedMessage = "{\"eventLogs\":[],\"timeTable\":[]}"
+    private val message = ReplicatorMessage("nodeId", listOf(), TimeTable())
+    private val serializedMessage = "{\"nodeId\":\"nodeId\",\"eventLogs\":[],\"timeTable\":[]}"
 
     @Mock private lateinit var mockJsonMapper: JsonMapper
 

@@ -48,23 +48,32 @@ class TimeTableTest {
     }
 
     @Test
-    fun mergeRow_shouldMergeCellWiseStoringTheLargestValue() {
+    fun mergeRow_shouldMergeTargetRowIntoSourceRowStoringTheLargestValue() {
+        timeTable[NODE_1, NODE_1] = 42L
         timeTable[NODE_1, NODE_2] = 2L
-        timeTable[NODE_1, NODE_3] = 3L
+        timeTable[NODE_1, NODE_3] = 12L
         timeTable[NODE_2, NODE_1] = 6L
+        timeTable[NODE_3, NODE_1] = 8L
 
         val timeTable2 = TimeTable(3)
+        timeTable2[NODE_2, NODE_1] = 9L
+        timeTable2[NODE_2, NODE_2] = 10L
+        timeTable2[NODE_2, NODE_3] = 3L
         timeTable2[NODE_1, NODE_2] = 4L
-        timeTable2[NODE_1, NODE_3] = 1L
-        timeTable2[NODE_2, NODE_1] = 10L
-        timeTable2[NODE_3, NODE_1] = 10L
+        timeTable2[NODE_1, NODE_3] = 7L
+        timeTable2[NODE_3, NODE_1] = 14L
 
-        timeTable.mergeRow(timeTable2, NODE_1)
+        timeTable.mergeRow(NODE_1, timeTable2, NODE_2)
 
-        assertThat(timeTable[NODE_1, NODE_2], equalTo(4L))
-        assertThat(timeTable[NODE_1, NODE_3], equalTo(3L))
+        assertThat(timeTable[NODE_1, NODE_1], equalTo(42L))
+        assertThat(timeTable[NODE_1, NODE_2], equalTo(10L))
+        assertThat(timeTable[NODE_1, NODE_3], equalTo(12L))
         assertThat(timeTable[NODE_2, NODE_1], equalTo(6L))
-        assertThat(timeTable[NODE_3, NODE_1], equalTo(0L))
+        assertThat(timeTable[NODE_2, NODE_2], equalTo(0L))
+        assertThat(timeTable[NODE_2, NODE_3], equalTo(0L))
+        assertThat(timeTable[NODE_3, NODE_1], equalTo(8L))
+        assertThat(timeTable[NODE_3, NODE_2], equalTo(0L))
+        assertThat(timeTable[NODE_3, NODE_3], equalTo(0L))
     }
 
     @Test
@@ -81,9 +90,14 @@ class TimeTableTest {
 
         timeTable.merge(timeTable2)
 
+        assertThat(timeTable[NODE_1, NODE_1], equalTo(0L))
         assertThat(timeTable[NODE_1, NODE_2], equalTo(4L))
         assertThat(timeTable[NODE_1, NODE_3], equalTo(3L))
         assertThat(timeTable[NODE_2, NODE_1], equalTo(6L))
+        assertThat(timeTable[NODE_2, NODE_2], equalTo(0L))
+        assertThat(timeTable[NODE_2, NODE_2], equalTo(0L))
         assertThat(timeTable[NODE_3, NODE_1], equalTo(2L))
+        assertThat(timeTable[NODE_3, NODE_2], equalTo(0L))
+        assertThat(timeTable[NODE_3, NODE_3], equalTo(0L))
     }
 }

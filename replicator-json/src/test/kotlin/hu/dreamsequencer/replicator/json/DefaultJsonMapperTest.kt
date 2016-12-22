@@ -51,17 +51,17 @@ class DefaultJsonMapperTest {
 
     @Test
     fun write_shouldSerializeReplicatorMessage() {
-        val message = ReplicatorMessage(listOf(), TimeTable())
+        val message = ReplicatorMessage("nodeId", listOf(), TimeTable())
 
-        assertThat(jsonMapper.write(message), equalTo("{\"eventLogs\":[],\"timeTable\":[]}"))
+        assertThat(jsonMapper.write(message), equalTo("{\"nodeId\":\"nodeId\",\"eventLogs\":[],\"timeTable\":[]}"))
     }
 
     @Test
     fun read_shouldDeserializeReplicatorMessage() {
-        val message = "{\"eventLogs\":[],\"timeTable\":[]}"
+        val message = "{\"nodeId\":\"nodeId\",\"eventLogs\":[],\"timeTable\":[]}"
 
         val actual = jsonMapper.read(message, ReplicatorMessage::class)
-        val expected = ReplicatorMessage(listOf(), TimeTable())
+        val expected = ReplicatorMessage("nodeId", listOf(), TimeTable())
 
         assertThat(actual, equalTo(expected))
     }

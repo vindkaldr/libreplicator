@@ -40,13 +40,13 @@ private constructor(private val table: Table<String, String, Long>) {
         }
     }
 
-    fun mergeRow(timeTable: TimeTable, sourceNodeId: String) = synchronized(this) {
-        val row = copyOf(table.row(sourceNodeId))
-        val otherRow = copyOf(timeTable.table.row(sourceNodeId))
-        val allColumnKeys = copyOf(row.keys) + copyOf(otherRow.keys)
+    fun mergeRow(sourceNodeId: String, timeTable: TimeTable, targetNodeId: String) = synchronized(this) {
+        val sourceRow = copyOf(table.row(sourceNodeId))
+        val targetRow = copyOf(timeTable.table.row(targetNodeId))
+        val allColumnKeys = copyOf(sourceRow.keys) + copyOf(targetRow.keys)
 
         allColumnKeys.forEach { columnKey ->
-            val maxTime = max(row[columnKey] ?: 0, otherRow[columnKey] ?: 0)
+            val maxTime = max(sourceRow[columnKey] ?: 0, targetRow[columnKey] ?: 0)
 
             if (maxTime > 0) {
                 table.put(sourceNodeId, columnKey, maxTime)

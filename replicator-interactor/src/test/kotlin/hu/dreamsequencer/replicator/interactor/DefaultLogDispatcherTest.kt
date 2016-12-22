@@ -17,7 +17,6 @@
 
 package hu.dreamsequencer.replicator.interactor
 
-import com.google.common.collect.ImmutableList
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.check
 import com.nhaarman.mockito_kotlin.eq
@@ -107,7 +106,7 @@ class DefaultLogDispatcherTest {
         remoteEventLog = EventLog(REMOTE_NODE_1_ID, 1, REMOTE_LOG)
         remoteTimeTable = TimeTable(3)
         remoteTimeTable[REMOTE_NODE_1_ID, REMOTE_NODE_1_ID] = 1
-        replicatorMessage = ReplicatorMessage(listOf(remoteEventLog), remoteTimeTable)
+        replicatorMessage = ReplicatorMessage(REMOTE_NODE_1_ID, listOf(remoteEventLog), remoteTimeTable)
 
         logDispatcher.receive(replicatorMessage)
 
@@ -120,7 +119,7 @@ class DefaultLogDispatcherTest {
         remoteEventLog = EventLog(REMOTE_NODE_1_ID, 1, REMOTE_LOG)
         remoteTimeTable = TimeTable(3)
         remoteTimeTable[REMOTE_NODE_1_ID, REMOTE_NODE_1_ID] = 1
-        replicatorMessage = ReplicatorMessage(listOf(remoteEventLog), remoteTimeTable)
+        replicatorMessage = ReplicatorMessage(REMOTE_NODE_1_ID, listOf(remoteEventLog), remoteTimeTable)
         logDispatcher.receive(replicatorMessage)
 
         verify(mockObserver).observe(remoteEventLog)
@@ -152,7 +151,7 @@ class DefaultLogDispatcherTest {
         remoteTimeTable2[REMOTE_NODE_1_ID, REMOTE_NODE_1_ID] = 1
         remoteTimeTable2[REMOTE_NODE_2_ID, REMOTE_NODE_2_ID] = 2
         remoteTimeTable2[REMOTE_NODE_2_ID, REMOTE_NODE_1_ID] = 1
-        replicatorMessage2 = ReplicatorMessage(listOf(remoteEventLog, remoteEventLog2), remoteTimeTable2)
+        replicatorMessage2 = ReplicatorMessage(REMOTE_NODE_2_ID, listOf(remoteEventLog, remoteEventLog2), remoteTimeTable2)
         logDispatcher.receive(replicatorMessage2)
 
         verify(mockObserver).observe(remoteEventLog)
@@ -186,7 +185,7 @@ class DefaultLogDispatcherTest {
         remoteTimeTable2[REMOTE_NODE_2_ID, REMOTE_NODE_2_ID] = 2
         remoteTimeTable2[REMOTE_NODE_2_ID, REMOTE_NODE_1_ID] = 2
         remoteTimeTable2[REMOTE_NODE_1_ID, REMOTE_NODE_2_ID] = 2
-        replicatorMessage2 = ReplicatorMessage(listOf(remoteEventLog, remoteEventLog2), remoteTimeTable2)
+        replicatorMessage2 = ReplicatorMessage(REMOTE_NODE_2_ID, listOf(remoteEventLog, remoteEventLog2), remoteTimeTable2)
         logDispatcher.receive(replicatorMessage2)
 
         verify(mockObserver).observe(remoteEventLog)

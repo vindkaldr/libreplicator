@@ -54,7 +54,7 @@ class DefaultLogDispatcher
         notifyObserver(replicatorMessage.eventLogs)
 
         addToEventLogs(replicatorMessage.eventLogs)
-        updateTimeTable(replicatorMessage.timeTable)
+        updateTimeTable(replicatorMessage)
         cleanUpEventLogs()
     }
 
@@ -74,7 +74,7 @@ class DefaultLogDispatcher
         remoteNodes.forEach { remoteNode ->
             val missingLogs = eventLogs.filter { !hasEventLog(remoteNode, it) }.sortedBy { it.time }
             if (!missingLogs.isEmpty()) {
-                logRouter.send(remoteNode, ReplicatorMessage(missingLogs, timeTable))
+                logRouter.send(remoteNode, ReplicatorMessage(localNode.nodeId, missingLogs, timeTable))
             }
         }
     }
@@ -93,9 +93,9 @@ class DefaultLogDispatcher
                 .forEach { remoteEventLogObserver.observe(it) }
     }
 
-    private fun updateTimeTable(remoteTimeTable: TimeTable) {
-        timeTable.mergeRow(remoteTimeTable, localNode.nodeId)
-        timeTable.merge(remoteTimeTable)
+    private fun updateTimeTable(replicatorMessage: ReplicatorMessage) {
+        timeTable.mergeRow(localNode.nodeId, replicatorMessage.timeTable, replicatorMessage.nodeId)
+        timeTable.merge(replicatorMessage.timeTable)
     }
 
     private fun cleanUpEventLogs() {

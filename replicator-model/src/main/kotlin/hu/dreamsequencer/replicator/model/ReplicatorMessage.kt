@@ -17,4 +17,4 @@
 
 package hu.dreamsequencer.replicator.model
 
-data class ReplicatorMessage(val eventLogs: List<EventLog>, val timeTable: TimeTable)
+data class ReplicatorMessage(val nodeId: String, val eventLogs: List<EventLog>, val timeTable: TimeTable)

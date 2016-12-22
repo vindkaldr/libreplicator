@@ -23,5 +23,6 @@ import hu.dreamsequencer.replicator.model.EventLog
 import hu.dreamsequencer.replicator.model.TimeTable
 
 class ReplicatorMessageMixin
-@JsonCreator constructor(@JsonProperty("eventLogs") val eventLogs: List<EventLog>,
+@JsonCreator constructor(@JsonProperty("nodeId") val nodeId: String,
+                         @JsonProperty("eventLogs") val eventLogs: List<EventLog>,
                          @JsonProperty("timeTable") val timeTable: TimeTable)
