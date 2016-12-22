@@ -18,10 +18,11 @@
 package hu.dreamsequencer.replicator.interactor.api
 
 import hu.dreamsequencer.replicator.api.LocalEventLog
-import hu.dreamsequencer.replicator.api.ReplicatorNode
 import hu.dreamsequencer.replicator.model.ReplicatorMessage
 
 interface LogDispatcher {
     fun dispatch(localEventLog: LocalEventLog)
     fun receive(replicatorMessage: ReplicatorMessage)
+    fun open()
+    fun close()
 }

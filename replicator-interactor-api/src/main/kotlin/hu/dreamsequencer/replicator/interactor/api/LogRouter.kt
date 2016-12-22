@@ -22,5 +22,6 @@ import hu.dreamsequencer.replicator.model.ReplicatorMessage
 
 interface LogRouter {
     fun send(remoteNode: ReplicatorNode, message: ReplicatorMessage)
+    fun open()
     fun close()
 }

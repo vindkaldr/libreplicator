@@ -35,4 +35,7 @@ class DefaultReplicator
     override fun replicate(localEventLog: LocalEventLog) {
         logDispatcher.dispatch(localEventLog)
     }
+
+    override fun open() = logDispatcher.open()
+    override fun close() = logDispatcher.close()
 }

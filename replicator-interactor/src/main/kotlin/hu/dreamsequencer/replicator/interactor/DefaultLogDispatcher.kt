@@ -58,6 +58,9 @@ class DefaultLogDispatcher
         cleanUpEventLogs()
     }
 
+    override fun open() = logRouter.open()
+    override fun close() = logRouter.close()
+
     private fun getCurrentTime(): Long {
         return System.currentTimeMillis();
     }

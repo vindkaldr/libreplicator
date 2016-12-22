@@ -37,18 +37,22 @@ import kotlin.concurrent.thread
 
 class DefaultLogRouter
 @Inject constructor(private val jsonMapper: JsonMapper,
-                    localNode: ReplicatorNode,
+                    private val localNode: ReplicatorNode,
                     private val logDispatcher: LogDispatcher) : LogRouter {
 
     private val logger = LoggerFactory.getLogger(DefaultLogRouter::class.java)
 
-    private val BUFFER_SIZE_IN_BYTES = 1024
+    private val BUFFER_SIZE_IN_BYTES = 1024 * 1024
     private val SOCKET_TIMEOUT_IN_MILLIS = 1000
 
-    private val socket = DatagramSocket(localNode.port)
-    private val messageSubscription = createMessageObservable().subscribe { logDispatcher.receive(it) }
+    private var socket = createSocket()
+    private var messageSubscription = createMessageSubscription()
 
     override fun send(remoteNode: ReplicatorNode, message: ReplicatorMessage) {
+        if (isRouterClosed()) {
+            return
+        }
+
         try {
             socket.send(createPacket(remoteNode, message))
         }
@@ -60,7 +64,18 @@ class DefaultLogRouter
         }
     }
 
+    override fun open() {
+        if (isRouterClosed()) {
+            socket = createSocket()
+            messageSubscription = createMessageSubscription()
+        }
+    }
+
     override fun close() = messageSubscription.unsubscribe()
+
+    private fun isRouterClosed() = socket.isClosed and messageSubscription.isUnsubscribed
+    private fun createSocket() = DatagramSocket(localNode.port)
+    private fun createMessageSubscription() = createMessageObservable().subscribe { logDispatcher.receive(it) }
 
     private fun createPacket(remoteNode: ReplicatorNode, message: ReplicatorMessage): DatagramPacket {
         val messageAsByteArray = jsonMapper.write(message).toByteArray()

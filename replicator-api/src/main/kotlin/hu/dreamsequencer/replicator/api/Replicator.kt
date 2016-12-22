@@ -19,4 +19,6 @@ package hu.dreamsequencer.replicator.api
 
 interface Replicator {
     fun replicate(localEventLog: LocalEventLog)
+    fun open()
+    fun close()
 }
