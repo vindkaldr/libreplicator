@@ -35,7 +35,7 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
-class DefaultLogRouterTest {
+class DefaultLogRouterIntegrationTest {
 
     private val message = ReplicatorMessage("nodeId", listOf(), TimeTable())
     private val serializedMessage = "{\"nodeId\":\"nodeId\",\"eventLogs\":[],\"timeTable\":[]}"
@@ -63,6 +63,19 @@ class DefaultLogRouterTest {
     fun tearDown() {
         logRouter.close()
         logRouter2.close()
+    }
+
+    @Test
+    fun router_shouldRouteMessage() {
+        logRouter.send(node2, message)
+
+        verify(mockLogDispatcher2, timeout(1000)).receive(message)
+        verifyNoMoreInteractions(mockLogDispatcher2)
+
+        logRouter2.send(node1, message)
+
+        verify(mockLogDispatcher1, timeout(1000)).receive(message)
+        verifyNoMoreInteractions(mockLogDispatcher1)
     }
 
     @Test

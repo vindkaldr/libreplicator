@@ -25,12 +25,12 @@ import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.json.api.JsonWriteException
 import org.libreplicator.model.ReplicatorMessage
 import org.slf4j.LoggerFactory
-import rx.Observable
 import rx.lang.kotlin.observable
+import java.lang.Thread.sleep
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
-import java.net.SocketTimeoutException
+import java.net.SocketException
 import java.net.UnknownHostException
 import javax.inject.Inject
 import kotlin.concurrent.thread
@@ -40,20 +40,20 @@ class DefaultLogRouter
                     private val localNode: ReplicatorNode,
                     private val logDispatcher: LogDispatcher) : LogRouter {
 
-    private val logger = LoggerFactory.getLogger(DefaultLogRouter::class.java)
-
-    private val BUFFER_SIZE_IN_BYTES = 1024 * 1024
-    private val SOCKET_TIMEOUT_IN_MILLIS = 1000
+    companion object {
+        private val logger = LoggerFactory.getLogger(DefaultLogRouter::class.java)
+        private val BUFFER_SIZE_IN_BYTES = 1024 * 1024
+    }
 
     private var socket = createSocket()
-    private var messageSubscription = createMessageSubscription()
+    private var messageSubscription = subscribeToMessages()
 
-    override fun send(remoteNode: ReplicatorNode, message: ReplicatorMessage) {
+    override fun send(remoteNode: ReplicatorNode, message: ReplicatorMessage) = synchronized(this) {
         if (isRouterClosed()) {
             return
         }
         try {
-            socket.send(createPacket(remoteNode, message))
+            socket.send(createPacketToNodeFromMessage(remoteNode, message))
         }
         catch (unknownHostException: UnknownHostException) {
             logger.error(unknownHostException.message, unknownHostException)
@@ -63,59 +63,70 @@ class DefaultLogRouter
         }
     }
 
-    override fun open() {
+    override fun open() = synchronized(this) {
         if (isRouterClosed()) {
             socket = createSocket()
-            messageSubscription = createMessageSubscription()
+            messageSubscription = subscribeToMessages()
         }
     }
 
-    override fun close() = messageSubscription.unsubscribe()
+    override fun close() = synchronized(this) {
+        if (isRouterClosed()) {
+            return
+        }
+        unsubscribeFromMessages()
+        closeSocket()
+        waitUntilRouterIsClosed()
+    }
 
     private fun isRouterClosed() = socket.isClosed and messageSubscription.isUnsubscribed
-    private fun createSocket() = DatagramSocket(localNode.port)
-    private fun createMessageSubscription() = createMessageObservable().subscribe { logDispatcher.receive(it) }
 
-    private fun createPacket(remoteNode: ReplicatorNode, message: ReplicatorMessage): DatagramPacket {
+    private fun createPacketToNodeFromMessage(remoteNode: ReplicatorNode, message: ReplicatorMessage): DatagramPacket {
         val messageAsByteArray = jsonMapper.write(message).toByteArray()
 
         return DatagramPacket(messageAsByteArray, messageAsByteArray.size,
                 InetAddress.getByName(remoteNode.url), remoteNode.port)
     }
 
+    private fun createSocket() = DatagramSocket(localNode.port)
+    private fun subscribeToMessages() = createMessageObservable().subscribe { logDispatcher.receive(it) }
+
+    private fun unsubscribeFromMessages() = messageSubscription.unsubscribe()
+    private fun closeSocket() = socket.close()
+
+    private fun waitUntilRouterIsClosed() {
+        while (!isRouterClosed()) {
+            sleep(1000)
+        }
+    }
+
     private fun createMessageObservable() = observable<ReplicatorMessage> { subscriber ->
         thread {
-            setSocketTimeout(SOCKET_TIMEOUT_IN_MILLIS)
             while (true) {
                 try {
                     if (subscriber.isUnsubscribed) {
-                        closeSocket()
                         break
                     }
                     subscriber.onNext(readMessageFromSocket())
-                }
-                catch (socketTimeoutException: SocketTimeoutException) {
-                    // Ignore it. I have no better solution to have timeout on the socket.
                 }
                 catch (jsonReadException: JsonReadException) {
                     logger.error(jsonReadException.message, jsonReadException)
                     subscriber.onError(jsonReadException)
                 }
+                catch (socketException: SocketException) {
+                    if (!socket.isClosed) {
+                        logger.error(socketException.message, socketException)
+                        socket.close()
+                    }
+                    subscriber.unsubscribe()
+                }
             }
         }
     }
 
-    private fun setSocketTimeout(timeout: Int) {
-        socket.soTimeout = timeout
-    }
-
-    private fun closeSocket() = socket.close()
-
     private fun readMessageFromSocket(): ReplicatorMessage {
         val packet = DatagramPacket(ByteArray(BUFFER_SIZE_IN_BYTES), BUFFER_SIZE_IN_BYTES)
-
         socket.receive(packet)
-
         return jsonMapper.read(String(packet.data.copyOfRange(0, packet.length)), ReplicatorMessage::class)
     }
 }
