@@ -19,10 +19,10 @@ package org.libreplicator.android.module
 
 import dagger.Binds
 import dagger.Module
-import org.libreplicator.interactor.DefaultLogDispatcherFactory
-import org.libreplicator.interactor.api.LogDispatcherFactory
+import org.libreplicator.api.ReplicatorFactory
+import org.libreplicator.boundary.DefaultReplicatorFactory
 
 @Module
-abstract class ReplicatorInteractorAndroidModule {
-    @Binds abstract fun bindLogDispatcherFactory(defaultLogDispatcherFactory: DefaultLogDispatcherFactory): LogDispatcherFactory
+abstract class LibReplicatorBoundaryModule {
+    @Binds abstract fun bindReplicatorFactory(defaultReplicatorFactory: DefaultReplicatorFactory): ReplicatorFactory
 }

@@ -18,12 +18,17 @@
 package org.libreplicator.module
 
 import com.google.inject.PrivateModule
-import org.libreplicator.api.ReplicatorFactory
-import org.libreplicator.boundary.DefaultReplicatorFactory
+import org.libreplicator.api.LocalEventLogFactory
+import org.libreplicator.api.ReplicatorNodeFactory
+import org.libreplicator.model.factory.DefaultLocalEventLogFactory
+import org.libreplicator.model.factory.DefaultReplicatorNodeFactory
 
-class ReplicatorBoundaryModule : PrivateModule() {
+class LibReplicatorModelModule : PrivateModule() {
     override fun configure() {
-        expose(ReplicatorFactory::class.java)
-        bind(ReplicatorFactory::class.java).to(DefaultReplicatorFactory::class.java)
+        expose(LocalEventLogFactory::class.java)
+        bind(LocalEventLogFactory::class.java).to(DefaultLocalEventLogFactory::class.java)
+
+        expose(ReplicatorNodeFactory::class.java)
+        bind(ReplicatorNodeFactory::class.java).to(DefaultReplicatorNodeFactory::class.java)
     }
 }

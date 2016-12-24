@@ -21,7 +21,7 @@ import com.google.inject.PrivateModule
 import org.libreplicator.interactor.api.LogRouterFactory
 import org.libreplicator.network.DefaultLogRouterFactory
 
-class ReplicatorNetworkModule : PrivateModule() {
+class LibReplicatorNetworkModule : PrivateModule() {
     override fun configure() {
         expose(LogRouterFactory::class.java)
         bind(LogRouterFactory::class.java).to(DefaultLogRouterFactory::class.java)

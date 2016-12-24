@@ -33,14 +33,14 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
-class ReplicatorAndroidIntegrationTest {
+class LibReplicatorIntegrationTest {
     private companion object {
         private val LOG = "log"
     }
 
-    private lateinit var replicatorAndroidClient1: ReplicatorAndroidClient
-    private lateinit var replicatorAndroidClient2: ReplicatorAndroidClient
-    private lateinit var replicatorAndroidClient3: ReplicatorAndroidClient
+    private lateinit var libReplicatorClient1: LibReplicatorClient
+    private lateinit var libReplicatorClient2: LibReplicatorClient
+    private lateinit var libReplicatorClient3: LibReplicatorClient
 
     private lateinit var node1: ReplicatorNode
     private lateinit var node2: ReplicatorNode
@@ -56,28 +56,28 @@ class ReplicatorAndroidIntegrationTest {
 
     @Before
     fun setUp() {
-        replicatorAndroidClient1 = ReplicatorAndroidClient()
-        replicatorAndroidClient2 = ReplicatorAndroidClient()
-        replicatorAndroidClient3 = ReplicatorAndroidClient()
+        libReplicatorClient1 = LibReplicatorClient()
+        libReplicatorClient2 = LibReplicatorClient()
+        libReplicatorClient3 = LibReplicatorClient()
 
-        DaggerReplicatorAndroidComponent.create().inject(replicatorAndroidClient1)
-        DaggerReplicatorAndroidComponent.create().inject(replicatorAndroidClient2)
-        DaggerReplicatorAndroidComponent.create().inject(replicatorAndroidClient3)
+        DaggerLibReplicatorComponent.create().inject(libReplicatorClient1)
+        DaggerLibReplicatorComponent.create().inject(libReplicatorClient2)
+        DaggerLibReplicatorComponent.create().inject(libReplicatorClient3)
 
-        node1 = replicatorAndroidClient1.replicatorNodeFactory.create("nodeId1", "localhost", 12345)
-        node2 = replicatorAndroidClient2.replicatorNodeFactory.create("nodeId2", "localhost", 12346)
-        node3 = replicatorAndroidClient3.replicatorNodeFactory.create("nodeId3", "localhost", 12347)
+        node1 = libReplicatorClient1.replicatorNodeFactory.create("nodeId1", "localhost", 12345)
+        node2 = libReplicatorClient2.replicatorNodeFactory.create("nodeId2", "localhost", 12346)
+        node3 = libReplicatorClient3.replicatorNodeFactory.create("nodeId3", "localhost", 12347)
 
-        replicator1 = replicatorAndroidClient1.replicatorFactory.create(node1, listOf(node2, node3), mockObserver1)
-        replicator2 = replicatorAndroidClient2.replicatorFactory.create(node2, listOf(node1, node3), mockObserver2)
-        replicator3 = replicatorAndroidClient3.replicatorFactory.create(node3, listOf(node1, node2), mockObserver3)
+        replicator1 = libReplicatorClient1.replicatorFactory.create(node1, listOf(node2, node3), mockObserver1)
+        replicator2 = libReplicatorClient2.replicatorFactory.create(node2, listOf(node1, node3), mockObserver2)
+        replicator3 = libReplicatorClient3.replicatorFactory.create(node3, listOf(node1, node2), mockObserver3)
     }
 
     @Test
     fun replicator_shouldReplicateLogsBetweenNodes() {
-        replicator1.replicate(replicatorAndroidClient1.localEventLogFactory.create(LOG))
-        replicator2.replicate(replicatorAndroidClient2.localEventLogFactory.create(LOG))
-        replicator3.replicate(replicatorAndroidClient3.localEventLogFactory.create(LOG))
+        replicator1.replicate(libReplicatorClient1.localEventLogFactory.create(LOG))
+        replicator2.replicate(libReplicatorClient2.localEventLogFactory.create(LOG))
+        replicator3.replicate(libReplicatorClient3.localEventLogFactory.create(LOG))
 
         verify(mockObserver1, timeout(1000).times(2)).observe(check { remoteEventLog ->
             assertThat(remoteEventLog.log, equalTo(LOG))

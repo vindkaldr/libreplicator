@@ -15,14 +15,11 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.android.module
+package org.libreplicator.android
 
-import dagger.Binds
-import dagger.Module
-import org.libreplicator.json.DefaultJsonMapper
-import org.libreplicator.json.api.JsonMapper
+import dagger.Component
 
-@Module
-abstract class ReplicatorJsonAndroidModule {
-    @Binds abstract fun bindJsonMapper(defaultJsonMapper: DefaultJsonMapper): JsonMapper
+@Component(modules= arrayOf(LibReplicatorModule::class))
+interface LibReplicatorComponent {
+    fun inject(libReplicatorClient: LibReplicatorClient)
 }

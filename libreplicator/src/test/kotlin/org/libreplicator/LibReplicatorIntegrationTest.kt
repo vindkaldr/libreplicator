@@ -37,9 +37,9 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
-class ReplicatorIntegrationTest {
+class LibReplicatorIntegrationTest {
     private companion object {
-        private val injector = Guice.createInjector(ReplicatorModule())
+        private val injector = Guice.createInjector(LibReplicatorModule())
 
         private val LOG = "log"
     }

@@ -15,15 +15,15 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module
+package org.libreplicator.android
 
-import com.google.inject.PrivateModule
-import org.libreplicator.interactor.DefaultLogDispatcherFactory
-import org.libreplicator.interactor.api.LogDispatcherFactory
+import dagger.Module
+import org.libreplicator.android.module.LibReplicatorBoundaryModule
+import org.libreplicator.android.module.LibReplicatorInteractorModule
+import org.libreplicator.android.module.LibReplicatorJsonModule
+import org.libreplicator.android.module.LibReplicatorModelModule
+import org.libreplicator.android.module.LibReplicatorNetworkModule
 
-class ReplicatorInteractorModule : PrivateModule() {
-    override fun configure() {
-        expose(LogDispatcherFactory::class.java)
-        bind(LogDispatcherFactory::class.java).to(DefaultLogDispatcherFactory::class.java)
-    }
-}
+@Module(includes= arrayOf(LibReplicatorBoundaryModule::class, LibReplicatorInteractorModule::class,
+        LibReplicatorJsonModule::class, LibReplicatorModelModule::class, LibReplicatorNetworkModule::class))
+class LibReplicatorModule

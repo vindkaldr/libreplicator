@@ -18,18 +18,18 @@
 package org.libreplicator
 
 import com.google.inject.AbstractModule
-import org.libreplicator.module.ReplicatorBoundaryModule
-import org.libreplicator.module.ReplicatorInteractorModule
-import org.libreplicator.module.ReplicatorJsonModule
-import org.libreplicator.module.ReplicatorModelModule
-import org.libreplicator.module.ReplicatorNetworkModule
+import org.libreplicator.module.LibReplicatorBoundaryModule
+import org.libreplicator.module.LibReplicatorInteractorModule
+import org.libreplicator.module.LibReplicatorJsonModule
+import org.libreplicator.module.LibReplicatorModelModule
+import org.libreplicator.module.LibReplicatorNetworkModule
 
-class ReplicatorModule : AbstractModule() {
+class LibReplicatorModule : AbstractModule() {
     override fun configure() {
-        install(ReplicatorBoundaryModule())
-        install(ReplicatorInteractorModule())
-        install(ReplicatorJsonModule())
-        install(ReplicatorModelModule())
-        install(ReplicatorNetworkModule())
+        install(LibReplicatorBoundaryModule())
+        install(LibReplicatorInteractorModule())
+        install(LibReplicatorJsonModule())
+        install(LibReplicatorModelModule())
+        install(LibReplicatorNetworkModule())
     }
 }

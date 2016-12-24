@@ -15,15 +15,15 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.android
+package org.libreplicator.module
 
-import dagger.Module
-import org.libreplicator.android.module.ReplicatorBoundaryAndroidModule
-import org.libreplicator.android.module.ReplicatorInteractorAndroidModule
-import org.libreplicator.android.module.ReplicatorJsonAndroidModule
-import org.libreplicator.android.module.ReplicatorModelAndroidModule
-import org.libreplicator.android.module.ReplicatorNetworkAndroidModule
+import com.google.inject.PrivateModule
+import org.libreplicator.api.ReplicatorFactory
+import org.libreplicator.boundary.DefaultReplicatorFactory
 
-@Module(includes= arrayOf(ReplicatorBoundaryAndroidModule::class, ReplicatorInteractorAndroidModule::class,
-        ReplicatorJsonAndroidModule::class, ReplicatorModelAndroidModule::class, ReplicatorNetworkAndroidModule::class))
-class ReplicatorAndroidModule
+class LibReplicatorBoundaryModule : PrivateModule() {
+    override fun configure() {
+        expose(ReplicatorFactory::class.java)
+        bind(ReplicatorFactory::class.java).to(DefaultReplicatorFactory::class.java)
+    }
+}

@@ -15,20 +15,14 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module
+package org.libreplicator.android.module
 
-import com.google.inject.PrivateModule
-import org.libreplicator.api.LocalEventLogFactory
-import org.libreplicator.api.ReplicatorNodeFactory
-import org.libreplicator.model.factory.DefaultLocalEventLogFactory
-import org.libreplicator.model.factory.DefaultReplicatorNodeFactory
+import dagger.Binds
+import dagger.Module
+import org.libreplicator.interactor.api.LogRouterFactory
+import org.libreplicator.network.DefaultLogRouterFactory
 
-class ReplicatorModelModule : PrivateModule() {
-    override fun configure() {
-        expose(LocalEventLogFactory::class.java)
-        bind(LocalEventLogFactory::class.java).to(DefaultLocalEventLogFactory::class.java)
-
-        expose(ReplicatorNodeFactory::class.java)
-        bind(ReplicatorNodeFactory::class.java).to(DefaultReplicatorNodeFactory::class.java)
-    }
+@Module
+abstract class LibReplicatorNetworkModule {
+    @Binds abstract fun bindLogRouterFactory(defaultLogRouterFactory: DefaultLogRouterFactory): LogRouterFactory
 }

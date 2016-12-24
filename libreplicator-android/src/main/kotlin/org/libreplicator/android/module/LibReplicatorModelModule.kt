@@ -25,7 +25,7 @@ import org.libreplicator.model.factory.DefaultLocalEventLogFactory
 import org.libreplicator.model.factory.DefaultReplicatorNodeFactory
 
 @Module
-abstract class ReplicatorModelAndroidModule {
+abstract class LibReplicatorModelModule {
     @Binds abstract fun bindLocalEventLogFactory(defaultLocalEventLogFactory: DefaultLocalEventLogFactory): LocalEventLogFactory
     @Binds abstract fun bindReplicatorNodeFactory(defaultReplicatorNodeFactory: DefaultReplicatorNodeFactory): ReplicatorNodeFactory
 }

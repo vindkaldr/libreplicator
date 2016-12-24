@@ -15,15 +15,15 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module
+package org.libreplicator.android
 
-import com.google.inject.PrivateModule
-import org.libreplicator.json.DefaultJsonMapper
-import org.libreplicator.json.api.JsonMapper
+import org.libreplicator.api.LocalEventLogFactory
+import org.libreplicator.api.ReplicatorFactory
+import org.libreplicator.api.ReplicatorNodeFactory
+import javax.inject.Inject
 
-class ReplicatorJsonModule : PrivateModule() {
-    override fun configure() {
-        expose(JsonMapper::class.java)
-        bind(JsonMapper::class.java).to(DefaultJsonMapper::class.java)
-    }
+class LibReplicatorClient constructor() {
+    @Inject lateinit var replicatorFactory: ReplicatorFactory
+    @Inject lateinit var replicatorNodeFactory: ReplicatorNodeFactory
+    @Inject lateinit var localEventLogFactory: LocalEventLogFactory
 }
