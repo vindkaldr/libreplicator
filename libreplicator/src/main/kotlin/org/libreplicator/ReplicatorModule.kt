@@ -15,16 +15,21 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-rootProject.name = 'libreplicator-root'
+package org.libreplicator
 
-include ':libreplicator'
-include ':libreplicator-android'
-include ':libreplicator-api'
-include ':libreplicator-boundary'
-include ':libreplicator-interactor'
-include ':libreplicator-interactor-api'
-include ':libreplicator-json'
-include ':libreplicator-json-api'
-include ':libreplicator-log'
-include ':libreplicator-model'
-include ':libreplicator-network'
+import com.google.inject.AbstractModule
+import org.libreplicator.module.ReplicatorBoundaryModule
+import org.libreplicator.module.ReplicatorInteractorModule
+import org.libreplicator.module.ReplicatorJsonModule
+import org.libreplicator.module.ReplicatorModelModule
+import org.libreplicator.module.ReplicatorNetworkModule
+
+class ReplicatorModule : AbstractModule() {
+    override fun configure() {
+        install(ReplicatorBoundaryModule())
+        install(ReplicatorInteractorModule())
+        install(ReplicatorJsonModule())
+        install(ReplicatorModelModule())
+        install(ReplicatorNetworkModule())
+    }
+}

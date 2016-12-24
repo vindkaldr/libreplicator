@@ -15,16 +15,11 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-rootProject.name = 'libreplicator-root'
+package org.libreplicator.json.api
 
-include ':libreplicator'
-include ':libreplicator-android'
-include ':libreplicator-api'
-include ':libreplicator-boundary'
-include ':libreplicator-interactor'
-include ':libreplicator-interactor-api'
-include ':libreplicator-json'
-include ':libreplicator-json-api'
-include ':libreplicator-log'
-include ':libreplicator-model'
-include ':libreplicator-network'
+import kotlin.reflect.KClass
+
+interface JsonMapper {
+    fun write(any: Any): String
+    fun <T: Any> read(string: String, kotlinType: KClass<T>): T
+}

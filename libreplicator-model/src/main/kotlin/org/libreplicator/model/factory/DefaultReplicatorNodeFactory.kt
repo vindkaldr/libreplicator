@@ -15,16 +15,15 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-rootProject.name = 'libreplicator-root'
+package org.libreplicator.model.factory
 
-include ':libreplicator'
-include ':libreplicator-android'
-include ':libreplicator-api'
-include ':libreplicator-boundary'
-include ':libreplicator-interactor'
-include ':libreplicator-interactor-api'
-include ':libreplicator-json'
-include ':libreplicator-json-api'
-include ':libreplicator-log'
-include ':libreplicator-model'
-include ':libreplicator-network'
+import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.ReplicatorNodeFactory
+import org.libreplicator.model.EventNode
+import javax.inject.Inject
+
+class DefaultReplicatorNodeFactory @Inject constructor() : ReplicatorNodeFactory {
+	override fun create(nodeId: String, url: String, port: Int): ReplicatorNode {
+		return EventNode(nodeId, url, port)
+	}
+}

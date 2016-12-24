@@ -16,7 +16,7 @@
  */
 
 subprojects {
-    group 'hu.dreamsequencer.replicator'
+    group 'org.libreplicator'
     version '0.1.0'
 
     repositories {

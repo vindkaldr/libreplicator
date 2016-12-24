@@ -15,16 +15,15 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-rootProject.name = 'libreplicator-root'
+package org.libreplicator.android
 
-include ':libreplicator'
-include ':libreplicator-android'
-include ':libreplicator-api'
-include ':libreplicator-boundary'
-include ':libreplicator-interactor'
-include ':libreplicator-interactor-api'
-include ':libreplicator-json'
-include ':libreplicator-json-api'
-include ':libreplicator-log'
-include ':libreplicator-model'
-include ':libreplicator-network'
+import dagger.Module
+import org.libreplicator.android.module.ReplicatorBoundaryAndroidModule
+import org.libreplicator.android.module.ReplicatorInteractorAndroidModule
+import org.libreplicator.android.module.ReplicatorJsonAndroidModule
+import org.libreplicator.android.module.ReplicatorModelAndroidModule
+import org.libreplicator.android.module.ReplicatorNetworkAndroidModule
+
+@Module(includes= arrayOf(ReplicatorBoundaryAndroidModule::class, ReplicatorInteractorAndroidModule::class,
+        ReplicatorJsonAndroidModule::class, ReplicatorModelAndroidModule::class, ReplicatorNetworkAndroidModule::class))
+class ReplicatorAndroidModule

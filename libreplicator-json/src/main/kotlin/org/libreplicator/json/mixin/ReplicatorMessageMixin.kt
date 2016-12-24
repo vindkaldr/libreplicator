@@ -15,16 +15,14 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-rootProject.name = 'libreplicator-root'
+package org.libreplicator.json.mixin
 
-include ':libreplicator'
-include ':libreplicator-android'
-include ':libreplicator-api'
-include ':libreplicator-boundary'
-include ':libreplicator-interactor'
-include ':libreplicator-interactor-api'
-include ':libreplicator-json'
-include ':libreplicator-json-api'
-include ':libreplicator-log'
-include ':libreplicator-model'
-include ':libreplicator-network'
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import org.libreplicator.model.EventLog
+import org.libreplicator.model.TimeTable
+
+class ReplicatorMessageMixin
+@JsonCreator constructor(@JsonProperty("nodeId") val nodeId: String,
+                         @JsonProperty("eventLogs") val eventLogs: List<EventLog>,
+                         @JsonProperty("timeTable") val timeTable: TimeTable)

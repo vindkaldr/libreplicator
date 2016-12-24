@@ -15,16 +15,16 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-rootProject.name = 'libreplicator-root'
+package org.libreplicator.network
 
-include ':libreplicator'
-include ':libreplicator-android'
-include ':libreplicator-api'
-include ':libreplicator-boundary'
-include ':libreplicator-interactor'
-include ':libreplicator-interactor-api'
-include ':libreplicator-json'
-include ':libreplicator-json-api'
-include ':libreplicator-log'
-include ':libreplicator-model'
-include ':libreplicator-network'
+import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.interactor.api.LogDispatcher
+import org.libreplicator.interactor.api.LogRouter
+import org.libreplicator.interactor.api.LogRouterFactory
+import org.libreplicator.json.api.JsonMapper
+import javax.inject.Inject
+
+class DefaultLogRouterFactory @Inject constructor(private val jsonMapper: JsonMapper): LogRouterFactory {
+    override fun create(localNode: ReplicatorNode, logDispatcher: LogDispatcher): LogRouter =
+            DefaultLogRouter(jsonMapper, localNode, logDispatcher)
+}
