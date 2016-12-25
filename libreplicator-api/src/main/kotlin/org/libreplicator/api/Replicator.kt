@@ -19,6 +19,5 @@ package org.libreplicator.api
 
 interface Replicator {
     fun replicate(localEventLog: LocalEventLog)
-    fun open()
-    fun close()
+    fun subscribe(remoteEventLogObserver: Observer<RemoteEventLog>): Subscription
 }

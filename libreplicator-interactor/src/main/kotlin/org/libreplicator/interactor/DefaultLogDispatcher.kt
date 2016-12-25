@@ -18,8 +18,10 @@
 package org.libreplicator.interactor
 
 import org.libreplicator.api.LocalEventLog
-import org.libreplicator.api.RemoteEventLogObserver
+import org.libreplicator.api.Observer
+import org.libreplicator.api.RemoteEventLog
 import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.Subscription
 import org.libreplicator.interactor.api.LogDispatcher
 import org.libreplicator.interactor.api.LogRouterFactory
 import org.libreplicator.model.EventLog
@@ -30,9 +32,7 @@ import javax.inject.Inject
 class DefaultLogDispatcher
 @Inject constructor(logRouterFactory: LogRouterFactory,
                     private val localNode: ReplicatorNode,
-                    private val remoteNodes: List<ReplicatorNode>,
-                    private val remoteEventLogObserver: RemoteEventLogObserver) : LogDispatcher {
-
+                    private val remoteNodes: List<ReplicatorNode>) : LogDispatcher {
     companion object {
         private val NUMBER_OF_LOCAL_NODES = 1
     }
@@ -40,7 +40,7 @@ class DefaultLogDispatcher
     private val eventLogs = mutableSetOf<EventLog>()
     private val timeTable = TimeTable(NUMBER_OF_LOCAL_NODES + remoteNodes.size)
 
-    private val logRouter = logRouterFactory.create(localNode, this)
+    private val logRouter = logRouterFactory.create(localNode)
 
     override fun dispatch(localEventLog: LocalEventLog) = synchronized(this) {
         val currentTime = getCurrentTime()
@@ -50,16 +50,21 @@ class DefaultLogDispatcher
         updateRemoteNodes()
     }
 
-    override fun receive(replicatorMessage: ReplicatorMessage) = synchronized(this) {
-        notifyObserver(replicatorMessage.eventLogs)
-
-        addToEventLogs(replicatorMessage.eventLogs)
-        updateTimeTable(replicatorMessage)
-        cleanUpEventLogs()
+    override fun subscribe(observer: Observer<RemoteEventLog>): Subscription = synchronized(this) {
+        return logRouter.subscribe(object : Observer<ReplicatorMessage> {
+            override fun observe(observable: ReplicatorMessage) = synchronized(this@DefaultLogDispatcher) {
+                receive(observer, observable)
+            }
+        })
     }
 
-    override fun open() = logRouter.open()
-    override fun close() = logRouter.close()
+    private fun receive(observer: Observer<RemoteEventLog>, message: ReplicatorMessage) {
+        notifyObserver(observer, message.eventLogs)
+
+        addToEventLogs(message.eventLogs)
+        updateTimeTable(message)
+        cleanUpEventLogs()
+    }
 
     private fun getCurrentTime(): Long {
         return System.currentTimeMillis();
@@ -90,7 +95,7 @@ class DefaultLogDispatcher
         eventLogs.addAll(remoteEventLogs)
     }
 
-    private fun notifyObserver(remoteEventLogs: List<EventLog>) {
+    private fun notifyObserver(remoteEventLogObserver: Observer<RemoteEventLog>, remoteEventLogs: List<EventLog>) {
         remoteEventLogs.filter { !hasEventLog(localNode, it) }
                 .sortedBy { it.time }
                 .forEach { remoteEventLogObserver.observe(it) }

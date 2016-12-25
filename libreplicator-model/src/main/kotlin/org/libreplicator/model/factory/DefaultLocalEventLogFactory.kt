@@ -23,7 +23,5 @@ import org.libreplicator.model.EventLog
 import javax.inject.Inject
 
 class DefaultLocalEventLogFactory @Inject constructor() : LocalEventLogFactory {
-	override fun create(log: String): LocalEventLog {
-		return EventLog("", 0L, log)
-	}
+	override fun create(log: String): LocalEventLog = EventLog("", 0L, log)
 }

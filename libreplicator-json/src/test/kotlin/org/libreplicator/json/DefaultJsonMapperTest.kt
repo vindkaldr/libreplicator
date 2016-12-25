@@ -27,7 +27,6 @@ import org.junit.Before
 import org.junit.Test
 
 class DefaultJsonMapperTest {
-
     private lateinit var jsonMapper: JsonMapper
 
     @Before

@@ -27,10 +27,11 @@ import org.junit.Before
 import org.junit.Test
 
 class TimeTableSerializerTest {
-
-    private val NODE_1 = "node_1"
-    private val NODE_2 = "node_2"
-    private val NODE_3 = "node_3"
+    companion object {
+        private val NODE_1 = "node_1"
+        private val NODE_2 = "node_2"
+        private val NODE_3 = "node_3"
+    }
 
     private lateinit var objectMapper: ObjectMapper
 
@@ -67,6 +68,6 @@ class TimeTableSerializerTest {
                         "{\"rowKey\":\"$NODE_1\",\"columnKey\":\"$NODE_2\",\"value\":2}," +
                         "{\"rowKey\":\"$NODE_1\",\"columnKey\":\"$NODE_3\",\"value\":3}," +
                         "{\"rowKey\":\"$NODE_2\",\"columnKey\":\"$NODE_3\",\"value\":5}" +
-                        "]"))
+                "]"))
     }
 }

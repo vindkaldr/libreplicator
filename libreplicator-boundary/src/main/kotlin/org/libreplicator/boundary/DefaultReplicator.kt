@@ -18,7 +18,8 @@
 package org.libreplicator.boundary
 
 import org.libreplicator.api.LocalEventLog
-import org.libreplicator.api.RemoteEventLogObserver
+import org.libreplicator.api.Observer
+import org.libreplicator.api.RemoteEventLog
 import org.libreplicator.api.Replicator
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.interactor.api.LogDispatcherFactory
@@ -27,15 +28,12 @@ import javax.inject.Inject
 class DefaultReplicator
 @Inject constructor(logDispatcherFactory: LogDispatcherFactory,
                     localNode: ReplicatorNode,
-                    remoteNodes:List<ReplicatorNode>,
-                    remoteEventLogObserver: RemoteEventLogObserver) : Replicator {
+                    remoteNodes:List<ReplicatorNode>) : Replicator {
 
-    private val logDispatcher = logDispatcherFactory.create(localNode, remoteNodes, remoteEventLogObserver)
+    private val logDispatcher = logDispatcherFactory.create(localNode, remoteNodes)
 
-    override fun replicate(localEventLog: LocalEventLog) {
-        logDispatcher.dispatch(localEventLog)
-    }
+    override fun replicate(localEventLog: LocalEventLog) = logDispatcher.dispatch(localEventLog)
 
-    override fun open() = logDispatcher.open()
-    override fun close() = logDispatcher.close()
+    override fun subscribe(remoteEventLogObserver: Observer<RemoteEventLog>) =
+            logDispatcher.subscribe(remoteEventLogObserver)
 }

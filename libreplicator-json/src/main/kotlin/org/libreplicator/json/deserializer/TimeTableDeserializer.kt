@@ -25,7 +25,6 @@ import org.libreplicator.json.serializer.TimeTableSerializer
 import org.libreplicator.model.TimeTable
 
 class TimeTableDeserializer : StdDeserializer<TimeTable>(TimeTable::class.java) {
-
     override fun deserialize(parser: JsonParser?, context: DeserializationContext?): TimeTable {
         val node = parser?.readValueAsTree<JsonNode>()
         val timeTable = TimeTable()

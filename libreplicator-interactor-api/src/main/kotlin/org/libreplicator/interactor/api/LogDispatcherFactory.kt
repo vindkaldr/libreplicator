@@ -17,10 +17,8 @@
 
 package org.libreplicator.interactor.api
 
-import org.libreplicator.api.RemoteEventLogObserver
 import org.libreplicator.api.ReplicatorNode
 
 interface LogDispatcherFactory {
-    fun create(localNode: ReplicatorNode, remoteNodes:List<ReplicatorNode>,
-               remoteEventLogObserver: RemoteEventLogObserver) : LogDispatcher
+    fun create(localNode: ReplicatorNode, remoteNodes:List<ReplicatorNode>) : LogDispatcher
 }

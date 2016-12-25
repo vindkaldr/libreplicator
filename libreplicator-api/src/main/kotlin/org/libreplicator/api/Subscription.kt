@@ -15,17 +15,8 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.boundary
+package org.libreplicator.api
 
-import org.libreplicator.api.Replicator
-import org.libreplicator.api.ReplicatorFactory
-import org.libreplicator.api.ReplicatorNode
-import org.libreplicator.interactor.api.LogDispatcherFactory
-import javax.inject.Inject
-import javax.inject.Provider
-
-class DefaultReplicatorFactory
-@Inject constructor(private val logDispatcherFactoryProvider: Provider<LogDispatcherFactory>) : ReplicatorFactory {
-    override fun create(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>): Replicator =
-            DefaultReplicator(logDispatcherFactoryProvider.get(), localNode, remoteNodes)
+interface Subscription {
+    fun unsubscribe()
 }

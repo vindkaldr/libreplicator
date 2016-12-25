@@ -23,7 +23,5 @@ import org.libreplicator.model.EventNode
 import javax.inject.Inject
 
 class DefaultReplicatorNodeFactory @Inject constructor() : ReplicatorNodeFactory {
-	override fun create(nodeId: String, url: String, port: Int): ReplicatorNode {
-		return EventNode(nodeId, url, port)
-	}
+	override fun create(nodeId: String, url: String, port: Int): ReplicatorNode = EventNode(nodeId, url, port)
 }

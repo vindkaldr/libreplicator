@@ -24,7 +24,6 @@ import com.google.common.collect.Table
 import org.libreplicator.model.TimeTable
 
 class TimeTableSerializer : StdSerializer<TimeTable>(TimeTable::class.java) {
-
     companion object {
         val PROPERTY_ROW = "rowKey"
         val PROPERTY_COLUMN = "columnKey"

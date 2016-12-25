@@ -18,13 +18,11 @@
 package org.libreplicator.network
 
 import org.libreplicator.api.ReplicatorNode
-import org.libreplicator.interactor.api.LogDispatcher
 import org.libreplicator.interactor.api.LogRouter
 import org.libreplicator.interactor.api.LogRouterFactory
 import org.libreplicator.json.api.JsonMapper
 import javax.inject.Inject
 
 class DefaultLogRouterFactory @Inject constructor(private val jsonMapper: JsonMapper): LogRouterFactory {
-    override fun create(localNode: ReplicatorNode, logDispatcher: LogDispatcher): LogRouter =
-            DefaultLogRouter(jsonMapper, localNode, logDispatcher)
+    override fun create(localNode: ReplicatorNode): LogRouter = DefaultLogRouter(jsonMapper, localNode)
 }

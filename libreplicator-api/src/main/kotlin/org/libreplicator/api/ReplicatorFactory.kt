@@ -18,6 +18,5 @@
 package org.libreplicator.api
 
 interface ReplicatorFactory {
-    fun create(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>,
-               remoteEventLogObserver: RemoteEventLogObserver): Replicator
+    fun create(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>): Replicator
 }

@@ -21,14 +21,17 @@ import com.nhaarman.mockito_kotlin.check
 import com.nhaarman.mockito_kotlin.timeout
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
-import org.libreplicator.api.RemoteEventLogObserver
 import org.libreplicator.api.Replicator
 import org.libreplicator.api.ReplicatorNode
 import org.hamcrest.CoreMatchers.equalTo
+import org.junit.After
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.libreplicator.api.Observer
+import org.libreplicator.api.RemoteEventLog
+import org.libreplicator.api.Subscription
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 
@@ -50,9 +53,13 @@ class LibReplicatorIntegrationTest {
     private lateinit var replicator2: Replicator
     private lateinit var replicator3: Replicator
 
-    @Mock private lateinit var mockObserver1: RemoteEventLogObserver
-    @Mock private lateinit var mockObserver2: RemoteEventLogObserver
-    @Mock private lateinit var mockObserver3: RemoteEventLogObserver
+    @Mock private lateinit var mockLogObserver1: Observer<RemoteEventLog>
+    @Mock private lateinit var mockLogObserver2: Observer<RemoteEventLog>
+    @Mock private lateinit var mockLogObserver3: Observer<RemoteEventLog>
+
+    private lateinit var subscription1: Subscription
+    private lateinit var subscription2: Subscription
+    private lateinit var subscription3: Subscription
 
     @Before
     fun setUp() {
@@ -68,9 +75,21 @@ class LibReplicatorIntegrationTest {
         node2 = libReplicatorClient2.replicatorNodeFactory.create("nodeId2", "localhost", 12346)
         node3 = libReplicatorClient3.replicatorNodeFactory.create("nodeId3", "localhost", 12347)
 
-        replicator1 = libReplicatorClient1.replicatorFactory.create(node1, listOf(node2, node3), mockObserver1)
-        replicator2 = libReplicatorClient2.replicatorFactory.create(node2, listOf(node1, node3), mockObserver2)
-        replicator3 = libReplicatorClient3.replicatorFactory.create(node3, listOf(node1, node2), mockObserver3)
+        replicator1 = libReplicatorClient1.replicatorFactory.create(node1, listOf(node2, node3))
+        subscription1 = replicator1.subscribe(mockLogObserver1)
+
+        replicator2 = libReplicatorClient2.replicatorFactory.create(node2, listOf(node1, node3))
+        subscription2 = replicator2.subscribe(mockLogObserver2)
+
+        replicator3 = libReplicatorClient3.replicatorFactory.create(node3, listOf(node1, node2))
+        subscription3 = replicator3.subscribe(mockLogObserver3)
+    }
+
+    @After
+    fun tearDown() {
+        subscription1.unsubscribe()
+        subscription2.unsubscribe()
+        subscription3.unsubscribe()
     }
 
     @Test
@@ -79,20 +98,20 @@ class LibReplicatorIntegrationTest {
         replicator2.replicate(libReplicatorClient2.localEventLogFactory.create(LOG))
         replicator3.replicate(libReplicatorClient3.localEventLogFactory.create(LOG))
 
-        verify(mockObserver1, timeout(1000).times(2)).observe(check { remoteEventLog ->
+        verify(mockLogObserver1, timeout(1000).times(2)).observe(check { remoteEventLog ->
             assertThat(remoteEventLog.log, equalTo(LOG))
         })
 
-        verify(mockObserver2, timeout(1000).times(2)).observe(check { remoteEventLog ->
+        verify(mockLogObserver2, timeout(1000).times(2)).observe(check { remoteEventLog ->
             assertThat(remoteEventLog.log, equalTo(LOG))
         })
 
-        verify(mockObserver3, timeout(1000).times(2)).observe(check { remoteEventLog ->
+        verify(mockLogObserver3, timeout(1000).times(2)).observe(check { remoteEventLog ->
             assertThat(remoteEventLog.log, equalTo(LOG))
         })
 
-        verifyNoMoreInteractions(mockObserver1)
-        verifyNoMoreInteractions(mockObserver2)
-        verifyNoMoreInteractions(mockObserver3)
+        verifyNoMoreInteractions(mockLogObserver1)
+        verifyNoMoreInteractions(mockLogObserver2)
+        verifyNoMoreInteractions(mockLogObserver3)
     }
 }

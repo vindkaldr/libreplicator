@@ -17,7 +17,6 @@
 
 package org.libreplicator.interactor
 
-import org.libreplicator.api.RemoteEventLogObserver
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.interactor.api.LogDispatcher
 import org.libreplicator.interactor.api.LogDispatcherFactory
@@ -27,8 +26,6 @@ import javax.inject.Provider
 
 class DefaultLogDispatcherFactory
 @Inject constructor(private val logRouterFactoryProvider: Provider<LogRouterFactory>) : LogDispatcherFactory {
-    override fun create(localNode: ReplicatorNode,
-                        remoteNodes: List<ReplicatorNode>,
-                        remoteEventLogObserver: RemoteEventLogObserver): LogDispatcher =
-            DefaultLogDispatcher(logRouterFactoryProvider.get(), localNode, remoteNodes, remoteEventLogObserver)
+    override fun create(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>): LogDispatcher =
+            DefaultLogDispatcher(logRouterFactoryProvider.get(), localNode, remoteNodes)
 }

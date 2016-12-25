@@ -17,11 +17,12 @@
 
 package org.libreplicator.interactor.api
 
+import org.libreplicator.api.Observer
 import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.Subscription
 import org.libreplicator.model.ReplicatorMessage
 
 interface LogRouter {
     fun send(remoteNode: ReplicatorNode, message: ReplicatorMessage)
-    fun open()
-    fun close()
+    fun subscribe(messageObserver: Observer<ReplicatorMessage>): Subscription
 }

@@ -27,10 +27,11 @@ import org.junit.Ignore
 import org.junit.Test
 
 class TimeTableDeserializerTest {
-
-    private val NODE_1 = "node_1"
-    private val NODE_2 = "node_2"
-    private val NODE_3 = "node_3"
+    companion object {
+        private val NODE_1 = "node_1"
+        private val NODE_2 = "node_2"
+        private val NODE_3 = "node_3"
+    }
 
     private lateinit var objectMapper: ObjectMapper
 

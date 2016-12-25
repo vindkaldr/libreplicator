@@ -17,6 +17,6 @@
 
 package org.libreplicator.api
 
-interface RemoteEventLogObserver {
-    fun observe(remoteEventLog: RemoteEventLog)
+interface Observer<in T> {
+    fun observe(observable: T)
 }

@@ -20,5 +20,5 @@ package org.libreplicator.interactor.api
 import org.libreplicator.api.ReplicatorNode
 
 interface LogRouterFactory {
-    fun create(localNode: ReplicatorNode, logDispatcher: LogDispatcher) : LogRouter
+    fun create(localNode: ReplicatorNode) : LogRouter
 }

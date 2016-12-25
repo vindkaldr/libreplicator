@@ -18,11 +18,11 @@
 package org.libreplicator.interactor.api
 
 import org.libreplicator.api.LocalEventLog
-import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.api.Observer
+import org.libreplicator.api.RemoteEventLog
+import org.libreplicator.api.Subscription
 
 interface LogDispatcher {
     fun dispatch(localEventLog: LocalEventLog)
-    fun receive(replicatorMessage: ReplicatorMessage)
-    fun open()
-    fun close()
+    fun subscribe(observer: Observer<RemoteEventLog>): Subscription
 }
