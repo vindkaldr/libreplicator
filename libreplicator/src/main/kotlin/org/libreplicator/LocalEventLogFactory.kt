@@ -15,17 +15,12 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-rootProject.name = 'libreplicator-root'
+package org.libreplicator
 
-include ':libreplicator'
-include ':libreplicator-api'
-include ':libreplicator-boundary'
-include ':libreplicator-dagger'
-include ':libreplicator-guice'
-include ':libreplicator-interactor'
-include ':libreplicator-interactor-api'
-include ':libreplicator-json'
-include ':libreplicator-json-api'
-include ':libreplicator-log'
-include ':libreplicator-model'
-include ':libreplicator-network'
+import org.libreplicator.api.LocalEventLog
+import org.libreplicator.api.LocalEventLogFactory
+import org.libreplicator.model.factory.DefaultLocalEventLogFactory
+
+class LocalEventLogFactory : LocalEventLogFactory {
+    override fun create(log: String): LocalEventLog = DefaultLocalEventLogFactory().create(log)
+}
