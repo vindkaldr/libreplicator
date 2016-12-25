@@ -15,16 +15,15 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-rootProject.name = 'libreplicator-root'
+package org.libreplicator.dagger
 
-include ':libreplicator-api'
-include ':libreplicator-boundary'
-include ':libreplicator-dagger'
-include ':libreplicator-guice'
-include ':libreplicator-interactor'
-include ':libreplicator-interactor-api'
-include ':libreplicator-json'
-include ':libreplicator-json-api'
-include ':libreplicator-log'
-include ':libreplicator-model'
-include ':libreplicator-network'
+import org.libreplicator.api.LocalEventLogFactory
+import org.libreplicator.api.ReplicatorFactory
+import org.libreplicator.api.ReplicatorNodeFactory
+import javax.inject.Inject
+
+class LibReplicatorClient constructor() {
+    @Inject lateinit var replicatorFactory: ReplicatorFactory
+    @Inject lateinit var replicatorNodeFactory: ReplicatorNodeFactory
+    @Inject lateinit var localEventLogFactory: LocalEventLogFactory
+}

@@ -15,16 +15,15 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-rootProject.name = 'libreplicator-root'
+package org.libreplicator.dagger
 
-include ':libreplicator-api'
-include ':libreplicator-boundary'
-include ':libreplicator-dagger'
-include ':libreplicator-guice'
-include ':libreplicator-interactor'
-include ':libreplicator-interactor-api'
-include ':libreplicator-json'
-include ':libreplicator-json-api'
-include ':libreplicator-log'
-include ':libreplicator-model'
-include ':libreplicator-network'
+import dagger.Module
+import org.libreplicator.dagger.module.LibReplicatorBoundaryModule
+import org.libreplicator.dagger.module.LibReplicatorInteractorModule
+import org.libreplicator.dagger.module.LibReplicatorJsonModule
+import org.libreplicator.dagger.module.LibReplicatorModelModule
+import org.libreplicator.dagger.module.LibReplicatorNetworkModule
+
+@Module(includes= arrayOf(LibReplicatorBoundaryModule::class, LibReplicatorInteractorModule::class,
+        LibReplicatorJsonModule::class, LibReplicatorModelModule::class, LibReplicatorNetworkModule::class))
+class LibReplicatorModule

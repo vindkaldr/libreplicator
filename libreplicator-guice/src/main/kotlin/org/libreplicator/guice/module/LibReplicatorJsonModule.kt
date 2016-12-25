@@ -15,16 +15,15 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-rootProject.name = 'libreplicator-root'
+package org.libreplicator.guice.module
 
-include ':libreplicator-api'
-include ':libreplicator-boundary'
-include ':libreplicator-dagger'
-include ':libreplicator-guice'
-include ':libreplicator-interactor'
-include ':libreplicator-interactor-api'
-include ':libreplicator-json'
-include ':libreplicator-json-api'
-include ':libreplicator-log'
-include ':libreplicator-model'
-include ':libreplicator-network'
+import com.google.inject.PrivateModule
+import org.libreplicator.json.DefaultJsonMapper
+import org.libreplicator.json.api.JsonMapper
+
+class LibReplicatorJsonModule : PrivateModule() {
+    override fun configure() {
+        expose(JsonMapper::class.java)
+        bind(JsonMapper::class.java).to(DefaultJsonMapper::class.java)
+    }
+}

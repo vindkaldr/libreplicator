@@ -22,10 +22,9 @@ import org.libreplicator.interactor.api.LogDispatcher
 import org.libreplicator.interactor.api.LogDispatcherFactory
 import org.libreplicator.interactor.api.LogRouterFactory
 import javax.inject.Inject
-import javax.inject.Provider
 
 class DefaultLogDispatcherFactory
-@Inject constructor(private val logRouterFactoryProvider: Provider<LogRouterFactory>) : LogDispatcherFactory {
+@Inject constructor(private val logRouterFactory: LogRouterFactory) : LogDispatcherFactory {
     override fun create(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>): LogDispatcher =
-            DefaultLogDispatcher(logRouterFactoryProvider.get(), localNode, remoteNodes)
+            DefaultLogDispatcher(logRouterFactory, localNode, remoteNodes)
 }
