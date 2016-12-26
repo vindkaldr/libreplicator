@@ -27,6 +27,7 @@ import org.libreplicator.interactor.api.LogRouterFactory
 import org.libreplicator.model.EventLog
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.TimeTable
+import java.lang.Thread.sleep
 import javax.inject.Inject
 
 class DefaultLogDispatcher
@@ -48,6 +49,8 @@ class DefaultLogDispatcher
         updateTimeTable(currentTime)
         addToEventLogs(currentTime, localEventLog.log)
         updateRemoteNodes()
+
+        throttleDispatching()
     }
 
     override fun subscribe(observer: Observer<RemoteEventLog>): Subscription = synchronized(this) {
@@ -59,6 +62,8 @@ class DefaultLogDispatcher
     }
 
     override fun hasSubscription(): Boolean = logRouter.hasSubscription()
+
+    private fun throttleDispatching() = sleep(1)
 
     private fun receive(observer: Observer<RemoteEventLog>, message: ReplicatorMessage) {
         notifyObserver(observer, message.eventLogs)

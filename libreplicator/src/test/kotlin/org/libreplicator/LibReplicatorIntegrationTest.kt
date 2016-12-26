@@ -17,12 +17,13 @@
 
 package org.libreplicator
 
+import com.nhaarman.mockito_kotlin.argumentCaptor
 import com.nhaarman.mockito_kotlin.timeout
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
-import org.hamcrest.CoreMatchers
+import org.hamcrest.CoreMatchers.equalTo
 import org.junit.After
-import org.junit.Assert
+import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -37,12 +38,17 @@ import org.mockito.junit.MockitoJUnitRunner
 @RunWith(MockitoJUnitRunner::class)
 class LibReplicatorIntegrationTest {
     private companion object {
-        private val replicatorFactory = ReplicatorFactory()
-        private val replicatorNodeFactory = ReplicatorNodeFactory()
-        private val localEventLogFactory = LocalEventLogFactory()
-
-        private val LOG = "log"
+        private val LOG_1_1 = "log11"
+        private val LOG_1_2 = "log12"
+        private val LOG_2_1 = "log21"
+        private val LOG_2_2 = "log22"
+        private val LOG_3_1 = "log31"
+        private val LOG_3_2 = "log32"
     }
+
+    private lateinit var replicatorFactory: ReplicatorFactory
+    private lateinit var replicatorNodeFactory: ReplicatorNodeFactory
+    private lateinit var localEventLogFactory: LocalEventLogFactory
 
     private lateinit var node1: ReplicatorNode
     private lateinit var node2: ReplicatorNode
@@ -62,6 +68,10 @@ class LibReplicatorIntegrationTest {
 
     @Before
     fun setUp() {
+        replicatorFactory = ReplicatorFactory()
+        replicatorNodeFactory = ReplicatorNodeFactory()
+        localEventLogFactory = LocalEventLogFactory()
+
         node1 = replicatorNodeFactory.create("nodeId1", "localhost", 12345)
         node2 = replicatorNodeFactory.create("nodeId2", "localhost", 12346)
         node3 = replicatorNodeFactory.create("nodeId3", "localhost", 12347)
@@ -85,24 +95,24 @@ class LibReplicatorIntegrationTest {
 
     @Test
     fun replicator_shouldReplicateLogsBetweenNodes() {
-        replicator1.replicate(localEventLogFactory.create(LOG))
-        replicator2.replicate(localEventLogFactory.create(LOG))
-        replicator3.replicate(localEventLogFactory.create(LOG))
+        replicate(replicator1, localEventLogFactory, LOG_1_1, LOG_1_2)
+        replicate(replicator2, localEventLogFactory, LOG_2_1, LOG_2_2)
+        replicate(replicator3, localEventLogFactory, LOG_3_1, LOG_3_2)
 
-        verify(mockLogObserver1, timeout(1000).times(2)).observe(com.nhaarman.mockito_kotlin.check { remoteEventLog ->
-            Assert.assertThat(remoteEventLog.log, CoreMatchers.equalTo(LOG))
-        })
+        verifyLogObserverAndAssertLogs(mockLogObserver1, LOG_2_1, LOG_2_2, LOG_3_1, LOG_3_2)
+        verifyLogObserverAndAssertLogs(mockLogObserver2, LOG_1_1, LOG_1_2, LOG_3_1, LOG_3_2)
+        verifyLogObserverAndAssertLogs(mockLogObserver3, LOG_1_1, LOG_1_2, LOG_2_1, LOG_2_2)
+    }
 
-        verify(mockLogObserver2, timeout(1000).times(2)).observe(com.nhaarman.mockito_kotlin.check { remoteEventLog ->
-            Assert.assertThat(remoteEventLog.log, CoreMatchers.equalTo(LOG))
-        })
+    private fun replicate(replicator: Replicator, localEventLogFactory: LocalEventLogFactory, vararg logs: String) {
+        logs.forEach { replicator.replicate(localEventLogFactory.create(it)) }
+    }
 
-        verify(mockLogObserver3, timeout(1000).times(2)).observe(com.nhaarman.mockito_kotlin.check { remoteEventLog ->
-            Assert.assertThat(remoteEventLog.log, CoreMatchers.equalTo(LOG))
-        })
+    private fun verifyLogObserverAndAssertLogs(mockLogObserver: Observer<RemoteEventLog>, vararg logs: String) {
+        val argumentCaptor = argumentCaptor<RemoteEventLog>()
 
-        verifyNoMoreInteractions(mockLogObserver1)
-        verifyNoMoreInteractions(mockLogObserver2)
-        verifyNoMoreInteractions(mockLogObserver3)
+        verify(mockLogObserver, timeout(1000).times(logs.size)).observe(argumentCaptor.capture())
+        assertThat(listOf(*logs), equalTo(argumentCaptor.allValues.map { it.log }))
+        verifyNoMoreInteractions(mockLogObserver)
     }
 }

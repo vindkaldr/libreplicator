@@ -17,7 +17,7 @@
 
 package org.libreplicator.dagger
 
-import com.nhaarman.mockito_kotlin.check
+import com.nhaarman.mockito_kotlin.argumentCaptor
 import com.nhaarman.mockito_kotlin.timeout
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
@@ -27,6 +27,7 @@ import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.libreplicator.api.LocalEventLogFactory
 import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteEventLog
 import org.libreplicator.api.Replicator
@@ -38,7 +39,12 @@ import org.mockito.junit.MockitoJUnitRunner
 @RunWith(MockitoJUnitRunner::class)
 class LibReplicatorIntegrationTest {
     private companion object {
-        private val LOG = "log"
+        private val LOG_1_1 = "log11"
+        private val LOG_1_2 = "log12"
+        private val LOG_2_1 = "log21"
+        private val LOG_2_2 = "log22"
+        private val LOG_3_1 = "log31"
+        private val LOG_3_2 = "log32"
     }
 
     private lateinit var libReplicatorClient1: LibReplicatorClient
@@ -94,24 +100,24 @@ class LibReplicatorIntegrationTest {
 
     @Test
     fun replicator_shouldReplicateLogsBetweenNodes() {
-        replicator1.replicate(libReplicatorClient1.localEventLogFactory.create(LOG))
-        replicator2.replicate(libReplicatorClient2.localEventLogFactory.create(LOG))
-        replicator3.replicate(libReplicatorClient3.localEventLogFactory.create(LOG))
+        replicate(replicator1, libReplicatorClient1.localEventLogFactory, LOG_1_1, LOG_1_2)
+        replicate(replicator2, libReplicatorClient2.localEventLogFactory, LOG_2_1, LOG_2_2)
+        replicate(replicator3, libReplicatorClient3.localEventLogFactory, LOG_3_1, LOG_3_2)
 
-        verify(mockLogObserver1, timeout(1000).times(2)).observe(check { remoteEventLog ->
-            assertThat(remoteEventLog.log, equalTo(LOG))
-        })
+        verifyLogObserverAndAssertLogs(mockLogObserver1, LOG_2_1, LOG_2_2, LOG_3_1, LOG_3_2)
+        verifyLogObserverAndAssertLogs(mockLogObserver2, LOG_1_1, LOG_1_2, LOG_3_1, LOG_3_2)
+        verifyLogObserverAndAssertLogs(mockLogObserver3, LOG_1_1, LOG_1_2, LOG_2_1, LOG_2_2)
+    }
 
-        verify(mockLogObserver2, timeout(1000).times(2)).observe(check { remoteEventLog ->
-            assertThat(remoteEventLog.log, equalTo(LOG))
-        })
+    private fun replicate(replicator: Replicator, localEventLogFactory: LocalEventLogFactory, vararg logs: String) {
+        logs.forEach { replicator.replicate(localEventLogFactory.create(it)) }
+    }
 
-        verify(mockLogObserver3, timeout(1000).times(2)).observe(check { remoteEventLog ->
-            assertThat(remoteEventLog.log, equalTo(LOG))
-        })
+    private fun verifyLogObserverAndAssertLogs(mockLogObserver: Observer<RemoteEventLog>, vararg logs: String) {
+        val argumentCaptor = argumentCaptor<RemoteEventLog>()
 
-        verifyNoMoreInteractions(mockLogObserver1)
-        verifyNoMoreInteractions(mockLogObserver2)
-        verifyNoMoreInteractions(mockLogObserver3)
+        verify(mockLogObserver, timeout(1000).times(logs.size)).observe(argumentCaptor.capture())
+        assertThat(listOf(*logs), equalTo(argumentCaptor.allValues.map { it.log }))
+        verifyNoMoreInteractions(mockLogObserver)
     }
 }
