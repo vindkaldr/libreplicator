@@ -17,11 +17,14 @@
 
 package org.libreplicator.boundary
 
+import org.libreplicator.api.AlreadySubscribedException
 import org.libreplicator.api.LocalEventLog
+import org.libreplicator.api.NotSubscribedException
 import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteEventLog
 import org.libreplicator.api.Replicator
 import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.Subscription
 import org.libreplicator.interactor.api.LogDispatcherFactory
 import javax.inject.Inject
 
@@ -32,8 +35,17 @@ class DefaultReplicator
 
     private val logDispatcher = logDispatcherFactory.create(localNode, remoteNodes)
 
-    override fun replicate(localEventLog: LocalEventLog) = logDispatcher.dispatch(localEventLog)
+    override fun replicate(localEventLog: LocalEventLog) {
+        if (!logDispatcher.hasSubscription()) {
+            throw NotSubscribedException()
+        }
+        logDispatcher.dispatch(localEventLog)
+    }
 
-    override fun subscribe(remoteEventLogObserver: Observer<RemoteEventLog>) =
-            logDispatcher.subscribe(remoteEventLogObserver)
+    override fun subscribe(remoteEventLogObserver: Observer<RemoteEventLog>): Subscription {
+        if (logDispatcher.hasSubscription()) {
+            throw AlreadySubscribedException()
+        }
+        return logDispatcher.subscribe(remoteEventLogObserver)
+    }
 }

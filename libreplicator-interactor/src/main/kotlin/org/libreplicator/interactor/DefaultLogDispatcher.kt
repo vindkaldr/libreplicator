@@ -58,6 +58,8 @@ class DefaultLogDispatcher
         })
     }
 
+    override fun hasSubscription(): Boolean = logRouter.hasSubscription()
+
     private fun receive(observer: Observer<RemoteEventLog>, message: ReplicatorMessage) {
         notifyObserver(observer, message.eventLogs)
 

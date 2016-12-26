@@ -15,15 +15,6 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.interactor.api
+package org.libreplicator.api
 
-import org.libreplicator.api.Observer
-import org.libreplicator.api.ReplicatorNode
-import org.libreplicator.api.Subscription
-import org.libreplicator.model.ReplicatorMessage
-
-interface LogRouter {
-    fun send(remoteNode: ReplicatorNode, message: ReplicatorMessage)
-    fun subscribe(messageObserver: Observer<ReplicatorMessage>): Subscription
-    fun hasSubscription(): Boolean
-}
+class NotSubscribedException : Throwable()

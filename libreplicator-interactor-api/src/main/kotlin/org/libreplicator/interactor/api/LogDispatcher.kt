@@ -25,4 +25,5 @@ import org.libreplicator.api.Subscription
 interface LogDispatcher {
     fun dispatch(localEventLog: LocalEventLog)
     fun subscribe(observer: Observer<RemoteEventLog>): Subscription
+    fun hasSubscription(): Boolean
 }

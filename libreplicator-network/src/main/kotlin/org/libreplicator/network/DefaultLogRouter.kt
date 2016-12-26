@@ -26,6 +26,7 @@ import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.json.api.JsonWriteException
 import org.libreplicator.model.ReplicatorMessage
 import org.slf4j.LoggerFactory
+import java.lang.Thread.sleep
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetSocketAddress
@@ -43,10 +44,10 @@ class DefaultLogRouter
 
     private lateinit var socket: DatagramSocket
 
+    private var hasSubscription = false
+    private var listening = false
+
     override fun send(remoteNode: ReplicatorNode, message: ReplicatorMessage) = synchronized(this) {
-        if (socket.isClosed) {
-            return
-        }
         try {
             sendMessage(message, remoteNode)
         }
@@ -60,13 +61,21 @@ class DefaultLogRouter
 
     override fun subscribe(messageObserver: Observer<ReplicatorMessage>): Subscription = synchronized(this) {
         socket = DatagramSocket(localNode.port)
-        listeningForMessages(messageObserver)
+        hasSubscription = true
+        startThreadForListening(messageObserver)
+        waitUntilListeningStarted()
 
         return object : Subscription {
             override fun unsubscribe() {
+                hasSubscription = false
                 socket.close()
+                waitUntilListeningFinished()
             }
         }
+    }
+
+    override fun hasSubscription(): Boolean = synchronized(this) {
+        return hasSubscription
     }
 
     private fun sendMessage(message: ReplicatorMessage, remoteNode: ReplicatorNode) {
@@ -78,8 +87,9 @@ class DefaultLogRouter
         socket.send(packet)
     }
 
-    private fun listeningForMessages(messageObserver: Observer<ReplicatorMessage>) {
+    private fun startThreadForListening(messageObserver: Observer<ReplicatorMessage>) {
         thread {
+            listening = true
             while (true) {
                 try {
                     messageObserver.observe(readMessage())
@@ -88,13 +98,27 @@ class DefaultLogRouter
                     logger.error(jsonReadException.message, jsonReadException)
                 }
                 catch (socketException: SocketException) {
-                    if (!socket.isClosed) {
+                    if (hasSubscription) {
                         logger.error(socketException.message, socketException)
+                        hasSubscription = false
                         socket.close()
                     }
                     break
                 }
             }
+            listening = false
+        }
+    }
+
+    private fun waitUntilListeningStarted() {
+        while (!listening) {
+            sleep(1000)
+        }
+    }
+
+    private fun waitUntilListeningFinished() {
+        while (listening) {
+            sleep(1000)
         }
     }
 
