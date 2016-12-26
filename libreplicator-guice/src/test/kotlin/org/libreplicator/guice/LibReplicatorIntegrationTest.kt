@@ -113,10 +113,7 @@ class LibReplicatorIntegrationTest {
     }
 
     private fun replicate(replicator: Replicator, localEventLogFactory: LocalEventLogFactory, vararg logs: String) {
-        logs.forEach {
-//            sleep(500)
-            replicator.replicate(localEventLogFactory.create(it))
-        }
+        logs.forEach { replicator.replicate(localEventLogFactory.create(it)) }
     }
 
     private fun verifyLogObserverAndAssertLogs(mockLogObserver: Observer<RemoteEventLog>, vararg logs: String) {
