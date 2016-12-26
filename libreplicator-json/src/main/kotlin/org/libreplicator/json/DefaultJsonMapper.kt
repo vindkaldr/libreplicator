@@ -33,13 +33,15 @@ import javax.inject.Inject
 import kotlin.reflect.KClass
 
 class DefaultJsonMapper @Inject constructor() : JsonMapper {
-    private val objectMapper = ObjectMapper()
-            .registerModule(
-                    SimpleModule()
-                            .addSerializer(TimeTableSerializer())
-                            .addDeserializer(TimeTable::class.java, TimeTableDeserializer()))
-            .addMixIn(ReplicatorMessage::class.java, ReplicatorMessageMixin::class.java)
-            .addMixIn(EventLog::class.java, EventLogMixin::class.java)
+    private companion object {
+        private val objectMapper = ObjectMapper()
+                .registerModule(
+                        SimpleModule()
+                                .addSerializer(TimeTableSerializer())
+                                .addDeserializer(TimeTable::class.java, TimeTableDeserializer()))
+                .addMixIn(ReplicatorMessage::class.java, ReplicatorMessageMixin::class.java)
+                .addMixIn(EventLog::class.java, EventLogMixin::class.java)
+    }
 
     override fun write(any: Any): String {
         try {
