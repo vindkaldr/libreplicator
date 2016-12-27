@@ -43,81 +43,52 @@ class DefaultLogDispatcher
 
     private val logRouter = logRouterFactory.create(localNode)
 
+    private val eventLogHandler = EventLogHandler()
+
     override fun dispatch(localEventLog: LocalEventLog) = synchronized(this) {
-        val currentTime = getCurrentTime()
+        fun throttleDispatching() = sleep(1)
 
-        updateTimeTable(currentTime)
-        addToEventLogs(currentTime, localEventLog.log)
-        updateRemoteNodes()
-
+        updateTimeTableAndEventLogs(localEventLog)
+        updateRemoteNodesWithMissingEventLogs()
         throttleDispatching()
     }
 
     override fun subscribe(observer: Observer<RemoteEventLog>): Subscription = synchronized(this) {
         return logRouter.subscribe(object : Observer<ReplicatorMessage> {
-            override fun observe(observable: ReplicatorMessage) = synchronized(this@DefaultLogDispatcher) {
-                receive(observer, observable)
+            override fun observe(observable: ReplicatorMessage): Unit = synchronized(this@DefaultLogDispatcher) {
+                notifyObserver(observer, observable.eventLogs)
+                updateEventLogsAndTimeTable(observable)
+                removeDistributedEventLogs()
             }
         })
     }
 
     override fun hasSubscription(): Boolean = logRouter.hasSubscription()
 
-    private fun throttleDispatching() = sleep(1)
+    private fun updateTimeTableAndEventLogs(localEventLog: LocalEventLog) {
+        val currentTime = System.currentTimeMillis()
 
-    private fun receive(observer: Observer<RemoteEventLog>, message: ReplicatorMessage) {
-        notifyObserver(observer, message.eventLogs)
-
-        addToEventLogs(message.eventLogs)
-        updateTimeTable(message)
-        cleanUpEventLogs()
-    }
-
-    private fun getCurrentTime(): Long {
-        return System.currentTimeMillis();
-    }
-
-    private fun updateTimeTable(currentTime: Long) {
         timeTable[localNode.nodeId, localNode.nodeId] = currentTime
+        eventLogs.add(EventLog(localNode.nodeId, currentTime, localEventLog.log))
     }
 
-    private fun addToEventLogs(currentTime: Long, log: String) {
-        eventLogs.add(EventLog(localNode.nodeId, currentTime, log))
-    }
-
-    private fun updateRemoteNodes() {
-        remoteNodes.forEach { remoteNode ->
-            val missingLogs = eventLogs.filter { !hasEventLog(remoteNode, it) }.sortedBy { it.time }
-            if (!missingLogs.isEmpty()) {
-                logRouter.send(remoteNode, ReplicatorMessage(localNode.nodeId, missingLogs, timeTable))
-            }
-        }
-    }
-
-    private fun hasEventLog(replicatorNode: ReplicatorNode, eventLog: EventLog): Boolean {
-        return eventLog.time <= timeTable[replicatorNode.nodeId, eventLog.nodeId]
-    }
-
-    private fun addToEventLogs(remoteEventLogs: List<EventLog>) {
-        eventLogs.addAll(remoteEventLogs)
+    private fun updateRemoteNodesWithMissingEventLogs() {
+        eventLogHandler.getNodesWithMissingEventLogs(timeTable, remoteNodes, eventLogs)
+                .forEach { logRouter.send(it.key, ReplicatorMessage(localNode.nodeId, it.value, timeTable)) }
     }
 
     private fun notifyObserver(remoteEventLogObserver: Observer<RemoteEventLog>, remoteEventLogs: List<EventLog>) {
-        remoteEventLogs.filter { !hasEventLog(localNode, it) }
-                .sortedBy { it.time }
+        eventLogHandler.getMissingEventLogs(timeTable, localNode, remoteEventLogs)
                 .forEach { remoteEventLogObserver.observe(it) }
     }
 
-    private fun updateTimeTable(replicatorMessage: ReplicatorMessage) {
-        timeTable.mergeRow(localNode.nodeId, replicatorMessage.timeTable, replicatorMessage.nodeId)
-        timeTable.merge(replicatorMessage.timeTable)
+    private fun updateEventLogsAndTimeTable(message: ReplicatorMessage) {
+        eventLogs.addAll(message.eventLogs)
+        timeTable.mergeRow(localNode.nodeId, message.timeTable, message.nodeId)
+        timeTable.merge(message.timeTable)
     }
 
-    private fun cleanUpEventLogs() {
-        eventLogs.removeAll { eventLog ->
-            remoteNodes.all { remoteNode ->
-                hasEventLog(remoteNode, eventLog)
-            }
-        }
+    private fun removeDistributedEventLogs() {
+        eventLogs.removeAll(eventLogHandler.getDistributedEventLogs(timeTable, remoteNodes, eventLogs))
     }
 }
