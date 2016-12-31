@@ -17,6 +17,7 @@
 
 package org.libreplicator.json
 
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import org.libreplicator.json.api.JsonMapper
@@ -24,23 +25,27 @@ import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.json.api.JsonWriteException
 import org.libreplicator.json.deserializer.TimeTableDeserializer
 import org.libreplicator.json.mixin.EventLogMixin
+import org.libreplicator.json.mixin.JournalEntryMixin
 import org.libreplicator.json.mixin.ReplicatorMessageMixin
 import org.libreplicator.json.serializer.TimeTableSerializer
 import org.libreplicator.model.EventLog
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.TimeTable
+import org.libreplicator.model.journal.JournalEntry
 import javax.inject.Inject
 import kotlin.reflect.KClass
 
 class DefaultJsonMapper @Inject constructor() : JsonMapper {
     private companion object {
         private val objectMapper = ObjectMapper()
+                .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
                 .registerModule(
                         SimpleModule()
                                 .addSerializer(TimeTableSerializer())
                                 .addDeserializer(TimeTable::class.java, TimeTableDeserializer()))
                 .addMixIn(ReplicatorMessage::class.java, ReplicatorMessageMixin::class.java)
                 .addMixIn(EventLog::class.java, EventLogMixin::class.java)
+                .addMixIn(JournalEntry::class.java, JournalEntryMixin::class.java)
     }
 
     override fun write(any: Any): String {

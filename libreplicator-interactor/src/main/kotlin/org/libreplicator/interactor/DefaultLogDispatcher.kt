@@ -22,28 +22,30 @@ import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteEventLog
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.api.Subscription
+import org.libreplicator.interactor.api.journal.JournalService
 import org.libreplicator.interactor.api.LogDispatcher
 import org.libreplicator.interactor.api.LogRouterFactory
 import org.libreplicator.model.EventLog
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.TimeTable
+import org.libreplicator.model.journal.JournalEntry
 import java.lang.Thread.sleep
 import javax.inject.Inject
 
 class DefaultLogDispatcher
 @Inject constructor(logRouterFactory: LogRouterFactory,
                     private val localNode: ReplicatorNode,
-                    private val remoteNodes: List<ReplicatorNode>) : LogDispatcher {
+                    private val remoteNodes: List<ReplicatorNode>,
+                    private val eventLogHandler: EventLogHandler,
+                    private val journalService: JournalService) : LogDispatcher {
     companion object {
         private val NUMBER_OF_LOCAL_NODES = 1
     }
 
-    private val eventLogs = mutableSetOf<EventLog>()
-    private val timeTable = TimeTable(NUMBER_OF_LOCAL_NODES + remoteNodes.size)
-
     private val logRouter = logRouterFactory.create(localNode)
 
-    private val eventLogHandler = EventLogHandler()
+    private var eventLogs = mutableSetOf<EventLog>()
+    private var timeTable = TimeTable(NUMBER_OF_LOCAL_NODES + remoteNodes.size)
 
     override fun dispatch(localEventLog: LocalEventLog) = synchronized(this) {
         fun throttleDispatching() = sleep(1)
@@ -54,9 +56,11 @@ class DefaultLogDispatcher
     }
 
     override fun subscribe(observer: Observer<RemoteEventLog>): Subscription = synchronized(this) {
+        journalService.getLatestJournalEntryThen { restoreStateFromJournal(observer, it) }
+
         return logRouter.subscribe(object : Observer<ReplicatorMessage> {
             override fun observe(observable: ReplicatorMessage): Unit = synchronized(this@DefaultLogDispatcher) {
-                notifyObserver(observer, observable.eventLogs)
+                writeJournalAndNotifyObserver(observer, observable)
                 updateEventLogsAndTimeTable(observable)
                 removeDistributedEventLogs()
             }
@@ -75,6 +79,44 @@ class DefaultLogDispatcher
     private fun updateRemoteNodesWithMissingEventLogs() {
         eventLogHandler.getNodesWithMissingEventLogs(timeTable, remoteNodes, eventLogs)
                 .forEach { logRouter.send(it.key, ReplicatorMessage(localNode.nodeId, it.value, timeTable)) }
+    }
+
+    private fun restoreStateFromJournal(observer: Observer<RemoteEventLog>, journalEntry: JournalEntry) {
+        if (journalEntry.closed) {
+            recoverFromJournalEntry(journalEntry)
+        }
+        else if (journalEntry.committed) {
+            replayJournalEntry(observer, journalEntry)
+        }
+    }
+
+    private fun recoverFromJournalEntry(journalEntry: JournalEntry) {
+        eventLogs = journalEntry.eventLogs.toMutableSet()
+        timeTable = journalEntry.timeTable
+
+        updateEventLogsAndTimeTable(journalEntry.replicatorMessage)
+        removeDistributedEventLogs()
+    }
+
+    private fun replayJournalEntry(observer: Observer<RemoteEventLog>, journalEntry: JournalEntry) {
+        eventLogs = journalEntry.eventLogs.toMutableSet()
+        timeTable = journalEntry.timeTable
+
+        notifyObserver(observer, journalEntry.eventLogs.sortedBy { it.time })
+
+        updateEventLogsAndTimeTable(journalEntry.replicatorMessage)
+        removeDistributedEventLogs()
+
+        journalService.close(journalEntry.id)
+    }
+
+    private fun writeJournalAndNotifyObserver(observer: Observer<RemoteEventLog>, message: ReplicatorMessage) {
+        val journalId = journalService.write(JournalEntry(eventLogs.toSet(), timeTable, message))
+        journalService.commit(journalId)
+
+        notifyObserver(observer, message.eventLogs)
+
+        journalService.close(journalId)
     }
 
     private fun notifyObserver(remoteEventLogObserver: Observer<RemoteEventLog>, remoteEventLogs: List<EventLog>) {

@@ -17,4 +17,8 @@
 
 package org.libreplicator.model
 
-data class ReplicatorMessage(val nodeId: String, val eventLogs: List<EventLog>, val timeTable: TimeTable)
+data class ReplicatorMessage(val nodeId: String, val eventLogs: List<EventLog>, val timeTable: TimeTable) {
+    companion object {
+        val EMPTY = ReplicatorMessage("", listOf(), TimeTable(0))
+    }
+}

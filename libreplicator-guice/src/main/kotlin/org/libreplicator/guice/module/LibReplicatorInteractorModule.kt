@@ -18,12 +18,16 @@
 package org.libreplicator.guice.module
 
 import com.google.inject.PrivateModule
+import org.libreplicator.interactor.DefaultEventLogHandler
 import org.libreplicator.interactor.DefaultLogDispatcherFactory
+import org.libreplicator.interactor.EventLogHandler
 import org.libreplicator.interactor.api.LogDispatcherFactory
 
 class LibReplicatorInteractorModule : PrivateModule() {
     override fun configure() {
         expose(LogDispatcherFactory::class.java)
         bind(LogDispatcherFactory::class.java).to(DefaultLogDispatcherFactory::class.java)
+
+        bind(EventLogHandler::class.java).to(DefaultEventLogHandler::class.java)
     }
 }

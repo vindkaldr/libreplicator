@@ -26,7 +26,7 @@ import org.libreplicator.model.EventLog
 import org.libreplicator.model.EventNode
 import org.libreplicator.model.TimeTable
 
-class EventLogHandlerTest {
+class DefaultEventLogHandlerTest {
     private companion object {
         private val NODE_1_ID = "node1"
         private val NODE_2_ID = "node2"
@@ -44,11 +44,11 @@ class EventLogHandlerTest {
         private val NODE_3_LOG_2 = "node3Log2"
     }
 
-    private lateinit var eventLogHandler: EventLogHandler
+    private lateinit var eventLogHandler: DefaultEventLogHandler
 
     @Before
     fun setUp() {
-        eventLogHandler = EventLogHandler()
+        eventLogHandler = DefaultEventLogHandler()
     }
 
     @Test

@@ -26,6 +26,10 @@ import java.lang.Math.max
 
 data class TimeTable
 private constructor(private val table: Table<String, String, Long>) {
+    companion object {
+        val EMPTY = TimeTable(ImmutableTable.of())
+    }
+
     constructor(expectedNumberOfNodes: Int = 10) :
         this(HashBasedTable.create<String, String, Long>(expectedNumberOfNodes, expectedNumberOfNodes))
 

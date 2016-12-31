@@ -18,12 +18,15 @@
 package org.libreplicator.dagger
 
 import dagger.Module
+import org.libreplicator.dagger.module.LibReplicatorJournalProviderModule
 import org.libreplicator.dagger.module.LibReplicatorBoundaryModule
 import org.libreplicator.dagger.module.LibReplicatorInteractorModule
+import org.libreplicator.dagger.module.LibReplicatorJournalModule
 import org.libreplicator.dagger.module.LibReplicatorJsonModule
 import org.libreplicator.dagger.module.LibReplicatorModelModule
 import org.libreplicator.dagger.module.LibReplicatorNetworkModule
 
-@Module(includes= arrayOf(LibReplicatorBoundaryModule::class, LibReplicatorInteractorModule::class,
-        LibReplicatorJsonModule::class, LibReplicatorModelModule::class, LibReplicatorNetworkModule::class))
+@Module(includes= arrayOf(LibReplicatorBoundaryModule::class, LibReplicatorInteractorModule::class, LibReplicatorJournalProviderModule::class,
+        LibReplicatorJournalModule::class, LibReplicatorJsonModule::class,
+        LibReplicatorModelModule::class, LibReplicatorNetworkModule::class))
 class LibReplicatorModule

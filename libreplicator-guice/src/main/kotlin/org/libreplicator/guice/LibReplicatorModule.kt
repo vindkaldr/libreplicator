@@ -20,6 +20,7 @@ package org.libreplicator.guice
 import com.google.inject.AbstractModule
 import org.libreplicator.guice.module.LibReplicatorBoundaryModule
 import org.libreplicator.guice.module.LibReplicatorInteractorModule
+import org.libreplicator.guice.module.LibReplicatorJournalModule
 import org.libreplicator.guice.module.LibReplicatorJsonModule
 import org.libreplicator.guice.module.LibReplicatorModelModule
 import org.libreplicator.guice.module.LibReplicatorNetworkModule
@@ -28,6 +29,7 @@ class LibReplicatorModule : AbstractModule() {
     override fun configure() {
         install(LibReplicatorBoundaryModule())
         install(LibReplicatorInteractorModule())
+        install(LibReplicatorJournalModule())
         install(LibReplicatorJsonModule())
         install(LibReplicatorModelModule())
         install(LibReplicatorNetworkModule())

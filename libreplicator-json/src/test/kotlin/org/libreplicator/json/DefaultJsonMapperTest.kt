@@ -17,16 +17,28 @@
 
 package org.libreplicator.json
 
-import org.libreplicator.json.api.JsonMapper
-import org.libreplicator.model.EventLog
-import org.libreplicator.model.ReplicatorMessage
-import org.libreplicator.model.TimeTable
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.libreplicator.json.api.JsonMapper
+import org.libreplicator.model.EventLog
+import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.model.TimeTable
+import org.libreplicator.model.journal.JournalEntry
 
 class DefaultJsonMapperTest {
+    private companion object {
+        private val EVENT_LOG = EventLog("nodeId", 5L, "log")
+        private val SERIALIZED_EVENT_LOG = "{\"nodeId\":\"nodeId\",\"time\":5,\"log\":\"log\"}"
+
+        private val REPLICATOR_MESSAGE = ReplicatorMessage("nodeId", listOf(), TimeTable.EMPTY)
+        private val SERIALIZED_REPLICATOR_MESSAGE = "{\"nodeId\":\"nodeId\",\"eventLogs\":[],\"timeTable\":[]}"
+
+        private val JOURNAL_ENTRY = JournalEntry(setOf(), TimeTable(), REPLICATOR_MESSAGE)
+        private val SERIALIZED_JOURNAL_ENTRY = "{\"eventLogs\":[],\"timeTable\":[],\"replicatorMessage\":$SERIALIZED_REPLICATOR_MESSAGE}"
+    }
+
     private lateinit var jsonMapper: JsonMapper
 
     @Before
@@ -36,32 +48,31 @@ class DefaultJsonMapperTest {
 
     @Test
     fun write_shouldSerializeEventLog() {
-        val log = EventLog("nodeId", 5L, "log")
-
-        assertThat(jsonMapper.write(log), equalTo("{\"nodeId\":\"nodeId\",\"time\":5,\"log\":\"log\"}"))
+        assertThat(jsonMapper.write(EVENT_LOG), equalTo(SERIALIZED_EVENT_LOG))
     }
 
     @Test
     fun read_shouldDeserializeEventLog() {
-        val log = "{\"nodeId\":\"nodeId\",\"time\":5,\"log\":\"log\"}"
-
-        assertThat(jsonMapper.read(log, EventLog::class), equalTo(EventLog("nodeId", 5L, "log")))
+        assertThat(jsonMapper.read(SERIALIZED_EVENT_LOG, EventLog::class), equalTo(EVENT_LOG))
     }
 
     @Test
     fun write_shouldSerializeReplicatorMessage() {
-        val message = ReplicatorMessage("nodeId", listOf(), TimeTable())
-
-        assertThat(jsonMapper.write(message), equalTo("{\"nodeId\":\"nodeId\",\"eventLogs\":[],\"timeTable\":[]}"))
+        assertThat(jsonMapper.write(REPLICATOR_MESSAGE), equalTo(SERIALIZED_REPLICATOR_MESSAGE))
     }
 
     @Test
     fun read_shouldDeserializeReplicatorMessage() {
-        val message = "{\"nodeId\":\"nodeId\",\"eventLogs\":[],\"timeTable\":[]}"
+        assertThat(jsonMapper.read(SERIALIZED_REPLICATOR_MESSAGE, ReplicatorMessage::class), equalTo(REPLICATOR_MESSAGE))
+    }
 
-        val actual = jsonMapper.read(message, ReplicatorMessage::class)
-        val expected = ReplicatorMessage("nodeId", listOf(), TimeTable())
+    @Test
+    fun write_shouldSerializeJournalEntry() {
+        assertThat(jsonMapper.write(JOURNAL_ENTRY), equalTo(SERIALIZED_JOURNAL_ENTRY))
+    }
 
-        assertThat(actual, equalTo(expected))
+    @Test
+    fun read_shouldDeserializeJournalEntry() {
+        assertThat(jsonMapper.read(SERIALIZED_JOURNAL_ENTRY, JournalEntry::class), equalTo(JOURNAL_ENTRY))
     }
 }

@@ -19,10 +19,13 @@ package org.libreplicator.dagger.module
 
 import dagger.Binds
 import dagger.Module
+import org.libreplicator.interactor.DefaultEventLogHandler
 import org.libreplicator.interactor.DefaultLogDispatcherFactory
+import org.libreplicator.interactor.EventLogHandler
 import org.libreplicator.interactor.api.LogDispatcherFactory
 
 @Module
 abstract class LibReplicatorInteractorModule {
     @Binds abstract fun bindLogDispatcherFactory(defaultLogDispatcherFactory: DefaultLogDispatcherFactory): LogDispatcherFactory
+    @Binds abstract fun bindEventLogHandler(defaultEventLogHandler: DefaultEventLogHandler): EventLogHandler
 }
