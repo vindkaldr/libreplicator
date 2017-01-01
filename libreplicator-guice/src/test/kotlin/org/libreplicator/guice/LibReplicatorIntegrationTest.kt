@@ -101,7 +101,6 @@ class LibReplicatorIntegrationTest {
         subscription3.unsubscribe()
     }
 
-    @Ignore
     @Test
     fun replicator_shouldReplicateLogsBetweenNodes() {
         replicate(replicator1, localEventLogFactory, LOG_1_1, LOG_1_2)

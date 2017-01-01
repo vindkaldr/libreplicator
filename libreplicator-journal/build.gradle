@@ -18,6 +18,7 @@
 dependencies {
     compile project(':libreplicator-interactor-api')
     compile project(':libreplicator-json-api')
+    compile project(':libreplicator-log')
     compile project(':libreplicator-model')
 
     compile group: 'javax.inject', name: 'javax.inject', version: '1'

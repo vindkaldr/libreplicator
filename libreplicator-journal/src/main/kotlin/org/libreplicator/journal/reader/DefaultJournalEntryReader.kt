@@ -22,6 +22,7 @@ import org.libreplicator.journal.writer.DefaultJournalEntryWriter
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.model.journal.JournalEntry
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.nio.file.Paths
 import javax.inject.Inject
@@ -32,6 +33,8 @@ class DefaultJournalEntryReader
                     private val fileReader: FileReader,
                     private val jsonMapper: JsonMapper) : JournalEntryReader {
     private companion object {
+        val logger = LoggerFactory.getLogger(DefaultJournalEntryReader::class.java)!!
+
         private val JOURNAL_ENTRY_POSITION = 0
         private val COMMITTED_SYMBOL_POSITION = 1
         private val CLOSED_SYMBOL_POSITION = 2
@@ -40,6 +43,7 @@ class DefaultJournalEntryReader
     override fun read(journalEntryId: Long): JournalEntry {
         val journalEntryFile = getJournalEntryFile(journalEntryId)
         if (!journalEntryFile.exists()) {
+            logger.error("Attempted to read not existing journal entry! entry id: $journalEntryId")
             throw JournalNotExistsException()
         }
         return readJournalEntry(journalEntryId, fileReader.readAllLines(journalEntryFile))

@@ -17,26 +17,17 @@
 
 package org.libreplicator.dagger.module
 
-import com.google.common.io.Files
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import org.libreplicator.interactor.api.journal.JournalService
 import org.libreplicator.journal.DefaultJournalService
 import org.libreplicator.journal.reader.DefaultJournalEntryReader
-import org.libreplicator.journal.reader.FileReader
 import org.libreplicator.journal.reader.JournalEntryReader
 import org.libreplicator.journal.writer.DefaultJournalEntryWriter
-import org.libreplicator.journal.writer.FileWriter
 import org.libreplicator.journal.writer.JournalEntryWriter
-import javax.inject.Named
 
 @Module
 abstract class LibReplicatorJournalModule {
-    companion object {
-
-    }
-
     @Binds abstract fun bindJournalService(defaultJournalService: DefaultJournalService): JournalService
     @Binds abstract fun bindJournalEntryWriter(defaultJournalEntryWriter: DefaultJournalEntryWriter): JournalEntryWriter
     @Binds abstract fun bindJournalEntryReader(defaultJournalEntryReader: DefaultJournalEntryReader): JournalEntryReader

@@ -23,10 +23,11 @@ import dagger.Provides
 import org.libreplicator.journal.reader.FileReader
 import org.libreplicator.journal.writer.FileWriter
 import javax.inject.Named
+import javax.inject.Singleton
 
 @Module
 class LibReplicatorJournalProviderModule {
     @Provides fun provideFileWriter() = FileWriter()
     @Provides fun provideFileReader() = FileReader()
-    @Provides @Named("journalDirectory") fun provideJournalDirectory() = Files.createTempDir()
+    @Provides @Named("journalDirectory") @Singleton fun provideJournalDirectory() = Files.createTempDir()
 }

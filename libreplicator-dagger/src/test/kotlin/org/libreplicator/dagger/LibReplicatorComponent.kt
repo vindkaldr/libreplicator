@@ -18,8 +18,10 @@
 package org.libreplicator.dagger
 
 import dagger.Component
+import javax.inject.Singleton
 
 @Component(modules= arrayOf(LibReplicatorModule::class))
+@Singleton
 interface LibReplicatorComponent {
     fun inject(libReplicatorClient: LibReplicatorClient)
 }

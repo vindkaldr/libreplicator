@@ -23,6 +23,7 @@ import org.libreplicator.interactor.api.journal.JournalNotExistsException
 import org.libreplicator.journal.reader.JournalEntryReader
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.model.journal.JournalEntry
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -36,6 +37,8 @@ class DefaultJournalEntryWriter
                     private val fileWriter: FileWriter,
                     private val jsonMapper: JsonMapper) : JournalEntryWriter {
     companion object {
+        val logger = LoggerFactory.getLogger(DefaultJournalEntryWriter::class.java)!!
+
         val COMMITTED_SYMBOL = "COMMITTED"
         val CLOSED_SYMBOL = "CLOSED"
     }
@@ -43,6 +46,7 @@ class DefaultJournalEntryWriter
     override fun write(journalEntryId: Long, entry: JournalEntry) {
         val journalFilePath = getJournalEntryFilePath(journalEntryId)
         if (fileWriter.exists(journalFilePath)) {
+            logger.error("Attempted to write existing journal entry! entry id: $journalEntryId, entry: $entry")
             throw JournalExistsException()
         }
         fileWriter.write(journalFilePath, jsonMapper.write(entry))
@@ -51,6 +55,7 @@ class DefaultJournalEntryWriter
     override fun commit(journalEntryId: Long) {
         val journalEntryFilePath = getJournalEntryFilePath(journalEntryId)
         if (!fileWriter.exists(journalEntryFilePath)) {
+            logger.error("Attempted to commit not existing journal entry! entry id: $journalEntryId")
             throw JournalNotExistsException()
         }
         fileWriter.append(journalEntryFilePath, COMMITTED_SYMBOL)
@@ -59,6 +64,7 @@ class DefaultJournalEntryWriter
     override fun close(journalEntryId: Long) {
         val journalEntry = journalEntryReader.read(journalEntryId)
         if (!journalEntry.committed) {
+            logger.error("Attempted to close not committed journal entry! entry id: $journalEntryId")
             throw JournalNotCommittedException()
         }
         fileWriter.append(getJournalEntryFilePath(journalEntryId), CLOSED_SYMBOL)
