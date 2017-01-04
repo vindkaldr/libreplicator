@@ -15,15 +15,13 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.interactor.api
+package org.libreplicator.model
 
-import org.libreplicator.api.LocalEventLog
-import org.libreplicator.api.Observer
-import org.libreplicator.api.RemoteEventLog
-import org.libreplicator.api.Subscription
+data class ReplicatorState(var logs: MutableSet<EventLog>, var timeTable: TimeTable) {
+    companion object {
+        val EMPTY = ReplicatorState(mutableSetOf(), TimeTable.EMPTY)
 
-interface LogDispatcher {
-    fun dispatch(localEventLog: LocalEventLog)
-    fun subscribe(remoteEventLogObserver: Observer<RemoteEventLog>): Subscription
-    fun hasSubscription(): Boolean
+        fun copy(state: ReplicatorState) =
+                ReplicatorState(state.logs.toMutableSet(), TimeTable.copy(state.timeTable))
+    }
 }

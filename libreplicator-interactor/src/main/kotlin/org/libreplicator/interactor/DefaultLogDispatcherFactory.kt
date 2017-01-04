@@ -18,16 +18,20 @@
 package org.libreplicator.interactor
 
 import org.libreplicator.api.ReplicatorNode
-import org.libreplicator.interactor.api.journal.JournalService
 import org.libreplicator.interactor.api.LogDispatcher
 import org.libreplicator.interactor.api.LogDispatcherFactory
 import org.libreplicator.interactor.api.LogRouterFactory
+import org.libreplicator.interactor.api.ReplicatorJournalProvider
+import org.libreplicator.interactor.api.ReplicatorListener
+import java.util.Optional
 import javax.inject.Inject
 
 class DefaultLogDispatcherFactory
 @Inject constructor(private val logRouterFactory: LogRouterFactory,
                     private val eventLogHandler: EventLogHandler,
-                    private val journalService: JournalService) : LogDispatcherFactory {
+                    private val replicatorJournalProvider: Optional<ReplicatorJournalProvider>,
+                    private val replicatorListeners: Optional<Set<ReplicatorListener>>) : LogDispatcherFactory {
     override fun create(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>): LogDispatcher =
-            DefaultLogDispatcher(logRouterFactory, localNode, remoteNodes, eventLogHandler, journalService)
+            DefaultLogDispatcher(logRouterFactory, localNode, remoteNodes, eventLogHandler,
+                    replicatorJournalProvider, replicatorListeners)
 }

@@ -15,15 +15,12 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.interactor.api
+package org.libreplicator.journal.model
 
-import org.libreplicator.api.LocalEventLog
-import org.libreplicator.api.Observer
-import org.libreplicator.api.RemoteEventLog
-import org.libreplicator.api.Subscription
+import org.libreplicator.model.ReplicatorJournal
 
-interface LogDispatcher {
-    fun dispatch(localEventLog: LocalEventLog)
-    fun subscribe(remoteEventLogObserver: Observer<RemoteEventLog>): Subscription
-    fun hasSubscription(): Boolean
+data class RetrievedReplicatorJournal(val id: Long, val replicatorJournal: ReplicatorJournal) {
+    companion object {
+        val EMPTY = RetrievedReplicatorJournal(0, ReplicatorJournal.EMPTY)
+    }
 }

@@ -15,15 +15,13 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.interactor.api
+package org.libreplicator.json.mixin
 
-import org.libreplicator.api.LocalEventLog
-import org.libreplicator.api.Observer
-import org.libreplicator.api.RemoteEventLog
-import org.libreplicator.api.Subscription
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import org.libreplicator.model.EventLog
+import org.libreplicator.model.TimeTable
 
-interface LogDispatcher {
-    fun dispatch(localEventLog: LocalEventLog)
-    fun subscribe(remoteEventLogObserver: Observer<RemoteEventLog>): Subscription
-    fun hasSubscription(): Boolean
-}
+class ReplicatorStateMixin
+@JsonCreator constructor(@JsonProperty("logs") var logs: MutableSet<EventLog>,
+                         @JsonProperty("timeTable") var timeTable: TimeTable)

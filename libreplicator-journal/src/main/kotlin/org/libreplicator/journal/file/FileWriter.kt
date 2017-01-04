@@ -15,15 +15,15 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.interactor.api
+package org.libreplicator.journal.file
 
-import org.libreplicator.api.LocalEventLog
-import org.libreplicator.api.Observer
-import org.libreplicator.api.RemoteEventLog
-import org.libreplicator.api.Subscription
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardOpenOption
 
-interface LogDispatcher {
-    fun dispatch(localEventLog: LocalEventLog)
-    fun subscribe(remoteEventLogObserver: Observer<RemoteEventLog>): Subscription
-    fun hasSubscription(): Boolean
+class FileWriter {
+    fun exists(path: Path): Boolean = Files.exists(path)
+    fun write(path: Path, line: String): Path = Files.write(path, listOf(line))
+    fun append(path: Path, line: String): Path = Files.write(path, listOf(line), StandardOpenOption.APPEND)
+    fun delete(path: Path) = Files.delete(path)
 }

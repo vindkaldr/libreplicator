@@ -26,10 +26,14 @@ import org.libreplicator.json.api.JsonWriteException
 import org.libreplicator.json.deserializer.TimeTableDeserializer
 import org.libreplicator.json.mixin.EventLogMixin
 import org.libreplicator.json.mixin.JournalEntryMixin
+import org.libreplicator.json.mixin.ReplicatorJournalMixin
 import org.libreplicator.json.mixin.ReplicatorMessageMixin
+import org.libreplicator.json.mixin.ReplicatorStateMixin
 import org.libreplicator.json.serializer.TimeTableSerializer
 import org.libreplicator.model.EventLog
+import org.libreplicator.model.ReplicatorJournal
 import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.model.ReplicatorState
 import org.libreplicator.model.TimeTable
 import org.libreplicator.model.journal.JournalEntry
 import javax.inject.Inject
@@ -45,7 +49,8 @@ class DefaultJsonMapper @Inject constructor() : JsonMapper {
                                 .addDeserializer(TimeTable::class.java, TimeTableDeserializer()))
                 .addMixIn(ReplicatorMessage::class.java, ReplicatorMessageMixin::class.java)
                 .addMixIn(EventLog::class.java, EventLogMixin::class.java)
-                .addMixIn(JournalEntry::class.java, JournalEntryMixin::class.java)
+                .addMixIn(ReplicatorState::class.java, ReplicatorStateMixin::class.java)
+                .addMixIn(ReplicatorJournal::class.java, ReplicatorJournalMixin::class.java)
     }
 
     override fun write(any: Any): String {

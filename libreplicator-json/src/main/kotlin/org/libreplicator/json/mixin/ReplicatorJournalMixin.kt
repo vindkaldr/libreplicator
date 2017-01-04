@@ -15,15 +15,17 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.interactor.api
+package org.libreplicator.json.mixin
 
-import org.libreplicator.api.LocalEventLog
-import org.libreplicator.api.Observer
-import org.libreplicator.api.RemoteEventLog
-import org.libreplicator.api.Subscription
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
+import org.libreplicator.model.ReplicatorJournalStatus
+import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.model.ReplicatorState
 
-interface LogDispatcher {
-    fun dispatch(localEventLog: LocalEventLog)
-    fun subscribe(remoteEventLogObserver: Observer<RemoteEventLog>): Subscription
-    fun hasSubscription(): Boolean
+class ReplicatorJournalMixin
+@JsonCreator constructor(@JsonProperty("replicatorState") val replicatorState: ReplicatorState,
+                         @JsonProperty("lastReplicatorMessage") val lastReplicatorMessage: ReplicatorMessage) {
+    @JsonIgnore val status = ReplicatorJournalStatus.RECOVER
 }

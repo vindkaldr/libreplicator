@@ -23,7 +23,10 @@ import org.junit.Before
 import org.junit.Test
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.model.EventLog
+import org.libreplicator.model.ReplicatorJournal
+import org.libreplicator.model.ReplicatorJournalStatus
 import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.model.ReplicatorState
 import org.libreplicator.model.TimeTable
 import org.libreplicator.model.journal.JournalEntry
 
@@ -35,8 +38,14 @@ class DefaultJsonMapperTest {
         private val REPLICATOR_MESSAGE = ReplicatorMessage("nodeId", listOf(), TimeTable.EMPTY)
         private val SERIALIZED_REPLICATOR_MESSAGE = "{\"nodeId\":\"nodeId\",\"eventLogs\":[],\"timeTable\":[]}"
 
-        private val JOURNAL_ENTRY = JournalEntry(setOf(), TimeTable(), REPLICATOR_MESSAGE)
-        private val SERIALIZED_JOURNAL_ENTRY = "{\"eventLogs\":[],\"timeTable\":[],\"replicatorMessage\":$SERIALIZED_REPLICATOR_MESSAGE}"
+        private val REPLICATOR_STATE = ReplicatorState(mutableSetOf(), TimeTable.EMPTY)
+        private val SERIALIZED_REPLICATOR_STATE = "{\"logs\":[],\"timeTable\":[]}"
+
+        private val REPLICATOR_JOURNAL = ReplicatorJournal(REPLICATOR_STATE, REPLICATOR_MESSAGE)
+        private val SERIALIZED_REPLICATOR_JOURNAL = "{" +
+                    "\"replicatorState\":$SERIALIZED_REPLICATOR_STATE," +
+                    "\"lastReplicatorMessage\":$SERIALIZED_REPLICATOR_MESSAGE" +
+                "}"
     }
 
     private lateinit var jsonMapper: JsonMapper
@@ -67,12 +76,22 @@ class DefaultJsonMapperTest {
     }
 
     @Test
-    fun write_shouldSerializeJournalEntry() {
-        assertThat(jsonMapper.write(JOURNAL_ENTRY), equalTo(SERIALIZED_JOURNAL_ENTRY))
+    fun write_shouldSerializeReplicatorState() {
+        assertThat(jsonMapper.write(REPLICATOR_STATE), equalTo(SERIALIZED_REPLICATOR_STATE))
     }
 
     @Test
-    fun read_shouldDeserializeJournalEntry() {
-        assertThat(jsonMapper.read(SERIALIZED_JOURNAL_ENTRY, JournalEntry::class), equalTo(JOURNAL_ENTRY))
+    fun read_shouldDeserializeReplicatorState() {
+        assertThat(jsonMapper.read(SERIALIZED_REPLICATOR_STATE, ReplicatorState::class), equalTo(REPLICATOR_STATE))
+    }
+
+    @Test
+    fun write_shouldSerializeReplicatorJournal() {
+        assertThat(jsonMapper.write(REPLICATOR_JOURNAL), equalTo(SERIALIZED_REPLICATOR_JOURNAL))
+    }
+
+    @Test
+    fun read_shouldDeserializeReplicatorJournal() {
+        assertThat(jsonMapper.read(SERIALIZED_REPLICATOR_JOURNAL, ReplicatorJournal::class), equalTo(REPLICATOR_JOURNAL))
     }
 }

@@ -17,13 +17,13 @@
 
 package org.libreplicator.interactor.api
 
-import org.libreplicator.api.LocalEventLog
-import org.libreplicator.api.Observer
-import org.libreplicator.api.RemoteEventLog
-import org.libreplicator.api.Subscription
+import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.model.ReplicatorState
 
-interface LogDispatcher {
-    fun dispatch(localEventLog: LocalEventLog)
-    fun subscribe(remoteEventLogObserver: Observer<RemoteEventLog>): Subscription
-    fun hasSubscription(): Boolean
+abstract class ReplicatorAdapter : ReplicatorListener {
+    override fun beforeReplicatorStateUpdate(id: Long, state: ReplicatorState, message: ReplicatorMessage) {
+    }
+
+    override fun afterReplicatorStateUpdate(id: Long, state: ReplicatorState) {
+    }
 }
