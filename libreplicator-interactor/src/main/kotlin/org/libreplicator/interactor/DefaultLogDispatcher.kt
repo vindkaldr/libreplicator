@@ -43,11 +43,13 @@ class DefaultLogDispatcher
                     private val replicatorJournalProvider: Optional<ReplicatorJournalProvider>,
                     private val replicatorListeners: Optional<Set<ReplicatorListener>>) : LogDispatcher {
     private val logRouter = logRouterFactory.create(localNode)
-    private var state = ReplicatorState.EMPTY
+    private var state = ReplicatorState.copy(ReplicatorState.EMPTY)
 
     override fun dispatch(localEventLog: LocalEventLog) = synchronized(this) {
+        println("${localNode.nodeId}: updated start")
         updateState(localEventLog)
         updateRemoteNodes()
+        println("${localNode.nodeId}: updated finished")
     }
 
     override fun subscribe(remoteEventLogObserver: Observer<RemoteEventLog>): Subscription = synchronized(this) {
@@ -116,10 +118,10 @@ class DefaultLogDispatcher
             replicatorListeners.ifPresent { listeners ->
                 listeners.forEach { listener -> listener.beforeReplicatorStateUpdate(currentTime, state, observable) }
             }
-
+            println("${localNode.nodeId}: updating state")
             updateClient(remoteEventLogObserver, observable)
             updateState(observable)
-
+            println("${localNode.nodeId}: updated state")
             replicatorListeners.ifPresent { listeners ->
                 listeners.forEach { listener -> listener.afterReplicatorStateUpdate(currentTime, state) }
             }
