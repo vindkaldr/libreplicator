@@ -25,7 +25,6 @@ import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.json.api.JsonWriteException
 import org.libreplicator.json.deserializer.TimeTableDeserializer
 import org.libreplicator.json.mixin.EventLogMixin
-import org.libreplicator.json.mixin.JournalEntryMixin
 import org.libreplicator.json.mixin.ReplicatorJournalMixin
 import org.libreplicator.json.mixin.ReplicatorMessageMixin
 import org.libreplicator.json.mixin.ReplicatorStateMixin
@@ -35,7 +34,6 @@ import org.libreplicator.model.ReplicatorJournal
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.ReplicatorState
 import org.libreplicator.model.TimeTable
-import org.libreplicator.model.journal.JournalEntry
 import javax.inject.Inject
 import kotlin.reflect.KClass
 
