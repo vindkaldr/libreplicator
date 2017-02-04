@@ -20,11 +20,11 @@ package org.libreplicator.network
 import org.libreplicator.api.Observer
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.api.Subscription
-import org.libreplicator.interactor.api.LogRouter
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.json.api.JsonWriteException
 import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.network.api.LogRouter
 import org.slf4j.LoggerFactory
 import java.lang.Thread.sleep
 import java.net.DatagramPacket

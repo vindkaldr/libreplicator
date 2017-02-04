@@ -18,4 +18,5 @@
 dependencies {
     compile project(':libreplicator-api')
     compile project(':libreplicator-model')
+    compile project(':libreplicator-network-api')
 }

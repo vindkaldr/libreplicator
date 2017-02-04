@@ -28,3 +28,5 @@ include ':libreplicator-json-api'
 include ':libreplicator-log'
 include ':libreplicator-model'
 include ':libreplicator-network'
+include ':libreplicator-network-api'
+

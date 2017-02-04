@@ -23,9 +23,9 @@ import org.libreplicator.api.RemoteEventLog
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.api.Subscription
 import org.libreplicator.interactor.api.LogDispatcher
-import org.libreplicator.interactor.api.LogRouter
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.ReplicatorState
+import org.libreplicator.network.api.LogRouter
 import javax.inject.Inject
 
 class DefaultLogDispatcher

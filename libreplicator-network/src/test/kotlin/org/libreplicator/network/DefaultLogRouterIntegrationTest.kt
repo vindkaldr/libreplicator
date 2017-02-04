@@ -27,12 +27,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.libreplicator.api.Observer
 import org.libreplicator.api.Subscription
-import org.libreplicator.interactor.api.LogDispatcher
-import org.libreplicator.interactor.api.LogRouter
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.model.EventNode
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.TimeTable
+import org.libreplicator.network.api.LogRouter
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 
