@@ -23,18 +23,12 @@ import org.libreplicator.api.NotSubscribedException
 import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteEventLog
 import org.libreplicator.api.Replicator
-import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.api.Subscription
-import org.libreplicator.interactor.api.LogDispatcherFactory
+import org.libreplicator.interactor.api.LogDispatcher
 import javax.inject.Inject
 
 class DefaultReplicator
-@Inject constructor(logDispatcherFactory: LogDispatcherFactory,
-                    localNode: ReplicatorNode,
-                    remoteNodes:List<ReplicatorNode>) : Replicator {
-
-    private val logDispatcher = logDispatcherFactory.create(localNode, remoteNodes)
-
+@Inject constructor(private val logDispatcher: LogDispatcher) : Replicator {
     override fun replicate(localEventLog: LocalEventLog) {
         if (!logDispatcher.hasSubscription()) {
             throw NotSubscribedException()

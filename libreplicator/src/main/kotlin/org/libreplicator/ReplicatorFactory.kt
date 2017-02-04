@@ -18,22 +18,18 @@
 package org.libreplicator
 
 import org.libreplicator.api.Replicator
-import org.libreplicator.api.ReplicatorFactory
 import org.libreplicator.api.ReplicatorNode
-import org.libreplicator.boundary.DefaultReplicatorFactory
-import org.libreplicator.interactor.DefaultEventLogHandler
-import org.libreplicator.interactor.DefaultLogDispatcherFactory
+import org.libreplicator.boundary.DefaultReplicator
+import org.libreplicator.interactor.DefaultLogDispatcher
 import org.libreplicator.json.DefaultJsonMapper
-import org.libreplicator.network.DefaultLogRouterFactory
-import java.util.Optional
+import org.libreplicator.model.ReplicatorState
+import org.libreplicator.network.DefaultLogRouter
 
-class ReplicatorFactory : ReplicatorFactory {
-    override fun create(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>): Replicator {
-        val logRouterFactory = DefaultLogRouterFactory(DefaultJsonMapper())
-        val eventLogHandler = DefaultEventLogHandler()
-        val logDispatcherFactory = DefaultLogDispatcherFactory(logRouterFactory, eventLogHandler,
-                Optional.empty(), Optional.empty())
+class ReplicatorFactory {
+    fun create(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>): Replicator {
+        val logRouter = DefaultLogRouter(DefaultJsonMapper(), localNode)
+        val logDispatcher = DefaultLogDispatcher(logRouter, ReplicatorState.copy(ReplicatorState.EMPTY), localNode, remoteNodes)
 
-        return DefaultReplicatorFactory(logDispatcherFactory).create(localNode, remoteNodes)
+        return DefaultReplicator(logDispatcher)
     }
 }

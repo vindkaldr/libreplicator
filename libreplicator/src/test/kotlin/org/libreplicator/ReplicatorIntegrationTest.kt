@@ -36,7 +36,7 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
-class LibReplicatorIntegrationTest {
+class ReplicatorIntegrationTest {
     private companion object {
         private val LOG_1_1 = "log11"
         private val LOG_1_2 = "log12"

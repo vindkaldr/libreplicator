@@ -17,11 +17,65 @@
 
 package org.libreplicator.model
 
+import org.libreplicator.api.LocalEventLog
+import org.libreplicator.api.ReplicatorNode
+
 data class ReplicatorState(var logs: MutableSet<EventLog>, var timeTable: TimeTable) {
     companion object {
         val EMPTY = ReplicatorState(mutableSetOf(), TimeTable.EMPTY)
 
-        fun copy(state: ReplicatorState) =
-                ReplicatorState(state.logs.toMutableSet(), TimeTable.copy(state.timeTable))
+        fun copy(state: ReplicatorState) = ReplicatorState(state.logs.toMutableSet(), TimeTable.copy(state.timeTable))
     }
+
+    fun addLocalEventLog(localNode: ReplicatorNode, localEventLog: LocalEventLog) {
+        val currentTime = getCurrentTimeInMillis()
+
+        updateTimeOfNode(localNode, currentTime)
+        addLogs(EventLog(localNode.nodeId, currentTime, localEventLog.log))
+    }
+
+    private fun getCurrentTimeInMillis() : Long {
+        fun throttle() = Thread.sleep(1)
+
+        val currentTime = System.currentTimeMillis()
+        throttle()
+        return currentTime
+    }
+
+    private fun updateTimeOfNode(replicatorNode: ReplicatorNode, time: Long) {
+        timeTable[replicatorNode.nodeId, replicatorNode.nodeId] = time
+    }
+
+    private fun addLogs(vararg eventLogs: EventLog) {
+        logs.addAll(eventLogs)
+    }
+
+    fun updateFromMessage(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>, message: ReplicatorMessage) {
+        logs.addAll(message.eventLogs)
+        timeTable.mergeRow(localNode.nodeId, message.timeTable, message.nodeId)
+        timeTable.merge(message.timeTable)
+
+        val logsToRemove = getDistributedEventLogs(remoteNodes)
+        logs.removeAll(logsToRemove)
+    }
+
+    fun getNodesWithMissingEventLogs(nodes: List<ReplicatorNode>): Map<ReplicatorNode, List<EventLog>> =
+            nodes.map { node ->
+                node.to(getMissingEventLogs(node)) }
+                    .filter { it.second.isNotEmpty() }
+                    .toMap()
+
+    fun getMissingEventLogs(localNode: ReplicatorNode, eventLogs: List<EventLog> = logs.toList()): List<EventLog> =
+            eventLogs.filter { !hasEventLog(localNode, it) }
+                    .sortedBy { it.time }
+
+    private fun getDistributedEventLogs(nodes: List<ReplicatorNode>): List<EventLog> =
+            logs.filter { log ->
+                nodes.all { node ->
+                    hasEventLog(node, log)
+                }
+            }
+
+    private fun hasEventLog(node: ReplicatorNode, eventLog: EventLog): Boolean =
+            eventLog.time <= timeTable[node.nodeId, eventLog.nodeId]
 }

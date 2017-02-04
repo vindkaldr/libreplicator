@@ -17,7 +17,6 @@
 
 package org.libreplicator.boundary
 
-import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
@@ -51,8 +50,7 @@ class DefaultReplicatorTest {
 
     @Before
     fun setUp() {
-        whenever(mockLogDispatcherFactory.create(any(), any())).thenReturn(mockLogDispatcher)
-        replicator = DefaultReplicator(mockLogDispatcherFactory, mock(), listOf(mock()))
+        replicator = DefaultReplicator(mockLogDispatcher)
     }
 
     @Test(expected = NotSubscribedException::class)

@@ -15,18 +15,16 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.interactor
+package org.libreplicator.model
 
+import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.equalTo
+import org.junit.Assert
 import org.junit.Assert.assertThat
-import org.junit.Before
 import org.junit.Test
 import org.libreplicator.api.ReplicatorNode
-import org.libreplicator.model.EventLog
-import org.libreplicator.model.EventNode
-import org.libreplicator.model.TimeTable
 
-class DefaultEventLogHandlerTest {
+class ReplicatorStateTest {
     private companion object {
         private val NODE_1_ID = "node1"
         private val NODE_2_ID = "node2"
@@ -42,13 +40,6 @@ class DefaultEventLogHandlerTest {
         private val NODE_2_LOG_2 = "node2Log2"
         private val NODE_3_LOG_1 = "node3Log1"
         private val NODE_3_LOG_2 = "node3Log2"
-    }
-
-    private lateinit var eventLogHandler: DefaultEventLogHandler
-
-    @Before
-    fun setUp() {
-        eventLogHandler = DefaultEventLogHandler()
     }
 
     @Test
@@ -68,8 +59,9 @@ class DefaultEventLogHandlerTest {
         val node1Log2 = EventLog(NODE_1_ID, 5, NODE_1_LOG_2)
         val node3Log1 = EventLog(NODE_3_ID, 2, NODE_3_LOG_1)
 
-        val actual = eventLogHandler.getNodesWithMissingEventLogs(timeTable, listOf(NODE_1, NODE_2, NODE_3),
-                setOf(node1Log1, node1Log2, node3Log1))
+        val state = ReplicatorState(mutableSetOf(node1Log1, node1Log2, node3Log1), timeTable)
+        val actual = state.getNodesWithMissingEventLogs(listOf(NODE_1, NODE_2, NODE_3))
+
         val expected = mapOf(NODE_1 to listOf(node3Log1),
                 NODE_2 to listOf(node3Log1, node1Log2),
                 NODE_3 to listOf(node1Log1, node1Log2))
@@ -88,28 +80,10 @@ class DefaultEventLogHandlerTest {
         val node3Log1 = EventLog(NODE_3_ID, 2, NODE_3_LOG_1)
         val node3Log2 = EventLog(NODE_3_ID, 3, NODE_3_LOG_2)
 
-        val actual = eventLogHandler.getMissingEventLogs(timeTable, NODE_1,
-                listOf(node2Log1, node2Log2, node3Log1, node3Log2))
+        val state = ReplicatorState(mutableSetOf(node2Log1, node2Log2, node3Log1, node3Log2), timeTable)
+        val actual = state.getMissingEventLogs(NODE_1)
+
         val expected = listOf(node3Log2, node2Log2)
-
-        assertThat(actual, equalTo(expected))
-    }
-
-    @Test
-    fun getDistributedEventLogs_shouldReturnEventLogsThatAllNodeHave() {
-        val timeTable = TimeTable(2)
-        timeTable[NODE_1_ID, NODE_1_ID] = 1
-        timeTable[NODE_1_ID, NODE_2_ID] = 2
-        timeTable[NODE_2_ID, NODE_1_ID] = 1
-        timeTable[NODE_2_ID, NODE_2_ID] = 3
-
-        val node1Log1 = EventLog(NODE_1_ID, 1, NODE_1_LOG_1)
-        val node2Log1 = EventLog(NODE_2_ID, 2, NODE_2_LOG_1)
-        val node2Log2 = EventLog(NODE_2_ID, 3, NODE_2_LOG_2)
-
-        val actual = eventLogHandler.getDistributedEventLogs(timeTable, listOf(NODE_1, NODE_2),
-                setOf(node1Log1, node2Log1, node2Log2))
-        val expected = listOf(node1Log1, node2Log1)
 
         assertThat(actual, equalTo(expected))
     }

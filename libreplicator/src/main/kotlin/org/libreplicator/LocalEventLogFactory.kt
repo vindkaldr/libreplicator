@@ -18,9 +18,8 @@
 package org.libreplicator
 
 import org.libreplicator.api.LocalEventLog
-import org.libreplicator.api.LocalEventLogFactory
-import org.libreplicator.model.factory.DefaultLocalEventLogFactory
+import org.libreplicator.model.EventLog
 
-class LocalEventLogFactory : LocalEventLogFactory {
-    override fun create(log: String): LocalEventLog = DefaultLocalEventLogFactory().create(log)
+class LocalEventLogFactory {
+    fun create(log: String): LocalEventLog = EventLog("", 0L, log)
 }

@@ -18,10 +18,8 @@
 package org.libreplicator
 
 import org.libreplicator.api.ReplicatorNode
-import org.libreplicator.api.ReplicatorNodeFactory
-import org.libreplicator.model.factory.DefaultReplicatorNodeFactory
+import org.libreplicator.model.EventNode
 
-class ReplicatorNodeFactory : ReplicatorNodeFactory {
-    override fun create(nodeId: String, url: String, port: Int): ReplicatorNode =
-            DefaultReplicatorNodeFactory().create(nodeId, url, port)
+class ReplicatorNodeFactory {
+    fun create(nodeId: String, url: String, port: Int): ReplicatorNode = EventNode(nodeId, url, port)
 }
