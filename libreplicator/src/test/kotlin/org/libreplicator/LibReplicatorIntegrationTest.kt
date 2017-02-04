@@ -25,7 +25,6 @@ import org.hamcrest.CoreMatchers.equalTo
 import org.junit.After
 import org.junit.Assert.assertThat
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.libreplicator.api.Observer
@@ -96,13 +95,26 @@ class LibReplicatorIntegrationTest {
 
     @Test
     fun replicator_shouldReplicateLogsBetweenNodes() {
-        replicate(replicator1, localEventLogFactory, LOG_1_1, LOG_1_2)
-        replicate(replicator2, localEventLogFactory, LOG_2_1, LOG_2_2)
-        replicate(replicator3, localEventLogFactory, LOG_3_1, LOG_3_2)
+        replicate(replicator1, localEventLogFactory, LOG_1_1)
+        replicate(replicator2, localEventLogFactory, LOG_2_1)
+        replicate(replicator3, localEventLogFactory, LOG_3_1)
 
-        verifyLogObserverAndAssertLogs(mockLogObserver1, LOG_2_1, LOG_2_2, LOG_3_1, LOG_3_2)
-        verifyLogObserverAndAssertLogs(mockLogObserver2, LOG_1_1, LOG_1_2, LOG_3_1, LOG_3_2)
-        verifyLogObserverAndAssertLogs(mockLogObserver3, LOG_1_1, LOG_1_2, LOG_2_1, LOG_2_2)
+        subscription1.unsubscribe()
+        subscription1 = replicator1.subscribe(mockLogObserver1)
+
+        subscription2.unsubscribe()
+        subscription2 = replicator2.subscribe(mockLogObserver2)
+
+        subscription3.unsubscribe()
+        subscription3 = replicator3.subscribe(mockLogObserver3)
+
+        replicate(replicator1, localEventLogFactory, LOG_1_2)
+        replicate(replicator2, localEventLogFactory, LOG_2_2)
+        replicate(replicator3, localEventLogFactory, LOG_3_2)
+
+        verifyLogObserverAndAssertLogs(mockLogObserver1, LOG_2_1, LOG_3_1, LOG_2_2, LOG_3_2)
+        verifyLogObserverAndAssertLogs(mockLogObserver2, LOG_1_1, LOG_3_1, LOG_1_2, LOG_3_2)
+        verifyLogObserverAndAssertLogs(mockLogObserver3, LOG_1_1, LOG_2_1, LOG_1_2, LOG_2_2)
     }
 
     private fun replicate(replicator: Replicator, localEventLogFactory: LocalEventLogFactory, vararg logs: String) {
@@ -113,7 +125,7 @@ class LibReplicatorIntegrationTest {
         val argumentCaptor = argumentCaptor<RemoteEventLog>()
 
         verify(mockLogObserver, timeout(1000).times(logs.size)).observe(argumentCaptor.capture())
-        assertThat(listOf(*logs), equalTo(argumentCaptor.allValues.map { it.log }))
+        assertThat(argumentCaptor.allValues.map { it.log }, equalTo(listOf(*logs)))
         verifyNoMoreInteractions(mockLogObserver)
     }
 }
