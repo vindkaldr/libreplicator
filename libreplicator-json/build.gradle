@@ -19,15 +19,15 @@ dependencies {
     compile project(':libreplicator-json-api')
     compile project(':libreplicator-model')
 
-    compile group: 'javax.inject', name: 'javax.inject', version: '1'
+    compile group: 'javax.inject', name: 'javax.inject', version: injectVersion
 
-    compile group: 'com.google.guava', name: 'guava', version: '20.0'
+    compile group: 'com.google.guava', name: 'guava', version: guavaVersion
 
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.8.5'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.5'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.8.5'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: jacksonVersion
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile group: 'com.nhaarman', name: 'mockito-kotlin', version: '1.0.0'
-    testCompile group: 'org.hamcrest', name: 'hamcrest-core', version: '1.3'
+    testCompile group: 'junit', name: 'junit', version: junitVersion
+    testCompile group: 'com.nhaarman', name: 'mockito-kotlin', version: mockitoKotlinVersion
+    testCompile group: 'org.hamcrest', name: 'hamcrest-core', version: hamcrestVersion
 }
