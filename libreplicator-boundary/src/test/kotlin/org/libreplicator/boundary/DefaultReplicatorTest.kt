@@ -17,7 +17,6 @@
 
 package org.libreplicator.boundary
 
-import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import org.hamcrest.CoreMatchers.equalTo
@@ -33,17 +32,15 @@ import org.libreplicator.api.RemoteEventLog
 import org.libreplicator.api.Replicator
 import org.libreplicator.api.Subscription
 import org.libreplicator.interactor.api.LogDispatcher
-import org.libreplicator.interactor.api.LogDispatcherFactory
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
 class DefaultReplicatorTest {
-    @Mock private lateinit var mockLogDispatcherFactory: LogDispatcherFactory
     @Mock private lateinit var mockLogDispatcher: LogDispatcher
 
     @Mock private lateinit var mockLocalEventLog: LocalEventLog
-    @Mock private lateinit var mockEventLogObserver: Observer<RemoteEventLog>
+    @Mock private lateinit var mockRemoteEventLogObserver: Observer<RemoteEventLog>
     @Mock private lateinit var mockSubscription: Subscription
 
     private lateinit var replicator: Replicator
@@ -59,7 +56,7 @@ class DefaultReplicatorTest {
     }
 
     @Test
-    fun replicate_shouldPassEventLogToDispatcher() {
+    fun replicate_shouldPassLocalEventLogToDispatcher() {
         whenever(mockLogDispatcher.hasSubscription()).thenReturn(true)
 
         replicator.replicate(mockLocalEventLog)
@@ -71,16 +68,16 @@ class DefaultReplicatorTest {
     fun subscribe_shouldThrowException_whenAlreadySubscribed() {
         whenever(mockLogDispatcher.hasSubscription()).thenReturn(true)
 
-        replicator.subscribe(mock())
+        replicator.subscribe(mockRemoteEventLogObserver)
     }
 
     @Test
-    fun subscribe_shouldPassEventLogObserverToDispatcher_thenReturnSubscription() {
-        whenever(mockLogDispatcher.subscribe(mockEventLogObserver)).thenReturn(mockSubscription)
+    fun subscribe_shouldPassRemoteEventLogObserverToDispatcher_thenReturnSubscription() {
+        whenever(mockLogDispatcher.subscribe(mockRemoteEventLogObserver)).thenReturn(mockSubscription)
 
-        val subscription = replicator.subscribe(mockEventLogObserver)
+        val subscription = replicator.subscribe(mockRemoteEventLogObserver)
 
-        verify(mockLogDispatcher).subscribe(mockEventLogObserver)
+        verify(mockLogDispatcher).subscribe(mockRemoteEventLogObserver)
         assertThat(subscription, equalTo(mockSubscription))
     }
 }
