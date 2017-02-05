@@ -21,25 +21,20 @@ import org.libreplicator.api.Replicator
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.boundary.DefaultReplicator
 import org.libreplicator.interactor.DefaultLogDispatcher
-import org.libreplicator.journal.file.FileReader
-import org.libreplicator.journal.file.FileWriter
-import org.libreplicator.journal.read.JournalReader
-import org.libreplicator.journal.write.JournalWriter
+import org.libreplicator.interactor.api.ReplicatorStateListener
 import org.libreplicator.json.DefaultJsonMapper
+import org.libreplicator.model.ReplicatorState
 import org.libreplicator.network.DefaultLogRouter
-import java.io.File
 
 class ReplicatorFactory {
     fun create(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>): Replicator {
         val jsonMapper = DefaultJsonMapper()
-
-        val journal = File.createTempFile("libreplicator-", ".log").toPath()
-        val journalReader = JournalReader(journal, FileReader(), jsonMapper)
-        val journalWriter = JournalWriter(journal, FileWriter(), jsonMapper)
-        val replicatorState = journalReader.getInitialState()
-
         val logRouter = DefaultLogRouter(jsonMapper, localNode)
-        val logDispatcher = DefaultLogDispatcher(logRouter, replicatorState, journalWriter, localNode, remoteNodes)
+
+        val replicatorState = ReplicatorState.EMPTY
+        val replicatorStateListener = object : ReplicatorStateListener {}
+
+        val logDispatcher = DefaultLogDispatcher(logRouter, replicatorState, replicatorStateListener, localNode, remoteNodes)
 
         return DefaultReplicator(logDispatcher)
     }
