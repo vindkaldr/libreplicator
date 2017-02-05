@@ -25,7 +25,6 @@ import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.json.api.JsonWriteException
 import org.libreplicator.json.deserializer.TimeTableDeserializer
 import org.libreplicator.json.mixin.EventLogMixin
-import org.libreplicator.json.mixin.ReplicatorJournalMixin
 import org.libreplicator.json.mixin.ReplicatorMessageMixin
 import org.libreplicator.json.mixin.ReplicatorStateMixin
 import org.libreplicator.json.serializer.TimeTableSerializer

@@ -18,7 +18,6 @@
 package org.libreplicator.json.mixin
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.ReplicatorState
