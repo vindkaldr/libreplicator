@@ -48,7 +48,6 @@ constructor(private val logRouter: LogRouter,
     override fun hasSubscription(): Boolean = logRouter.hasSubscription()
 
     private fun listenedTo(block: () -> Unit) {
-        replicatorStateListener.replicatorStateChanged(replicatorState)
         block()
         replicatorStateListener.replicatorStateChanged(replicatorState)
     }

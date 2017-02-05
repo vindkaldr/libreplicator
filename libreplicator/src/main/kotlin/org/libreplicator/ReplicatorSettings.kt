@@ -15,12 +15,19 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.journal.file
+package org.libreplicator
 
-import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.StandardOpenOption
+import java.nio.file.Paths
 
-class FileWriter {
-    fun append(path: Path, line: String) = Files.write(path, listOf(line), StandardOpenOption.APPEND)
+class ReplicatorSettings
+constructor(val enableJournal: Boolean = ReplicatorSettings.getDefaultEnableJournalSetting(),
+            val journalsDirectory: Path = ReplicatorSettings.getDefaultJournalsDirectorySetting()) {
+    private companion object {
+        fun getDefaultEnableJournalSetting() = false
+
+        fun getDefaultJournalsDirectorySetting(): Path {
+            return Paths.get(System.getProperty("java.io.tmpdir")).resolve("libreplicator-journals-")
+        }
+    }
 }
