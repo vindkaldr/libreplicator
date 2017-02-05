@@ -23,7 +23,6 @@ import org.junit.Before
 import org.junit.Test
 
 class TimeTableTest {
-
     private val NODE_1 = "node_1"
     private val NODE_2 = "node_2"
     private val NODE_3 = "node_3"

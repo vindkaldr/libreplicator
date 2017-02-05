@@ -18,8 +18,6 @@
 dependencies {
     compile project(':libreplicator-api')
 
-    compile group: 'javax.inject', name: 'javax.inject', version: injectVersion
-
     compile group: 'com.google.guava', name: 'guava', version: guavaVersion
 
     testCompile group: 'junit', name: 'junit', version: junitVersion

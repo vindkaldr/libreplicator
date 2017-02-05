@@ -28,6 +28,7 @@ class JournalReader
 constructor(private val journal: Path,
             private val fileReader: FileReader,
             private val jsonMapper: JsonMapper) : ReplicatorStateProvider {
+
     override fun getInitialState(): ReplicatorState {
         fileReader.readAllLines(journal).reversed().forEach { line ->
             try {

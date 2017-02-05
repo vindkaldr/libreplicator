@@ -19,8 +19,6 @@ dependencies {
     compile project(':libreplicator-json-api')
     compile project(':libreplicator-model')
 
-    compile group: 'javax.inject', name: 'javax.inject', version: injectVersion
-
     compile group: 'com.google.guava', name: 'guava', version: guavaVersion
 
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion

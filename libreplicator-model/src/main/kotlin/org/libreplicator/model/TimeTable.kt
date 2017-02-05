@@ -24,8 +24,7 @@ import com.google.common.collect.ImmutableTable
 import com.google.common.collect.Table
 import java.lang.Math.max
 
-data class TimeTable
-private constructor(private val table: Table<String, String, Long>) {
+data class TimeTable private constructor(private val table: Table<String, String, Long>) {
     companion object {
         val EMPTY = TimeTable(HashBasedTable.create())
 

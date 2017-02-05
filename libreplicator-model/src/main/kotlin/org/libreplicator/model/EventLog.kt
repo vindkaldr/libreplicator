@@ -20,9 +20,10 @@ package org.libreplicator.model
 import org.libreplicator.api.LocalEventLog
 import org.libreplicator.api.RemoteEventLog
 
-data class EventLog(override val nodeId: String,
-                    override val time: Long,
-                    override val log: String) : RemoteEventLog, LocalEventLog {
+data class EventLog
+constructor(override val nodeId: String,
+            override val time: Long,
+            override val log: String) : RemoteEventLog, LocalEventLog {
     companion object {
         val EMPTY = EventLog("", 0L, "")
     }

@@ -17,9 +17,10 @@
 
 package org.libreplicator.model
 
-data class ReplicatorJournal(val replicatorState: ReplicatorState,
-                             val lastReplicatorMessage: ReplicatorMessage,
-                             val status: ReplicatorJournalStatus = ReplicatorJournalStatus.RESTORE) {
+data class ReplicatorJournal
+constructor(val replicatorState: ReplicatorState,
+            val lastReplicatorMessage: ReplicatorMessage,
+            val status: ReplicatorJournalStatus = ReplicatorJournalStatus.RESTORE) {
     companion object {
         val EMPTY = ReplicatorJournal(ReplicatorState.EMPTY, ReplicatorMessage.EMPTY, ReplicatorJournalStatus.RESTORE)
     }

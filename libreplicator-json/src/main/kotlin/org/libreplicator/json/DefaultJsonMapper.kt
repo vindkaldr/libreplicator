@@ -34,10 +34,9 @@ import org.libreplicator.model.ReplicatorJournal
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.ReplicatorState
 import org.libreplicator.model.TimeTable
-import javax.inject.Inject
 import kotlin.reflect.KClass
 
-class DefaultJsonMapper @Inject constructor() : JsonMapper {
+class DefaultJsonMapper : JsonMapper {
     private companion object {
         private val objectMapper = ObjectMapper()
                 .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)

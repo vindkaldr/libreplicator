@@ -27,14 +27,14 @@ import org.libreplicator.interactor.api.ReplicatorStateListener
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.ReplicatorState
 import org.libreplicator.network.api.LogRouter
-import javax.inject.Inject
 
 class DefaultLogDispatcher
-@Inject constructor(private val logRouter: LogRouter,
-                    private val replicatorState: ReplicatorState,
-                    private val replicatorStateListener: ReplicatorStateListener,
-                    private val localNode: ReplicatorNode,
-                    private val remoteNodes: List<ReplicatorNode>) : LogDispatcher {
+constructor(private val logRouter: LogRouter,
+            private val replicatorState: ReplicatorState,
+            private val replicatorStateListener: ReplicatorStateListener,
+            private val localNode: ReplicatorNode,
+            private val remoteNodes: List<ReplicatorNode>) : LogDispatcher {
+
     override fun dispatch(localEventLog: LocalEventLog) = synchronized(this) { listenedTo {
         replicatorState.addLocalEventLog(localNode, localEventLog)
         replicatorState.getNodesWithMissingEventLogs(remoteNodes)

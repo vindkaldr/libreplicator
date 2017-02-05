@@ -27,6 +27,7 @@ class JournalWriter
 constructor(private val journal: Path,
             private val fileWriter: FileWriter,
             private val jsonMapper: JsonMapper) : ReplicatorStateListener {
+
     override fun replicatorStateChanged(replicatorState: ReplicatorState) {
         fileWriter.append(journal, jsonMapper.write(replicatorState))
     }
