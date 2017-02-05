@@ -44,6 +44,8 @@ class ReplicatorIntegrationTest {
         private val LOG_2_2 = "log22"
         private val LOG_3_1 = "log31"
         private val LOG_3_2 = "log32"
+
+        private val TIMEOUT_IN_MILLIS = 3000L
     }
 
     private lateinit var replicatorFactory: ReplicatorFactory
@@ -124,7 +126,7 @@ class ReplicatorIntegrationTest {
     private fun verifyLogObserverAndAssertLogs(mockLogObserver: Observer<RemoteEventLog>, vararg logs: String) {
         val argumentCaptor = argumentCaptor<RemoteEventLog>()
 
-        verify(mockLogObserver, timeout(1000).times(logs.size)).observe(argumentCaptor.capture())
+        verify(mockLogObserver, timeout(TIMEOUT_IN_MILLIS).times(logs.size)).observe(argumentCaptor.capture())
         assertThat(argumentCaptor.allValues.map { it.log }, equalTo(listOf(*logs)))
         verifyNoMoreInteractions(mockLogObserver)
     }
