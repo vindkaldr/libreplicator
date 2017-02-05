@@ -17,9 +17,26 @@
 
 package org.libreplicator.journal.read
 
-import org.libreplicator.journal.model.RetrievedReplicatorJournal
+import org.libreplicator.interactor.api.ReplicatorStateProvider
+import org.libreplicator.journal.file.FileReader
+import org.libreplicator.json.api.JsonMapper
+import org.libreplicator.json.api.JsonReadException
+import org.libreplicator.model.ReplicatorState
+import java.nio.file.Path
 
-interface JournalReader {
-    fun read(journalId: Long): RetrievedReplicatorJournal
-    fun readAll(): List<RetrievedReplicatorJournal>
+class JournalReader
+constructor(private val journal: Path,
+            private val fileReader: FileReader,
+            private val jsonMapper: JsonMapper) : ReplicatorStateProvider {
+    override fun getInitialState(): ReplicatorState {
+        fileReader.readAllLines(journal).reversed().forEach { line ->
+            try {
+                return jsonMapper.read(line, ReplicatorState::class)
+            }
+            catch (jsonReadException: JsonReadException) {
+                // Go to the next line.
+            }
+        }
+        return ReplicatorState.EMPTY
+    }
 }

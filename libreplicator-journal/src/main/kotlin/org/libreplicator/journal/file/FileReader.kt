@@ -17,9 +17,9 @@
 
 package org.libreplicator.journal.file
 
-import java.io.File
 import java.nio.file.Files
+import java.nio.file.Path
 
 class FileReader {
-    fun readAllLines(file: File): List<String> = Files.readAllLines(file.toPath())
+    fun readAllLines(path: Path): List<String> = Files.readAllLines(path)
 }

@@ -17,13 +17,9 @@
 
 package org.libreplicator.interactor.api
 
-import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.ReplicatorState
 
-abstract class ReplicatorAdapter : ReplicatorListener {
-    override fun beforeReplicatorStateUpdate(id: Long, state: ReplicatorState, message: ReplicatorMessage) {
-    }
-
-    override fun afterReplicatorStateUpdate(id: Long, state: ReplicatorState) {
+interface ReplicatorStateListener {
+    fun replicatorStateChanged(replicatorState: ReplicatorState) {
     }
 }

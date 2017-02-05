@@ -22,8 +22,5 @@ import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 
 class FileWriter {
-    fun exists(path: Path): Boolean = Files.exists(path)
-    fun write(path: Path, line: String): Path = Files.write(path, listOf(line))
-    fun append(path: Path, line: String): Path = Files.write(path, listOf(line), StandardOpenOption.APPEND)
-    fun delete(path: Path) = Files.delete(path)
+    fun append(path: Path, line: String) = Files.write(path, listOf(line), StandardOpenOption.APPEND)
 }
