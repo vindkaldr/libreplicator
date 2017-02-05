@@ -20,12 +20,9 @@ package org.libreplicator.json.mixin
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.libreplicator.model.ReplicatorJournalStatus
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.ReplicatorState
 
 class ReplicatorJournalMixin
 @JsonCreator constructor(@JsonProperty("replicatorState") val replicatorState: ReplicatorState,
-                         @JsonProperty("lastReplicatorMessage") val lastReplicatorMessage: ReplicatorMessage) {
-    @JsonIgnore val status = ReplicatorJournalStatus.RECOVER
-}
+                         @JsonProperty("lastReplicatorMessage") val lastReplicatorMessage: ReplicatorMessage)

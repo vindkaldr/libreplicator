@@ -31,7 +31,7 @@ class ReplicatorFactory {
         val jsonMapper = DefaultJsonMapper()
         val logRouter = DefaultLogRouter(jsonMapper, localNode)
 
-        val replicatorState = ReplicatorState.EMPTY
+        val replicatorState = ReplicatorState.copy(ReplicatorState.EMPTY)
         val replicatorStateListener = object : ReplicatorStateListener {}
 
         val logDispatcher = DefaultLogDispatcher(logRouter, replicatorState, replicatorStateListener, localNode, remoteNodes)
