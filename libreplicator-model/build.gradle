@@ -19,5 +19,5 @@ dependencies {
     compile project(':libreplicator-api')
 
     testCompile group: 'junit', name: 'junit', version: junitVersion
-    testCompile group: 'org.hamcrest', name: 'hamcrest-core', version: hamcrestVersion
+    testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrestVersion
 }
