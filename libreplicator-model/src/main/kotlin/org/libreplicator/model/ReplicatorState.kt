@@ -18,13 +18,20 @@
 package org.libreplicator.model
 
 import org.libreplicator.api.LocalEventLog
+import org.libreplicator.api.Observer
 import org.libreplicator.api.ReplicatorNode
 
-data class ReplicatorState(var logs: MutableSet<EventLog>, var timeTable: TimeTable) {
-    companion object {
-        val EMPTY = ReplicatorState(mutableSetOf(), TimeTable.EMPTY)
+data class ReplicatorState constructor(
+        var logs: MutableSet<EventLog> = mutableSetOf(),
+        var timeTable: TimeTable = TimeTable()) : Bindable<ReplicatorState> {
 
-        fun copy(state: ReplicatorState) = ReplicatorState(state.logs.toMutableSet(), TimeTable.copy(state.timeTable))
+    private var observer: Observer<ReplicatorState> = object : Observer<ReplicatorState> {
+        override fun observe(observable: ReplicatorState) {
+        }
+    }
+
+    override fun bind(observer: Observer<ReplicatorState>) = synchronized(this) {
+        this.observer = observer
     }
 
     fun addLocalEventLog(localNode: ReplicatorNode, localEventLog: LocalEventLog) {
@@ -32,6 +39,8 @@ data class ReplicatorState(var logs: MutableSet<EventLog>, var timeTable: TimeTa
 
         updateTimeOfNode(localNode, currentTime)
         addLogs(EventLog(localNode.nodeId, currentTime, localEventLog.log))
+
+        observer.observe(this)
     }
 
     private fun getCurrentTimeInMillis() : Long {
@@ -57,6 +66,8 @@ data class ReplicatorState(var logs: MutableSet<EventLog>, var timeTable: TimeTa
 
         val logsToRemove = getDistributedEventLogs(remoteNodes)
         logs.removeAll(logsToRemove)
+
+        observer.observe(this)
     }
 
     fun getNodesWithMissingEventLogs(nodes: List<ReplicatorNode>): Map<ReplicatorNode, List<EventLog>> =

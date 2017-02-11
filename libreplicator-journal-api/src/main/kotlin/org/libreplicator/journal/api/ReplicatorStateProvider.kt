@@ -15,10 +15,10 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.interactor.api
+package org.libreplicator.journal.api
 
 import org.libreplicator.model.ReplicatorState
 
 interface ReplicatorStateProvider {
-    fun getInitialState(): ReplicatorState
+    fun getReplicatorState(): ReplicatorState
 }

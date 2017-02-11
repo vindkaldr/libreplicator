@@ -21,13 +21,11 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 class ReplicatorSettings
-constructor(val enableJournal: Boolean = ReplicatorSettings.getDefaultEnableJournalSetting(),
-            val journalsDirectory: Path = ReplicatorSettings.getDefaultJournalsDirectorySetting()) {
+constructor(val isJournalingEnabled: Boolean = false,
+            val directoryOfJournals: Path = ReplicatorSettings.getDefaultJournalsDirectorySetting()) {
     private companion object {
-        fun getDefaultEnableJournalSetting() = false
-
         fun getDefaultJournalsDirectorySetting(): Path {
-            return Paths.get(System.getProperty("java.io.tmpdir")).resolve("libreplicator-journals-")
+            return Paths.get(System.getProperty("java.io.tmpdir")).resolve("libreplicator-journals")
         }
     }
 }

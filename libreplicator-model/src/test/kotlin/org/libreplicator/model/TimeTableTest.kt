@@ -31,7 +31,7 @@ class TimeTableTest {
 
     @Before
     fun setUp() {
-        timeTable = TimeTable(3)
+        timeTable = TimeTable()
     }
 
     @Test
@@ -54,7 +54,7 @@ class TimeTableTest {
         timeTable[NODE_2, NODE_1] = 6L
         timeTable[NODE_3, NODE_1] = 8L
 
-        val timeTable2 = TimeTable(3)
+        val timeTable2 = TimeTable()
         timeTable2[NODE_2, NODE_1] = 9L
         timeTable2[NODE_2, NODE_2] = 10L
         timeTable2[NODE_2, NODE_3] = 3L
@@ -81,7 +81,7 @@ class TimeTableTest {
         timeTable[NODE_1, NODE_3] = 3L
         timeTable[NODE_2, NODE_1] = 6L
 
-        val timeTable2 = TimeTable(3)
+        val timeTable2 = TimeTable()
         timeTable2[NODE_1, NODE_2] = 4L
         timeTable2[NODE_1, NODE_3] = 1L
         timeTable2[NODE_2, NODE_1] = 4L

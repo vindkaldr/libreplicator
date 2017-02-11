@@ -23,8 +23,13 @@ import java.nio.file.StandardCopyOption
 import java.nio.file.StandardOpenOption
 
 class FileHandler {
-    fun readAllLines(path: Path): List<String> {
-        return Files.readAllLines(path)
+    fun readFirstLine(path: Path): String {
+        val allLines = Files.readAllLines(path)
+
+        if (allLines.isEmpty()) {
+            return "";
+        }
+        return allLines.first()
     }
 
     fun write(path: Path, line: String) {

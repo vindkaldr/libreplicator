@@ -96,7 +96,7 @@ class TimeTableDeserializerTest {
                         "{\"rowKey\":\"$NODE_2\",\"columnKey\":\"$NODE_3\",\"value\":5}" +
                 "]", TimeTable::class.java)
 
-        val expected = TimeTable(3)
+        val expected = TimeTable()
         expected[NODE_1, NODE_2] = 2L
         expected[NODE_1, NODE_3] = 3L
         expected[NODE_2, NODE_3] = 5L

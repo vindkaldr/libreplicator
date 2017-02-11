@@ -17,8 +17,4 @@
 
 package org.libreplicator.model
 
-data class ReplicatorMessage(val nodeId: String, val eventLogs: List<EventLog>, val timeTable: TimeTable) {
-    companion object {
-        fun copy(message: ReplicatorMessage) = message.copy(timeTable = TimeTable.copy(message.timeTable))
-    }
-}
+data class ReplicatorMessage(val nodeId: String, val eventLogs: List<EventLog>, val timeTable: TimeTable)

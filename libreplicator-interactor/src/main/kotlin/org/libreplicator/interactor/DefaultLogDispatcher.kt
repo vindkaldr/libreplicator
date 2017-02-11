@@ -23,7 +23,6 @@ import org.libreplicator.api.RemoteEventLog
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.api.Subscription
 import org.libreplicator.interactor.api.LogDispatcher
-import org.libreplicator.interactor.api.ReplicatorStateListener
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.ReplicatorState
 import org.libreplicator.network.api.LogRouter
@@ -31,15 +30,14 @@ import org.libreplicator.network.api.LogRouter
 class DefaultLogDispatcher
 constructor(private val logRouter: LogRouter,
             private val replicatorState: ReplicatorState,
-            private val replicatorStateListener: ReplicatorStateListener,
             private val localNode: ReplicatorNode,
             private val remoteNodes: List<ReplicatorNode>) : LogDispatcher {
 
-    override fun dispatch(localEventLog: LocalEventLog) = synchronized(this) { listenedTo {
+    override fun dispatch(localEventLog: LocalEventLog) = synchronized(this) {
         replicatorState.addLocalEventLog(localNode, localEventLog)
         replicatorState.getNodesWithMissingEventLogs(remoteNodes)
                 .forEach { logRouter.send(it.key, ReplicatorMessage(localNode.nodeId, it.value, replicatorState.timeTable)) }
-    }}
+    }
 
     override fun subscribe(remoteEventLogObserver: Observer<RemoteEventLog>): Subscription = synchronized(this) {
         return logRouter.subscribe(ReplicatorMessageObserver(remoteEventLogObserver))
@@ -47,21 +45,20 @@ constructor(private val logRouter: LogRouter,
 
     override fun hasSubscription(): Boolean = logRouter.hasSubscription()
 
-    private fun listenedTo(block: () -> Unit) {
-        block()
-        replicatorStateListener.replicatorStateChanged(replicatorState)
-    }
-
     inner class ReplicatorMessageObserver
     constructor(private val remoteEventLogObserver: Observer<RemoteEventLog>) : Observer<ReplicatorMessage> {
-        override fun observe(observable: ReplicatorMessage) = synchronized(this@DefaultLogDispatcher) { listenedTo {
-            updateClient(remoteEventLogObserver, observable)
-            updateState(observable)
-        }}
+        override fun observe(observable: ReplicatorMessage) = synchronized(this@DefaultLogDispatcher) {
+            updateClientAndState(remoteEventLogObserver, observable)
+        }
 
-        private fun updateClient(observer: Observer<RemoteEventLog>, message: ReplicatorMessage) {
+        private fun updateClientAndState(remoteEventLogObserver: Observer<RemoteEventLog>, message: ReplicatorMessage) {
+            updateClient(remoteEventLogObserver, message)
+            updateState(message)
+        }
+
+        private fun updateClient(remoteEventLogObserver: Observer<RemoteEventLog>, message: ReplicatorMessage) {
             replicatorState.getMissingEventLogs(localNode, message.eventLogs)
-                    .forEach { observer.observe(it) }
+                    .forEach { remoteEventLogObserver.observe(it) }
         }
 
         private fun updateState(message: ReplicatorMessage) {

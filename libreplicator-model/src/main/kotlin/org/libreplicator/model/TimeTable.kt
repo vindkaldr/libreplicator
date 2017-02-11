@@ -24,16 +24,7 @@ import com.google.common.collect.ImmutableTable
 import com.google.common.collect.Table
 import java.lang.Math.max
 
-data class TimeTable private constructor(private val table: Table<String, String, Long>) {
-    companion object {
-        val EMPTY = TimeTable(HashBasedTable.create())
-
-        fun copy(timeTable: TimeTable) = timeTable.copy(table = HashBasedTable.create(timeTable.table))
-    }
-
-    constructor(expectedNumberOfNodes: Int = 10) :
-        this(HashBasedTable.create<String, String, Long>(expectedNumberOfNodes, expectedNumberOfNodes))
-
+data class TimeTable(private val table: Table<String, String, Long> = HashBasedTable.create()) {
     operator fun get(sourceNodeId: String, targetNodeId: String) = synchronized(this) {
         table.get(sourceNodeId, targetNodeId) ?: 0
     }

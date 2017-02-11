@@ -15,11 +15,6 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.interactor.api
-
-import org.libreplicator.model.ReplicatorState
-
-interface ReplicatorStateListener {
-    fun replicatorStateChanged(replicatorState: ReplicatorState) {
-    }
+dependencies {
+    compile project(':libreplicator-model')
 }

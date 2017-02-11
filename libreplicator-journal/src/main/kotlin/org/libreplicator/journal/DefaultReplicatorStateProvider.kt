@@ -17,18 +17,18 @@
 
 package org.libreplicator.journal
 
+import org.libreplicator.api.Observer
 import org.libreplicator.api.ReplicatorNode
-import org.libreplicator.interactor.api.ReplicatorStateListener
-import org.libreplicator.interactor.api.ReplicatorStateProvider
+import org.libreplicator.journal.api.ReplicatorStateProvider
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.model.ReplicatorState
 import java.nio.file.Path
 
-class JournalHandler
+class DefaultReplicatorStateProvider
 constructor(private val journalsDirectory: Path,
             private val fileHandler: FileHandler,
-            private val jsonMapper: JsonMapper) : ReplicatorStateProvider, ReplicatorStateListener {
+            private val jsonMapper: JsonMapper) : ReplicatorStateProvider {
     private companion object {
         val JOURNAL_FILE_NAME = "libreplicator-journal"
         val LATEST_JOURNAL_FILE_NAME = "latest-libreplicator-journal"
@@ -46,23 +46,21 @@ constructor(private val journalsDirectory: Path,
         latestJournalFile = journalFile.resolveSibling(LATEST_JOURNAL_FILE_NAME)
     }
 
-    override fun getInitialState(): ReplicatorState {
-        if (!fileHandler.isExists(latestJournalFile)) {
-            return ReplicatorState.copy(ReplicatorState.EMPTY)
-        }
-
-        fileHandler.readAllLines(latestJournalFile).reversed().forEach { line ->
+    override fun getReplicatorState(): ReplicatorState {
+        if (fileHandler.isExists(latestJournalFile)) {
             try {
-                return jsonMapper.read(line, ReplicatorState::class)
+                val state = jsonMapper.read(fileHandler.readFirstLine(latestJournalFile), ReplicatorState::class)
+                state.bind(ReplicatorStateObserver())
+                return state
             }
             catch (jsonReadException: JsonReadException) {
                 // Go to the next line.
             }
         }
-        return ReplicatorState.copy(ReplicatorState.EMPTY)
+        return ReplicatorState()
     }
 
-    override fun replicatorStateChanged(replicatorState: ReplicatorState) {
+    fun replicatorStateChanged(replicatorState: ReplicatorState) {
         fileHandler.createFile(journalDirectory, journalFile)
         fileHandler.write(journalFile, jsonMapper.write(replicatorState))
         fileHandler.move(journalFile, latestJournalFile)
@@ -70,4 +68,11 @@ constructor(private val journalsDirectory: Path,
 
     private fun createJournalDirectoryName(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>): String =
             "${localNode.nodeId}:${remoteNodes.map { it.nodeId }.joinToString(":")}"
+
+    inner class ReplicatorStateObserver : Observer<ReplicatorState> {
+        override fun observe(observable: ReplicatorState) {
+            replicatorStateChanged(observable)
+        }
+
+    }
 }

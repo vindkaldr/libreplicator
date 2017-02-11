@@ -32,10 +32,10 @@ class DefaultJsonMapperTest {
         private val EVENT_LOG = EventLog("nodeId", 5L, "log")
         private val SERIALIZED_EVENT_LOG = "{\"nodeId\":\"nodeId\",\"time\":5,\"log\":\"log\"}"
 
-        private val REPLICATOR_MESSAGE = ReplicatorMessage("nodeId", listOf(), TimeTable.EMPTY)
+        private val REPLICATOR_MESSAGE = ReplicatorMessage("nodeId", listOf(), TimeTable())
         private val SERIALIZED_REPLICATOR_MESSAGE = "{\"nodeId\":\"nodeId\",\"eventLogs\":[],\"timeTable\":[]}"
 
-        private val REPLICATOR_STATE = ReplicatorState(mutableSetOf(), TimeTable.EMPTY)
+        private val REPLICATOR_STATE = ReplicatorState(mutableSetOf(), TimeTable())
         private val SERIALIZED_REPLICATOR_STATE = "{\"logs\":[],\"timeTable\":[]}"
     }
 

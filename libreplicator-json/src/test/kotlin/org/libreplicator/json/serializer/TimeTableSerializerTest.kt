@@ -43,14 +43,14 @@ class TimeTableSerializerTest {
 
     @Test
     fun serializer_shouldWriteEmptyTimeTable() {
-        val timeTable = TimeTable(3)
+        val timeTable = TimeTable()
 
         assertThat(objectMapper.writeValueAsString(timeTable), equalTo("[]"))
     }
 
     @Test
     fun serializer_shouldNotWriteZeroValues() {
-        val timeTable = TimeTable(3)
+        val timeTable = TimeTable()
         timeTable[NODE_1, NODE_2] = 0L
 
         assertThat(objectMapper.writeValueAsString(timeTable), equalTo("[]"))
@@ -58,7 +58,7 @@ class TimeTableSerializerTest {
 
     @Test
     fun serializer_shouldWriteTimeTable() {
-        val timeTable = TimeTable(3)
+        val timeTable = TimeTable()
         timeTable[NODE_1, NODE_2] = 2L
         timeTable[NODE_1, NODE_3] = 3L
         timeTable[NODE_2, NODE_3] = 5L

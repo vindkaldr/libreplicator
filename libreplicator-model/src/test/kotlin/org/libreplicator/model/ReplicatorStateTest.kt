@@ -42,7 +42,7 @@ class ReplicatorStateTest {
 
     @Test
     fun getNodesWithMissingEventLogs_shouldReturnNodesWithEventLogsTheyDoNotHave() {
-        val timeTable = TimeTable(3)
+        val timeTable = TimeTable()
         timeTable[NODE_1_ID, NODE_1_ID] = 5
         timeTable[NODE_1_ID, NODE_2_ID] = 0
         timeTable[NODE_1_ID, NODE_3_ID] = 1
@@ -69,7 +69,7 @@ class ReplicatorStateTest {
 
     @Test
     fun getMissingEventLogs_shouldReturnEventLogsThatNodeDoesNotHave() {
-        val timeTable = TimeTable(3)
+        val timeTable = TimeTable()
         timeTable[NODE_1_ID, NODE_2_ID] = 4
         timeTable[NODE_1_ID, NODE_3_ID] = 2
 

@@ -97,9 +97,9 @@ class ReplicatorIntegrationTest {
 
     @Test
     fun replicator_shouldReplicateLogsBetweenNodes() {
-        replicate(replicator1, localEventLogFactory, LOG_1_1)
-        replicate(replicator2, localEventLogFactory, LOG_2_1)
-        replicate(replicator3, localEventLogFactory, LOG_3_1)
+        replicate(replicator1, LOG_1_1)
+        replicate(replicator2, LOG_2_1)
+        replicate(replicator3, LOG_3_1)
 
         subscription1.unsubscribe()
         subscription1 = replicator1.subscribe(mockLogObserver1)
@@ -110,16 +110,16 @@ class ReplicatorIntegrationTest {
         subscription3.unsubscribe()
         subscription3 = replicator3.subscribe(mockLogObserver3)
 
-        replicate(replicator1, localEventLogFactory, LOG_1_2)
-        replicate(replicator2, localEventLogFactory, LOG_2_2)
-        replicate(replicator3, localEventLogFactory, LOG_3_2)
+        replicate(replicator1, LOG_1_2)
+        replicate(replicator2, LOG_2_2)
+        replicate(replicator3, LOG_3_2)
 
         verifyLogObserverAndAssertLogs(mockLogObserver1, LOG_2_1, LOG_3_1, LOG_2_2, LOG_3_2)
         verifyLogObserverAndAssertLogs(mockLogObserver2, LOG_1_1, LOG_3_1, LOG_1_2, LOG_3_2)
         verifyLogObserverAndAssertLogs(mockLogObserver3, LOG_1_1, LOG_2_1, LOG_1_2, LOG_2_2)
     }
 
-    private fun replicate(replicator: Replicator, localEventLogFactory: LocalEventLogFactory, vararg logs: String) {
+    private fun replicate(replicator: Replicator, vararg logs: String) {
         logs.forEach { replicator.replicate(localEventLogFactory.create(it)) }
     }
 
