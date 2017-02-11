@@ -25,10 +25,11 @@ import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.model.ReplicatorState
 import java.nio.file.Path
 
-class DefaultReplicatorStateProvider
-constructor(private val journalsDirectory: Path,
-            private val fileHandler: FileHandler,
-            private val jsonMapper: JsonMapper) : ReplicatorStateProvider {
+class DefaultReplicatorStateProvider constructor(
+        private val journalsDirectory: Path,
+        private val fileHandler: FileHandler,
+        private val jsonMapper: JsonMapper) : ReplicatorStateProvider {
+
     private companion object {
         val JOURNAL_FILE_NAME = "libreplicator-journal"
         val LATEST_JOURNAL_FILE_NAME = "latest-libreplicator-journal"
@@ -73,6 +74,5 @@ constructor(private val journalsDirectory: Path,
         override fun observe(observable: ReplicatorState) {
             replicatorStateChanged(observable)
         }
-
     }
 }

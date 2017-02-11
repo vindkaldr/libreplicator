@@ -27,11 +27,11 @@ import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.ReplicatorState
 import org.libreplicator.network.api.LogRouter
 
-class DefaultLogDispatcher
-constructor(private val logRouter: LogRouter,
-            private val replicatorState: ReplicatorState,
-            private val localNode: ReplicatorNode,
-            private val remoteNodes: List<ReplicatorNode>) : LogDispatcher {
+class DefaultLogDispatcher constructor(
+        private val logRouter: LogRouter,
+        private val replicatorState: ReplicatorState,
+        private val localNode: ReplicatorNode,
+        private val remoteNodes: List<ReplicatorNode>) : LogDispatcher {
 
     override fun dispatch(localEventLog: LocalEventLog) = synchronized(this) {
         replicatorState.addLocalEventLog(localNode, localEventLog)
