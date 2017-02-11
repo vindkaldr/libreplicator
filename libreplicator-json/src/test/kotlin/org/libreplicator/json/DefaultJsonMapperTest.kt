@@ -33,10 +33,13 @@ class DefaultJsonMapperTest {
         private val SERIALIZED_EVENT_LOG = "{\"nodeId\":\"nodeId\",\"time\":5,\"log\":\"log\"}"
 
         private val REPLICATOR_MESSAGE = ReplicatorMessage("nodeId", listOf(), TimeTable())
-        private val SERIALIZED_REPLICATOR_MESSAGE = "{\"nodeId\":\"nodeId\",\"eventLogs\":[],\"timeTable\":[]}"
+        private val SERIALIZED_REPLICATOR_MESSAGE = "{\"nodeId\":\"nodeId\",\"eventLogs\":[],\"timeTable\":{}}"
 
         private val REPLICATOR_STATE = ReplicatorState(mutableSetOf(), TimeTable())
-        private val SERIALIZED_REPLICATOR_STATE = "{\"logs\":[],\"timeTable\":[]}"
+        private val SERIALIZED_REPLICATOR_STATE = "{\"logs\":[],\"timeTable\":{}}"
+
+        private val TIME_TABLE = TimeTable(mutableMapOf("nodeId1" to mutableMapOf("nodeId2" to 2L)))
+        private val SERIALIZED_TIME_TABLE = "{\"nodeId1\":{\"nodeId2\":2}}"
     }
 
     private lateinit var jsonMapper: JsonMapper
@@ -74,5 +77,15 @@ class DefaultJsonMapperTest {
     @Test
     fun read_shouldDeserializeReplicatorState() {
         assertThat(jsonMapper.read(SERIALIZED_REPLICATOR_STATE, ReplicatorState::class), equalTo(REPLICATOR_STATE))
+    }
+
+    @Test
+    fun write_shouldSerializeTimeTable() {
+        assertThat(jsonMapper.write(TIME_TABLE), equalTo(SERIALIZED_TIME_TABLE))
+    }
+
+    @Test
+    fun read_shouldDeserializeTimeTable() {
+        assertThat(jsonMapper.read(SERIALIZED_TIME_TABLE, TimeTable::class), equalTo(TIME_TABLE))
     }
 }

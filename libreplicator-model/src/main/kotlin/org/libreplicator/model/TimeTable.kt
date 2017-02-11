@@ -17,54 +17,42 @@
 
 package org.libreplicator.model
 
-import com.google.common.collect.HashBasedTable
-import com.google.common.collect.ImmutableMap.copyOf
-import com.google.common.collect.ImmutableSet.copyOf
-import com.google.common.collect.ImmutableTable
-import com.google.common.collect.Table
 import java.lang.Math.max
 
-data class TimeTable(private val table: Table<String, String, Long> = HashBasedTable.create()) {
-    operator fun get(sourceNodeId: String, targetNodeId: String) = synchronized(this) {
-        table.get(sourceNodeId, targetNodeId) ?: 0
+data class TimeTable(private val table: MutableMap<String, MutableMap<String, Long>> = mutableMapOf()) {
+    operator fun get(sourceNodeId: String, targetNodeId: String): Long = synchronized(this) {
+        return table.getOrElse(sourceNodeId, { mapOf<String, Long>() })
+                .getOrElse(targetNodeId, { 0 })
     }
 
     operator fun set(sourceNodeId: String, targetNodeId: String, time: Long) = synchronized(this) {
-        if (time > 0L) {
-            table.put(sourceNodeId, targetNodeId, time)
+        if (time > 0) {
+            table.getOrPut(sourceNodeId, { mutableMapOf() }).put(targetNodeId, time)
         }
     }
 
     fun mergeRow(sourceNodeId: String, timeTable: TimeTable, targetNodeId: String) = synchronized(this) {
-        val sourceRow = copyOf(table.row(sourceNodeId))
-        val targetRow = copyOf(timeTable.table.row(targetNodeId))
-        val allColumnKeys = copyOf(sourceRow.keys) + copyOf(targetRow.keys)
+        val sourceRow = table.getOrElse(sourceNodeId, { mutableMapOf() })
+        val targetRow = timeTable.table.getOrElse(targetNodeId, { mutableMapOf() })
 
-        allColumnKeys.forEach { columnKey ->
-            val maxTime = max(sourceRow[columnKey] ?: 0, targetRow[columnKey] ?: 0)
-
-            if (maxTime > 0) {
-                table.put(sourceNodeId, columnKey, maxTime)
-            }
+        sourceRow.keys + targetRow.keys.forEach {
+            val maxValue = max(sourceRow.getOrElse(it, { 0 }), targetRow.getOrElse(it, { 0 }))
+            sourceRow.put(it, maxValue)
         }
     }
 
     fun merge(timeTable: TimeTable) = synchronized(this) {
-        val rowKeys = copyOf(table.rowKeySet()) + copyOf(timeTable.table.rowKeySet())
-        val columnKeys = copyOf(table.columnKeySet()) + copyOf(timeTable.table.columnKeySet())
+        val rowKeys2 = table.keys + timeTable.table.keys
+        val columnKeys2 = (table.values.map { it.keys } + timeTable.table.values.map { it.keys }).flatten()
 
-        rowKeys.forEach { rowKey ->
-            columnKeys.forEach { columnKey ->
-                val maxTime = max(table.get(rowKey, columnKey) ?: 0, timeTable.table.get(rowKey, columnKey) ?: 0)
-
-                if (maxTime > 0) {
-                    table.put(rowKey, columnKey, maxTime)
-                }
+        rowKeys2.forEach { rowKey ->
+            columnKeys2.forEach { columnKey ->
+                val maxValue = Math.max(get(rowKey, columnKey), timeTable[rowKey, columnKey])
+                set(rowKey, columnKey, maxValue)
             }
         }
     }
 
-    fun copy(): Table<String, String, Long> = synchronized(this) {
-        ImmutableTable.copyOf(table)
-    }
+    // Do not change or call. It's here for serialization/deserialization purposes.
+    private fun getTable() = table
 }

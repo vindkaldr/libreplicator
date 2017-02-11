@@ -15,8 +15,9 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.json.deserializer
+package org.libreplicator.json.mixin
 
-import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.annotation.JsonAnyGetter
+import com.fasterxml.jackson.annotation.JsonIgnore
 
-class ExpectedLongException(message: String) : JsonProcessingException(message)
+class TimeTableMixin(@JsonIgnore @get:JsonAnyGetter val table: Map<String, Map<String, Long>> = mapOf())
