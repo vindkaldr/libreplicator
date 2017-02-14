@@ -40,7 +40,7 @@ class FileHandler {
         return createDirectory(parentPath.resolve(directoryName))
     }
 
-    fun createDirectory(path: Path): Path {
+    private fun createDirectory(path: Path): Path {
         path.toFile().mkdirs()
         return path
     }

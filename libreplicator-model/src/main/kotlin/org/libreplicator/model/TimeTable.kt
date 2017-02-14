@@ -31,9 +31,14 @@ data class TimeTable(private val table: MutableMap<String, MutableMap<String, Lo
         }
     }
 
-    fun mergeRow(sourceNodeId: String, timeTable: TimeTable, targetNodeId: String) = synchronized(this) {
-        val sourceRow = table.getOrElse(sourceNodeId, { mutableMapOf() })
-        val targetRow = timeTable.table.getOrElse(targetNodeId, { mutableMapOf() })
+    fun merge(sourceNodeId: String, message: ReplicatorMessage) = synchronized(this) {
+        mergeRow(sourceNodeId, message)
+        merge(message)
+    }
+
+    private fun mergeRow(sourceNodeId: String, message: ReplicatorMessage) = synchronized(this) {
+        val sourceRow = table.getOrPut(sourceNodeId, { mutableMapOf() })
+        val targetRow = message.timeTable.table.getOrPut(message.nodeId, { mutableMapOf() })
 
         sourceRow.keys + targetRow.keys.forEach {
             val maxValue = max(sourceRow.getOrElse(it, { 0 }), targetRow.getOrElse(it, { 0 }))
@@ -41,13 +46,13 @@ data class TimeTable(private val table: MutableMap<String, MutableMap<String, Lo
         }
     }
 
-    fun merge(timeTable: TimeTable) = synchronized(this) {
-        val rowKeys2 = table.keys + timeTable.table.keys
-        val columnKeys2 = (table.values.map { it.keys } + timeTable.table.values.map { it.keys }).flatten()
+    private fun merge(message: ReplicatorMessage) = synchronized(this) {
+        val rowKeys2 = table.keys + message.timeTable.table.keys
+        val columnKeys2 = (table.values.map { it.keys } + message.timeTable.table.values.map { it.keys }).flatten()
 
         rowKeys2.forEach { rowKey ->
             columnKeys2.forEach { columnKey ->
-                val maxValue = Math.max(get(rowKey, columnKey), timeTable[rowKey, columnKey])
+                val maxValue = max(get(rowKey, columnKey), message.timeTable[rowKey, columnKey])
                 set(rowKey, columnKey, maxValue)
             }
         }

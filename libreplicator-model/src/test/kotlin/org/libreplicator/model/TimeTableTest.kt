@@ -47,7 +47,25 @@ class TimeTableTest {
     }
 
     @Test
-    fun mergeRow_shouldMergeTargetRowIntoSourceRowStoringTheLargestValue() {
+    fun merge_shouldMergeTimeTablesWithFewEntries() {
+        val timeTable2 = TimeTable()
+        timeTable2[NODE_2, NODE_2] = 10L
+
+        timeTable.merge(NODE_1, ReplicatorMessage(NODE_2, listOf(), timeTable2))
+
+        assertThat(timeTable[NODE_1, NODE_1], equalTo(0L))
+        assertThat(timeTable[NODE_1, NODE_2], equalTo(10L))
+        assertThat(timeTable[NODE_1, NODE_3], equalTo(0L))
+        assertThat(timeTable[NODE_2, NODE_1], equalTo(0L))
+        assertThat(timeTable[NODE_2, NODE_2], equalTo(10L))
+        assertThat(timeTable[NODE_2, NODE_3], equalTo(0L))
+        assertThat(timeTable[NODE_3, NODE_1], equalTo(0L))
+        assertThat(timeTable[NODE_3, NODE_2], equalTo(0L))
+        assertThat(timeTable[NODE_3, NODE_3], equalTo(0L))
+    }
+
+    @Test
+    fun merge_shouldMergeTimeTablesWithEntries() {
         timeTable[NODE_1, NODE_1] = 42L
         timeTable[NODE_1, NODE_2] = 2L
         timeTable[NODE_1, NODE_3] = 12L
@@ -62,40 +80,15 @@ class TimeTableTest {
         timeTable2[NODE_1, NODE_3] = 7L
         timeTable2[NODE_3, NODE_1] = 14L
 
-        timeTable.mergeRow(NODE_1, timeTable2, NODE_2)
+        timeTable.merge(NODE_1, ReplicatorMessage(NODE_2, listOf(), timeTable2))
 
         assertThat(timeTable[NODE_1, NODE_1], equalTo(42L))
         assertThat(timeTable[NODE_1, NODE_2], equalTo(10L))
         assertThat(timeTable[NODE_1, NODE_3], equalTo(12L))
-        assertThat(timeTable[NODE_2, NODE_1], equalTo(6L))
-        assertThat(timeTable[NODE_2, NODE_2], equalTo(0L))
-        assertThat(timeTable[NODE_2, NODE_3], equalTo(0L))
-        assertThat(timeTable[NODE_3, NODE_1], equalTo(8L))
-        assertThat(timeTable[NODE_3, NODE_2], equalTo(0L))
-        assertThat(timeTable[NODE_3, NODE_3], equalTo(0L))
-    }
-
-    @Test
-    fun merge_shouldMergeCellWiseStoringTheLargestValue() {
-        timeTable[NODE_1, NODE_2] = 2L
-        timeTable[NODE_1, NODE_3] = 3L
-        timeTable[NODE_2, NODE_1] = 6L
-
-        val timeTable2 = TimeTable()
-        timeTable2[NODE_1, NODE_2] = 4L
-        timeTable2[NODE_1, NODE_3] = 1L
-        timeTable2[NODE_2, NODE_1] = 4L
-        timeTable2[NODE_3, NODE_1] = 2L
-
-        timeTable.merge(timeTable2)
-
-        assertThat(timeTable[NODE_1, NODE_1], equalTo(0L))
-        assertThat(timeTable[NODE_1, NODE_2], equalTo(4L))
-        assertThat(timeTable[NODE_1, NODE_3], equalTo(3L))
-        assertThat(timeTable[NODE_2, NODE_1], equalTo(6L))
-        assertThat(timeTable[NODE_2, NODE_2], equalTo(0L))
-        assertThat(timeTable[NODE_2, NODE_2], equalTo(0L))
-        assertThat(timeTable[NODE_3, NODE_1], equalTo(2L))
+        assertThat(timeTable[NODE_2, NODE_1], equalTo(9L))
+        assertThat(timeTable[NODE_2, NODE_2], equalTo(10L))
+        assertThat(timeTable[NODE_2, NODE_3], equalTo(3L))
+        assertThat(timeTable[NODE_3, NODE_1], equalTo(14L))
         assertThat(timeTable[NODE_3, NODE_2], equalTo(0L))
         assertThat(timeTable[NODE_3, NODE_3], equalTo(0L))
     }

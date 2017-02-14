@@ -55,10 +55,12 @@ class DefaultReplicatorStateProvider constructor(
                 return state
             }
             catch (jsonReadException: JsonReadException) {
-                // Go to the next line.
+                // Skip to default return value.
             }
         }
-        return ReplicatorState()
+        val state = ReplicatorState()
+        state.bind(ReplicatorStateObserver())
+        return state
     }
 
     fun replicatorStateChanged(replicatorState: ReplicatorState) {

@@ -21,7 +21,7 @@ import com.nhaarman.mockito_kotlin.argumentCaptor
 import com.nhaarman.mockito_kotlin.timeout
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
-import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder
 import org.junit.After
 import org.junit.Assert.assertThat
 import org.junit.Before
@@ -127,7 +127,8 @@ class ReplicatorIntegrationTest {
         val argumentCaptor = argumentCaptor<RemoteEventLog>()
 
         verify(mockLogObserver, timeout(TIMEOUT_IN_MILLIS).times(logs.size)).observe(argumentCaptor.capture())
-        assertThat(argumentCaptor.allValues.map { it.log }, equalTo(listOf(*logs)))
+        assertThat(argumentCaptor.allValues.map { it.log }, containsInAnyOrder(*logs))
+
         verifyNoMoreInteractions(mockLogObserver)
     }
 }

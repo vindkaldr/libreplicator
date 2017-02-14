@@ -61,8 +61,7 @@ data class ReplicatorState constructor(
 
     fun updateFromMessage(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>, message: ReplicatorMessage) {
         logs.addAll(message.eventLogs)
-        timeTable.mergeRow(localNode.nodeId, message.timeTable, message.nodeId)
-        timeTable.merge(message.timeTable)
+        timeTable.merge(localNode.nodeId, message)
 
         val logsToRemove = getDistributedEventLogs(remoteNodes)
         logs.removeAll(logsToRemove)
