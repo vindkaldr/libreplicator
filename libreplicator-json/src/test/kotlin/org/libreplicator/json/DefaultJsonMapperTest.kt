@@ -29,6 +29,8 @@ import org.libreplicator.model.TimeTable
 
 class DefaultJsonMapperTest {
     private companion object {
+        private val EMPTY_JSON_OBJECT = "{}"
+
         private val EVENT_LOG = EventLog("nodeId", 5L, "log")
         private val SERIALIZED_EVENT_LOG = "{\"nodeId\":\"nodeId\",\"time\":5,\"log\":\"log\"}"
 
@@ -72,6 +74,11 @@ class DefaultJsonMapperTest {
     @Test
     fun write_shouldSerializeReplicatorState() {
         assertThat(jsonMapper.write(REPLICATOR_STATE), equalTo(SERIALIZED_REPLICATOR_STATE))
+    }
+
+    @Test
+    fun read_shouldDeserializeEmptyReplicatorState() {
+        assertThat(jsonMapper.read(EMPTY_JSON_OBJECT, ReplicatorState::class), equalTo(REPLICATOR_STATE))
     }
 
     @Test

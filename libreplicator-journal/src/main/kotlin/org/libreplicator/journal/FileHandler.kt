@@ -23,9 +23,14 @@ import java.nio.file.StandardCopyOption
 import java.nio.file.StandardOpenOption
 
 class FileHandler {
+    fun createDirectory(parentPath: Path, directoryName: String): Path {
+        val directoryPath = parentPath.resolve(directoryName)
+        directoryPath.toFile().mkdirs()
+        return directoryPath
+    }
+
     fun readFirstLine(path: Path): String {
         val allLines = Files.readAllLines(path)
-
         if (allLines.isEmpty()) {
             return "";
         }
@@ -33,29 +38,11 @@ class FileHandler {
     }
 
     fun write(path: Path, line: String) {
+        path.toFile().createNewFile()
         Files.write(path, listOf(line), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.SYNC)
     }
 
-    fun createDirectory(parentPath: Path, directoryName: String): Path {
-        return createDirectory(parentPath.resolve(directoryName))
-    }
-
-    private fun createDirectory(path: Path): Path {
-        path.toFile().mkdirs()
-        return path
-    }
-
-    fun isExists(path: Path): Boolean {
-        return path.toFile().exists()
-    }
-
-    fun createFile(parentPath: Path, path: Path): Path {
-        val filePath = parentPath.resolve(path)
-        filePath.toFile().createNewFile()
-        return filePath
-    }
-
     fun move(source: Path, destination: Path) {
-        Files.move(source, destination, StandardCopyOption.ATOMIC_MOVE)
+        Files.move(source, destination, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE)
     }
 }

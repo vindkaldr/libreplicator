@@ -23,6 +23,7 @@ import org.libreplicator.journal.api.ReplicatorStateProvider
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.model.ReplicatorState
+import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 
 class DefaultReplicatorStateProvider constructor(
@@ -48,23 +49,21 @@ class DefaultReplicatorStateProvider constructor(
     }
 
     override fun getReplicatorState(): ReplicatorState {
-        if (fileHandler.isExists(latestJournalFile)) {
-            try {
-                val state = jsonMapper.read(fileHandler.readFirstLine(latestJournalFile), ReplicatorState::class)
-                state.bind(ReplicatorStateObserver())
-                return state
-            }
-            catch (jsonReadException: JsonReadException) {
-                // Skip to default return value.
-            }
+        val state = try {
+            jsonMapper.read(fileHandler.readFirstLine(latestJournalFile), ReplicatorState::class)
         }
-        val state = ReplicatorState()
+        catch (jsonReadException: JsonReadException) {
+            ReplicatorState()
+        }
+        catch (noSuchFileException: NoSuchFileException) {
+            ReplicatorState()
+        }
+
         state.bind(ReplicatorStateObserver())
         return state
     }
 
     fun replicatorStateChanged(replicatorState: ReplicatorState) {
-        fileHandler.createFile(journalDirectory, journalFile)
         fileHandler.write(journalFile, jsonMapper.write(replicatorState))
         fileHandler.move(journalFile, latestJournalFile)
     }
