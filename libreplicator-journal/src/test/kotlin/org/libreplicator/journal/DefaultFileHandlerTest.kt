@@ -27,7 +27,7 @@ import java.nio.file.Files
 import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 
-class FileHandlerTest {
+class DefaultFileHandlerTest {
     private val FIRST_LINE = "first-line"
     private val SECOND_LINE = "second-line"
     private val NEW_LINE = "new-line"
@@ -54,7 +54,7 @@ class FileHandlerTest {
 
         notExistingDirectory = initializeNotExistingDirectory()
 
-        fileHandler = FileHandler()
+        fileHandler = DefaultFileHandler()
     }
 
     @After

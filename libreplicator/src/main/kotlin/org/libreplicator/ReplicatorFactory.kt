@@ -22,8 +22,8 @@ import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.boundary.DefaultReplicator
 import org.libreplicator.interactor.DefaultLogDispatcher
 import org.libreplicator.interactor.api.LogDispatcher
-import org.libreplicator.journal.FileHandler
-import org.libreplicator.journal.DefaultReplicatorStateProvider
+import org.libreplicator.journal.DefaultFileHandler
+import org.libreplicator.journal.DefaultReplicatorStateJournal
 import org.libreplicator.json.DefaultJsonMapper
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.model.ReplicatorState
@@ -50,15 +50,17 @@ class ReplicatorFactory(private val settings: ReplicatorSettings = ReplicatorSet
             return ReplicatorState()
         }
         val journalHandler = createJournalHandler(jsonMapper, localNode, remoteNodes)
-        return journalHandler.getReplicatorState()
+
+        val replicatorState = journalHandler.getReplicatorState()
+        replicatorState.subscribe(journalHandler)
+
+        return replicatorState
     }
 
-    fun createJournalHandler(jsonMapper: JsonMapper, localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>): DefaultReplicatorStateProvider {
+    fun createJournalHandler(jsonMapper: JsonMapper, localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>): DefaultReplicatorStateJournal {
         val journalsDirectory = createJournalsDirectory(settings.directoryOfJournals)
 
-        val journalHandler = DefaultReplicatorStateProvider(journalsDirectory, FileHandler(), jsonMapper)
-        journalHandler.init(localNode, remoteNodes)
-        return journalHandler
+        return DefaultReplicatorStateJournal(DefaultFileHandler(), jsonMapper, journalsDirectory, localNode, remoteNodes)
     }
 
     fun createJournalsDirectory(journalsDirectory: Path): Path {

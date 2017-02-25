@@ -19,37 +19,32 @@ package org.libreplicator.journal
 
 import org.libreplicator.api.Observer
 import org.libreplicator.api.ReplicatorNode
-import org.libreplicator.journal.api.ReplicatorStateProvider
+import org.libreplicator.journal.api.ReplicatorStateJournal
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.model.ReplicatorState
 import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 
-class DefaultReplicatorStateProvider constructor(
-        private val journalsDirectory: Path,
+class DefaultReplicatorStateJournal constructor(
         private val fileHandler: FileHandler,
-        private val jsonMapper: JsonMapper) : ReplicatorStateProvider {
+        private val jsonMapper: JsonMapper,
+        journalsDirectory: Path,
+        localNode: ReplicatorNode,
+        remoteNodes: List<ReplicatorNode>) : ReplicatorStateJournal, Observer<ReplicatorState> {
 
     private companion object {
-        val JOURNAL_FILE_NAME = "libreplicator-journal"
-        val LATEST_JOURNAL_FILE_NAME = "latest-libreplicator-journal"
+        private val JOURNAL_FILE_NAME = "libreplicator-journal"
+        private val LATEST_JOURNAL_FILE_NAME = "latest-libreplicator-journal"
     }
+    private val journalDirectory = fileHandler.createDirectory(journalsDirectory,
+            createJournalDirectoryName(localNode, remoteNodes))
 
-    private lateinit var journalDirectory: Path
-    private lateinit var journalFile: Path
-    private lateinit var latestJournalFile: Path
-
-    fun init(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>) {
-        val journalDirectoryName = createJournalDirectoryName(localNode, remoteNodes)
-
-        journalDirectory = fileHandler.createDirectory(journalsDirectory, journalDirectoryName)
-        journalFile = journalDirectory.resolve(JOURNAL_FILE_NAME)
-        latestJournalFile = journalFile.resolveSibling(LATEST_JOURNAL_FILE_NAME)
-    }
+    private val journalFile = journalDirectory.resolve(JOURNAL_FILE_NAME)
+    private val latestJournalFile = journalFile.resolveSibling(LATEST_JOURNAL_FILE_NAME)
 
     override fun getReplicatorState(): ReplicatorState {
-        val state = try {
+        return try {
             jsonMapper.read(fileHandler.readFirstLine(latestJournalFile), ReplicatorState::class)
         }
         catch (jsonReadException: JsonReadException) {
@@ -58,22 +53,16 @@ class DefaultReplicatorStateProvider constructor(
         catch (noSuchFileException: NoSuchFileException) {
             ReplicatorState()
         }
-
-        state.bind(ReplicatorStateObserver())
-        return state
+        catch (throwable: Throwable) {
+            ReplicatorState()
+        }
     }
 
-    fun replicatorStateChanged(replicatorState: ReplicatorState) {
-        fileHandler.write(journalFile, jsonMapper.write(replicatorState))
+    override fun observe(observable: ReplicatorState) {
+        fileHandler.write(journalFile, jsonMapper.write(observable))
         fileHandler.move(journalFile, latestJournalFile)
     }
 
     private fun createJournalDirectoryName(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>): String =
             "${localNode.nodeId}:${remoteNodes.map { it.nodeId }.joinToString(":")}"
-
-    inner class ReplicatorStateObserver : Observer<ReplicatorState> {
-        override fun observe(observable: ReplicatorState) {
-            replicatorStateChanged(observable)
-        }
-    }
 }

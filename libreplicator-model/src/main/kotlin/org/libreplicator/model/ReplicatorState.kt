@@ -23,14 +23,14 @@ import org.libreplicator.api.ReplicatorNode
 
 data class ReplicatorState constructor(
         var logs: MutableSet<EventLog> = mutableSetOf(),
-        var timeTable: TimeTable = TimeTable()) : Bindable<ReplicatorState> {
+        var timeTable: TimeTable = TimeTable()) {
 
     private var observer: Observer<ReplicatorState> = object : Observer<ReplicatorState> {
         override fun observe(observable: ReplicatorState) {
         }
     }
 
-    override fun bind(observer: Observer<ReplicatorState>) = synchronized(this) {
+    fun subscribe(observer: Observer<ReplicatorState>) = synchronized(this) {
         this.observer = observer
     }
 

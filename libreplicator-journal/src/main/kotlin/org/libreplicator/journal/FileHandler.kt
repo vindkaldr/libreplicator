@@ -17,32 +17,11 @@
 
 package org.libreplicator.journal
 
-import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.StandardCopyOption
-import java.nio.file.StandardOpenOption
 
-class FileHandler {
-    fun createDirectory(parentPath: Path, directoryName: String): Path {
-        val directoryPath = parentPath.resolve(directoryName)
-        directoryPath.toFile().mkdirs()
-        return directoryPath
-    }
-
-    fun readFirstLine(path: Path): String {
-        val allLines = Files.readAllLines(path)
-        if (allLines.isEmpty()) {
-            return "";
-        }
-        return allLines.first()
-    }
-
-    fun write(path: Path, line: String) {
-        path.toFile().createNewFile()
-        Files.write(path, listOf(line), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.SYNC)
-    }
-
-    fun move(source: Path, destination: Path) {
-        Files.move(source, destination, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE)
-    }
+interface FileHandler {
+    fun createDirectory(parentPath: Path, directoryName: String): Path
+    fun readFirstLine(path: Path): String
+    fun write(path: Path, line: String)
+    fun move(source: Path, destination: Path)
 }
