@@ -17,11 +17,19 @@
 
 package org.libreplicator.model
 
+import com.nhaarman.mockito_kotlin.verify
 import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.CoreMatchers.not
 import org.junit.Assert.assertThat
+import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.libreplicator.api.Observer
 import org.libreplicator.api.ReplicatorNode
+import org.mockito.Mock
+import org.mockito.junit.MockitoJUnitRunner
 
+@RunWith(MockitoJUnitRunner::class)
 class ReplicatorStateTest {
     private companion object {
         private val NODE_1_ID = "node1"
@@ -38,6 +46,19 @@ class ReplicatorStateTest {
         private val NODE_2_LOG_2 = "node2Log2"
         private val NODE_3_LOG_1 = "node3Log1"
         private val NODE_3_LOG_2 = "node3Log2"
+
+        val NODE_1_EVENT_LOG_1 = EventLog("", 0L, NODE_1_LOG_1)
+        val NODE_2_EVENT_LOG_1 = EventLog(NODE_2_ID, 1L, NODE_2_LOG_1)
+        val NODE_2_REPLICATOR_MESSAGE = ReplicatorMessage(NODE_2_ID, listOf(NODE_2_EVENT_LOG_1),
+                TimeTable(mutableMapOf(NODE_2_ID to mutableMapOf(NODE_2_ID to 1L))))
+    }
+
+    private lateinit var replicatorState: ReplicatorState
+    @Mock private lateinit var mockReplicatorStateObserver: Observer<ReplicatorState>
+
+    @Before
+    fun setUp() {
+        replicatorState = ReplicatorState()
     }
 
     @Test
@@ -84,5 +105,48 @@ class ReplicatorStateTest {
         val expected = listOf(node3Log2, node2Log2)
 
         assertThat(actual, equalTo(expected))
+    }
+
+    @Test
+    fun addLocalEventLog_createsAnOutgoingEventLog() {
+        replicatorState.addLocalEventLog(NODE_1, NODE_1_EVENT_LOG_1)
+
+        val remoteNodesWithMissingEventLogs = replicatorState.getNodesWithMissingEventLogs(listOf(NODE_2))
+        assertThat(remoteNodesWithMissingEventLogs.size, equalTo(1))
+
+        val missingEventLogsOfRemoteNode = remoteNodesWithMissingEventLogs[NODE_2]
+        assertThat(missingEventLogsOfRemoteNode!!.size, equalTo(1))
+
+        val missingEventLog = missingEventLogsOfRemoteNode[0]
+        assertThat(missingEventLog.nodeId, equalTo(NODE_1.nodeId))
+        assertThat(missingEventLog.time, not(equalTo(NODE_1_EVENT_LOG_1.time)))
+        assertThat(missingEventLog.log, equalTo(NODE_1_EVENT_LOG_1.log))
+    }
+
+    @Test
+    fun addLocalEventLog_notifiesReplicatorStateObserver() {
+        replicatorState.subscribe(mockReplicatorStateObserver)
+
+        replicatorState.addLocalEventLog(NODE_1, NODE_1_EVENT_LOG_1)
+
+        verify(mockReplicatorStateObserver).observe(replicatorState)
+    }
+
+    @Test
+    fun updateFromMessage_administersOutgoingEventLog() {
+        replicatorState.updateFromMessage(NODE_1, listOf(NODE_2, NODE_3), NODE_2_REPLICATOR_MESSAGE)
+
+        val missingEventLogs = replicatorState.getNodesWithMissingEventLogs(listOf(NODE_2, NODE_3))
+        assertThat(missingEventLogs.size, equalTo(1))
+        assertThat(missingEventLogs[NODE_3], equalTo(listOf(NODE_2_EVENT_LOG_1)))
+    }
+
+    @Test
+    fun updateFromMessage_notifiesReplicatorStateObserver() {
+        replicatorState.subscribe(mockReplicatorStateObserver)
+
+        replicatorState.updateFromMessage(NODE_1, listOf(NODE_2), NODE_2_REPLICATOR_MESSAGE)
+
+        verify(mockReplicatorStateObserver).observe(replicatorState)
     }
 }

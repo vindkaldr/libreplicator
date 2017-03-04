@@ -43,22 +43,6 @@ data class ReplicatorState constructor(
         observer.observe(this)
     }
 
-    private fun getCurrentTimeInMillis() : Long {
-        fun throttle() = Thread.sleep(1)
-
-        val currentTime = System.currentTimeMillis()
-        throttle()
-        return currentTime
-    }
-
-    private fun updateTimeOfNode(replicatorNode: ReplicatorNode, time: Long) {
-        timeTable[replicatorNode.nodeId, replicatorNode.nodeId] = time
-    }
-
-    private fun addLogs(vararg eventLogs: EventLog) {
-        logs.addAll(eventLogs)
-    }
-
     fun updateFromMessage(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>, message: ReplicatorMessage) {
         logs.addAll(message.eventLogs)
         timeTable.merge(localNode.nodeId, message)
@@ -78,6 +62,22 @@ data class ReplicatorState constructor(
     fun getMissingEventLogs(localNode: ReplicatorNode, eventLogs: List<EventLog> = logs.toList()): List<EventLog> =
             eventLogs.filter { !hasEventLog(localNode, it) }
                     .sortedBy { it.time }
+
+    private fun getCurrentTimeInMillis() : Long {
+        fun throttle() = Thread.sleep(1)
+
+        val currentTime = System.currentTimeMillis()
+        throttle()
+        return currentTime
+    }
+
+    private fun updateTimeOfNode(replicatorNode: ReplicatorNode, time: Long) {
+        timeTable[replicatorNode.nodeId, replicatorNode.nodeId] = time
+    }
+
+    private fun addLogs(vararg eventLogs: EventLog) {
+        logs.addAll(eventLogs)
+    }
 
     private fun getDistributedEventLogs(nodes: List<ReplicatorNode>): List<EventLog> =
             logs.filter { log ->
