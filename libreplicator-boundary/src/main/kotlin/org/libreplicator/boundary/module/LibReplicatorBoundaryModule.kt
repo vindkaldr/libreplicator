@@ -15,15 +15,14 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    compile project(':libreplicator-api')
-    compile project(':libreplicator-interactor-api')
+package org.libreplicator.boundary.module
 
-    compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion
-    compile group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
-    kapt group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
+import dagger.Binds
+import dagger.Module
+import org.libreplicator.api.Replicator
+import org.libreplicator.boundary.DefaultReplicator
 
-    testCompile group: 'junit', name: 'junit', version: junitVersion
-    testCompile group: 'com.nhaarman', name: 'mockito-kotlin', version: mockitoKotlinVersion
-    testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrestVersion
+@Module
+interface LibReplicatorBoundaryModule {
+    @Binds fun bindReplicator(defaultReplicator: DefaultReplicator): Replicator
 }

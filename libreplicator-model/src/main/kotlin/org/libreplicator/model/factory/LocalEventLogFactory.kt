@@ -15,15 +15,11 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    compile project(':libreplicator-api')
-    compile project(':libreplicator-interactor-api')
+package org.libreplicator.model.factory
 
-    compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion
-    compile group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
-    kapt group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
+import org.libreplicator.api.LocalEventLog
+import org.libreplicator.model.EventLog
 
-    testCompile group: 'junit', name: 'junit', version: junitVersion
-    testCompile group: 'com.nhaarman', name: 'mockito-kotlin', version: mockitoKotlinVersion
-    testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrestVersion
+class LocalEventLogFactory {
+    fun create(log: String): LocalEventLog = EventLog("", 0L, log)
 }

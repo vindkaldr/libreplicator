@@ -24,9 +24,10 @@ import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.json.api.JsonWriteException
 import org.libreplicator.json.mixin.TimeTableMixin
 import org.libreplicator.model.TimeTable
+import javax.inject.Inject
 import kotlin.reflect.KClass
 
-class DefaultJsonMapper : JsonMapper {
+class DefaultJsonMapper @Inject constructor() : JsonMapper {
     private companion object {
         private val objectMapper = jacksonObjectMapper()
                 .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)

@@ -17,9 +17,6 @@
 
 package org.libreplicator
 
-import org.libreplicator.api.LocalEventLog
-import org.libreplicator.model.EventLog
+import org.libreplicator.journal.module.LibReplicatorJournalSettings
 
-class LocalEventLogFactory {
-    fun create(log: String): LocalEventLog = EventLog("", 0L, log)
-}
+class LibReplicatorSettings(val journalSettings: LibReplicatorJournalSettings = LibReplicatorJournalSettings())

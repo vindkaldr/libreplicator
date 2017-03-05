@@ -48,9 +48,7 @@ class ReplicatorIntegrationTest {
         private val TIMEOUT_IN_MILLIS = 3000L
     }
 
-    private lateinit var replicatorFactory: ReplicatorFactory
-    private lateinit var replicatorNodeFactory: ReplicatorNodeFactory
-    private lateinit var localEventLogFactory: LocalEventLogFactory
+    private lateinit var libReplicatorFactory: LibReplicatorFactory
 
     private lateinit var node1: ReplicatorNode
     private lateinit var node2: ReplicatorNode
@@ -70,21 +68,19 @@ class ReplicatorIntegrationTest {
 
     @Before
     fun setUp() {
-        replicatorFactory = ReplicatorFactory()
-        replicatorNodeFactory = ReplicatorNodeFactory()
-        localEventLogFactory = LocalEventLogFactory()
+        libReplicatorFactory = LibReplicatorFactory()
 
-        node1 = replicatorNodeFactory.create("nodeId1", "localhost", 12345)
-        node2 = replicatorNodeFactory.create("nodeId2", "localhost", 12346)
-        node3 = replicatorNodeFactory.create("nodeId3", "localhost", 12347)
+        node1 = libReplicatorFactory.createReplicatorNode("nodeId1", "localhost", 12345)
+        node2 = libReplicatorFactory.createReplicatorNode("nodeId2", "localhost", 12346)
+        node3 = libReplicatorFactory.createReplicatorNode("nodeId3", "localhost", 12347)
 
-        replicator1 = replicatorFactory.create(node1, listOf(node2, node3))
+        replicator1 = libReplicatorFactory.createReplicator(node1, listOf(node2, node3))
         subscription1 = replicator1.subscribe(mockLogObserver1)
 
-        replicator2 = replicatorFactory.create(node2, listOf(node1, node3))
+        replicator2 = libReplicatorFactory.createReplicator(node2, listOf(node1, node3))
         subscription2 = replicator2.subscribe(mockLogObserver2)
 
-        replicator3 = replicatorFactory.create(node3, listOf(node1, node2))
+        replicator3 = libReplicatorFactory.createReplicator(node3, listOf(node1, node2))
         subscription3 = replicator3.subscribe(mockLogObserver3)
     }
 
@@ -120,7 +116,7 @@ class ReplicatorIntegrationTest {
     }
 
     private fun replicate(replicator: Replicator, vararg logs: String) {
-        logs.forEach { replicator.replicate(localEventLogFactory.create(it)) }
+        logs.forEach { replicator.replicate(libReplicatorFactory.createLocalEventLog(it)) }
     }
 
     private fun verifyLogObserverAndAssertLogs(mockLogObserver: Observer<RemoteEventLog>, vararg logs: String) {

@@ -32,10 +32,14 @@ import java.net.DatagramSocket
 import java.net.InetSocketAddress
 import java.net.SocketException
 import java.net.UnknownHostException
+import javax.inject.Inject
 import kotlin.concurrent.thread
 
-class DefaultLogRouter(private val jsonMapper: JsonMapper, private val localNode: ReplicatorNode) : LogRouter {
-    companion object {
+class DefaultLogRouter @Inject constructor(
+        private val jsonMapper: JsonMapper,
+        private val localNode: ReplicatorNode) : LogRouter {
+
+    private companion object {
         private val logger = LoggerFactory.getLogger(DefaultLogRouter::class.java)
         private val BUFFER_SIZE_IN_BYTES = 1024 * 1024
     }

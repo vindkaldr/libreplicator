@@ -15,11 +15,24 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator
+package org.libreplicator.interactor.module
 
+import dagger.Module
+import dagger.Provides
 import org.libreplicator.api.ReplicatorNode
-import org.libreplicator.model.EventNode
+import org.libreplicator.interactor.DefaultLogDispatcher
+import org.libreplicator.interactor.api.LogDispatcher
+import org.libreplicator.model.ReplicatorState
+import org.libreplicator.network.api.LogRouter
+import javax.inject.Singleton
 
-class ReplicatorNodeFactory {
-    fun create(nodeId: String, url: String, port: Int): ReplicatorNode = EventNode(nodeId, url, port)
+@Module
+class LibReplicatorInteractorModule(
+        private val localNode: ReplicatorNode,
+        private val remoteNodes: List<ReplicatorNode>) {
+
+    @Provides @Singleton
+    fun provideLogDispatcher(logRouter: LogRouter, replicatorState: ReplicatorState): LogDispatcher {
+        return DefaultLogDispatcher(logRouter, replicatorState, localNode, remoteNodes)
+    }
 }

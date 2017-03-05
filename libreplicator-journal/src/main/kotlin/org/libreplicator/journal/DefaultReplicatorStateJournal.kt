@@ -17,7 +17,6 @@
 
 package org.libreplicator.journal
 
-import org.libreplicator.api.Observer
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.journal.api.ReplicatorStateJournal
 import org.libreplicator.json.api.JsonMapper
@@ -25,13 +24,14 @@ import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.model.ReplicatorState
 import java.nio.file.NoSuchFileException
 import java.nio.file.Path
+import javax.inject.Inject
 
-class DefaultReplicatorStateJournal constructor(
+class DefaultReplicatorStateJournal @Inject constructor(
         private val fileHandler: FileHandler,
         private val jsonMapper: JsonMapper,
         journalsDirectory: Path,
         localNode: ReplicatorNode,
-        remoteNodes: List<ReplicatorNode>) : ReplicatorStateJournal, Observer<ReplicatorState> {
+        remoteNodes: List<ReplicatorNode>) : ReplicatorStateJournal {
 
     private companion object {
         private val JOURNAL_FILE_NAME = "libreplicator-journal"

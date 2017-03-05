@@ -17,8 +17,9 @@
 
 package org.libreplicator.journal.api
 
+import org.libreplicator.api.Observer
 import org.libreplicator.model.ReplicatorState
 
-interface ReplicatorStateJournal {
+interface ReplicatorStateJournal : Observer<ReplicatorState> {
     fun getReplicatorState(): ReplicatorState
 }

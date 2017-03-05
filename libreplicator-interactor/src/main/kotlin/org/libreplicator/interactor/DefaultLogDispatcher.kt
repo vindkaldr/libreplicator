@@ -26,8 +26,9 @@ import org.libreplicator.interactor.api.LogDispatcher
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.ReplicatorState
 import org.libreplicator.network.api.LogRouter
+import javax.inject.Inject
 
-class DefaultLogDispatcher constructor(
+class DefaultLogDispatcher @Inject constructor(
         private val logRouter: LogRouter,
         private val replicatorState: ReplicatorState,
         private val localNode: ReplicatorNode,

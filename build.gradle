@@ -24,12 +24,17 @@ subprojects {
     }
 
     apply plugin: "kotlin"
+    apply plugin: 'kotlin-kapt'
+    apply plugin: 'maven-publish'
 
     dependencies {
         compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlinVersion
     }
 
-    apply plugin: 'maven-publish'
+    sourceSets {
+        main.java.srcDirs += 'build/generated/source/kapt/main'
+        test.java.srcDirs += 'build/generated/source/kapt/test'
+    }
 
     task sourceJar(type: Jar) {
         from sourceSets.main.kotlin

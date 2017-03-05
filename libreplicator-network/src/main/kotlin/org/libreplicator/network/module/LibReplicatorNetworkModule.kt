@@ -15,18 +15,20 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator
+package org.libreplicator.network.module
 
-import java.nio.file.Path
-import java.nio.file.Paths
+import dagger.Module
+import dagger.Provides
+import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.json.api.JsonMapper
+import org.libreplicator.network.DefaultLogRouter
+import org.libreplicator.network.api.LogRouter
+import javax.inject.Singleton
 
-class ReplicatorSettings constructor(
-        val isJournalingEnabled: Boolean = false,
-        val directoryOfJournals: Path = ReplicatorSettings.getDefaultJournalsDirectorySetting()) {
-    
-    private companion object {
-        fun getDefaultJournalsDirectorySetting(): Path {
-            return Paths.get(System.getProperty("java.io.tmpdir")).resolve("libreplicator-journals")
-        }
+@Module
+class LibReplicatorNetworkModule(private val localNode: ReplicatorNode) {
+    @Provides @Singleton
+    fun provideLogRouter(jsonMapper: JsonMapper): LogRouter {
+        return DefaultLogRouter(jsonMapper, localNode)
     }
 }

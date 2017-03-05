@@ -31,6 +31,7 @@ import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteEventLog
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.api.Subscription
+import org.libreplicator.journal.module.LibReplicatorJournalSettings
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import java.nio.file.Files
@@ -55,30 +56,28 @@ class ReplicatorJournalingIntegrationTest {
         private val TIMEOUT_IN_MILLIS = 3000L
     }
 
-    private lateinit var localReplicatorSettings: ReplicatorSettings
-    private lateinit var localReplicatorFactory: ReplicatorFactory
+    private lateinit var localLibReplicatorSettings: LibReplicatorSettings
+    private lateinit var localReplicatorFactory: LibReplicatorFactory
     @Mock private lateinit var mockLocalEventLogObserver: Observer<RemoteEventLog>
     private lateinit var localReplicatorSubscription: Subscription
 
-    private lateinit var remoteReplicatorFactory: ReplicatorFactory
+    private lateinit var remoteLibReplicatorFactory: LibReplicatorFactory
     @Mock private lateinit var mockRemoteEventLogObserver: Observer<RemoteEventLog>
     private lateinit var remoteReplicatorSubscription: Subscription
-
-    private val replicatorNodeFactory = ReplicatorNodeFactory()
-    private val localEventLogFactory = LocalEventLogFactory()
 
     private lateinit var localNode: ReplicatorNode
     private lateinit var remoteNode: ReplicatorNode
 
     @Before
     fun setUp() {
-        localReplicatorSettings = ReplicatorSettings(isJournalingEnabled = true, directoryOfJournals = DIRECTORY_OF_JOURNALS)
-        localReplicatorFactory = ReplicatorFactory(localReplicatorSettings)
+        localLibReplicatorSettings = LibReplicatorSettings(
+                LibReplicatorJournalSettings(isJournalingEnabled = true, directoryOfJournals = DIRECTORY_OF_JOURNALS))
+        localReplicatorFactory = LibReplicatorFactory(localLibReplicatorSettings)
 
-        remoteReplicatorFactory = ReplicatorFactory()
+        remoteLibReplicatorFactory = LibReplicatorFactory()
 
-        localNode = replicatorNodeFactory.create(LOCAL_NODE_ID, NODE_HOST, LOCAL_NODE_PORT)
-        remoteNode = replicatorNodeFactory.create(REMOTE_NODE_ID, NODE_HOST, REMOTE_NODE_PORT)
+        localNode = localReplicatorFactory.createReplicatorNode(LOCAL_NODE_ID, NODE_HOST, LOCAL_NODE_PORT)
+        remoteNode = remoteLibReplicatorFactory.createReplicatorNode(REMOTE_NODE_ID, NODE_HOST, REMOTE_NODE_PORT)
     }
 
     @After
@@ -91,21 +90,21 @@ class ReplicatorJournalingIntegrationTest {
 
     @Test
     fun replicator_shouldKeepState_whenJournalingEnabled() {
-        var localReplicator = localReplicatorFactory.create(localNode, listOf(remoteNode))
+        var localReplicator = localReplicatorFactory.createReplicator(localNode, listOf(remoteNode))
         localReplicatorSubscription = localReplicator.subscribe(mockLocalEventLogObserver)
 
-        localReplicator.replicate(localEventLogFactory.create(FIRST_LOG))
-        localReplicator.replicate(localEventLogFactory.create(SECOND_LOG))
+        localReplicator.replicate(localReplicatorFactory.createLocalEventLog(FIRST_LOG))
+        localReplicator.replicate(localReplicatorFactory.createLocalEventLog(SECOND_LOG))
 
         localReplicatorSubscription.unsubscribe()
 
-        localReplicator = localReplicatorFactory.create(localNode, listOf(remoteNode))
+        localReplicator = localReplicatorFactory.createReplicator(localNode, listOf(remoteNode))
         localReplicatorSubscription = localReplicator.subscribe(mockLocalEventLogObserver)
 
-        val remoteReplicator = remoteReplicatorFactory.create(remoteNode, listOf(localNode))
+        val remoteReplicator = remoteLibReplicatorFactory.createReplicator(remoteNode, listOf(localNode))
         remoteReplicatorSubscription = remoteReplicator.subscribe(mockRemoteEventLogObserver)
 
-        localReplicator.replicate(localEventLogFactory.create(THIRD_LOG))
+        localReplicator.replicate(localReplicatorFactory.createLocalEventLog(THIRD_LOG))
 
         verifyLogObserverAndAssertLogs(mockRemoteEventLogObserver, FIRST_LOG, SECOND_LOG, THIRD_LOG)
     }

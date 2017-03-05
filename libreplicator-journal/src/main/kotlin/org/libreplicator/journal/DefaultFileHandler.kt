@@ -21,8 +21,9 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import java.nio.file.StandardOpenOption
+import javax.inject.Inject
 
-class DefaultFileHandler : FileHandler {
+class DefaultFileHandler @Inject constructor() : FileHandler {
     override fun createDirectory(parentPath: Path, directoryName: String): Path {
         val directoryPath = parentPath.resolve(directoryName)
         directoryPath.toFile().mkdirs()
