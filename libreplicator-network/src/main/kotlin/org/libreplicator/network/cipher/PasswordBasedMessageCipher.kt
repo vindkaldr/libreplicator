@@ -17,56 +17,74 @@
 
 package org.libreplicator.network.cipher
 
-import org.bouncycastle.crypto.PBEParametersGenerator
+import org.bouncycastle.crypto.BufferedBlockCipher
+import org.bouncycastle.crypto.CipherParameters
 import org.bouncycastle.crypto.engines.AESEngine
 import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator
 import org.bouncycastle.crypto.modes.CBCBlockCipher
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher
 import org.bouncycastle.util.encoders.Hex
-import java.nio.ByteBuffer
 
 class PasswordBasedMessageCipher {
+    private companion object {
+        private val SALT = ByteArray(0)
+        private val ITERATION_COUNT = 1024
+
+        private val KEY_SIZE = 256
+        private val INITIALIZATION_VECTOR_SIZE = 128
+
+        private val ENCRYPTION = true
+        private val DECRYPTION = false
+
+        private val ZEROTH_POSITION = 0
+    }
+
     fun encrypt(password: ByteArray, message: String): String {
-        val pbeDerivedKeyGenerator = PKCS5S2ParametersGenerator()
-        val pkcs5Password = PBEParametersGenerator.PKCS5PasswordToUTF8Bytes(Charsets.UTF_8.decode(ByteBuffer.wrap(password)).array())
-        pbeDerivedKeyGenerator.init(pkcs5Password, ByteArray(0), 1024)
+        val cipherParameters = getCipherParameters(password)
+        val cipher = getCipherForEncryption(cipherParameters)
 
-        val cipherParameters = pbeDerivedKeyGenerator.generateDerivedParameters(256, 128)
-
-        val cipher = PaddedBufferedBlockCipher(CBCBlockCipher(AESEngine()))
-        cipher.init(true, cipherParameters)
-
-        return String(Hex.encode(cipherData(cipher, message.toByteArray())))
+        return String(Hex.encode(cipherMessage(cipher, message.toByteArray())))
     }
 
     fun decrypt(password: ByteArray, encryptedMessage: String): String {
         try {
-            val pbeDerivedKeyGenerator = PKCS5S2ParametersGenerator()
-            val pkcs5Password = PBEParametersGenerator.PKCS5PasswordToUTF8Bytes(Charsets.UTF_8.decode(ByteBuffer.wrap(password)).array())
-            pbeDerivedKeyGenerator.init(pkcs5Password, ByteArray(0), 1024)
+            val cipherParameters = getCipherParameters(password)
+            val cipher = getCipherForDecryption(cipherParameters)
 
-            val cipherParameters = pbeDerivedKeyGenerator.generateDerivedParameters(256, 128)
-
-            val cipher = PaddedBufferedBlockCipher(CBCBlockCipher(AESEngine()))
-            cipher.init(false, cipherParameters)
-
-            return String(cipherData(cipher, Hex.decode(encryptedMessage.toByteArray())))
+            return String(cipherMessage(cipher, Hex.decode(encryptedMessage.toByteArray())))
         }
         catch (throwable: Throwable) {
             throw CipherException()
         }
     }
 
-    private fun cipherData(cipher: PaddedBufferedBlockCipher, data: ByteArray): ByteArray {
-        val outputBuffer = ByteArray(cipher.getOutputSize(data.size))
+    private fun getCipherParameters(password: ByteArray): CipherParameters {
+        val parametersGenerator = PKCS5S2ParametersGenerator()
+        parametersGenerator.init(password, SALT, ITERATION_COUNT)
 
-        val length1 = cipher.processBytes(data, 0, data.size, outputBuffer, 0)
-        val length2 = cipher.doFinal(outputBuffer, length1)
+        return parametersGenerator.generateDerivedParameters(KEY_SIZE, INITIALIZATION_VECTOR_SIZE)
+    }
 
-        val result = ByteArray(length1 + length2)
+    private fun getCipherForEncryption(cipherParameters: CipherParameters): BufferedBlockCipher {
+        val cipher = getCipher()
+        cipher.init(ENCRYPTION, cipherParameters)
+        return cipher
+    }
 
-        System.arraycopy(outputBuffer, 0, result, 0, result.size)
+    private fun getCipherForDecryption(cipherParameters: CipherParameters): BufferedBlockCipher {
+        val cipher = getCipher()
+        cipher.init(DECRYPTION, cipherParameters)
+        return cipher
+    }
 
-        return result
+    private fun getCipher(): BufferedBlockCipher = PaddedBufferedBlockCipher(CBCBlockCipher(AESEngine()))
+
+    private fun cipherMessage(cipher: BufferedBlockCipher, message: ByteArray): ByteArray {
+        val buffer = ByteArray(cipher.getOutputSize(message.size))
+
+        val numberOfCopiedBytes = cipher.processBytes(message, ZEROTH_POSITION, message.size, buffer, ZEROTH_POSITION)
+        val nextNumberOfCopiedBytes = cipher.doFinal(buffer, numberOfCopiedBytes)
+
+        return buffer.copyOf(numberOfCopiedBytes + nextNumberOfCopiedBytes)
     }
 }

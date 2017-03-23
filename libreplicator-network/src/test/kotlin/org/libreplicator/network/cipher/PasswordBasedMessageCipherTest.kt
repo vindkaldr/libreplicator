@@ -47,12 +47,13 @@ class PasswordBasedMessageCipherTest {
     @Test
     fun cipher_encryptsThenDecryptsMessage_withSamePassword() {
         val encryptedMessage = messageCipher.encrypt(PASSWORD, MESSAGE)
-        assertThat(messageCipher.decrypt(PASSWORD, encryptedMessage), equalTo(MESSAGE))
+        val decryptedMessage = messageCipher.decrypt(PASSWORD, encryptedMessage)
+        assertThat(decryptedMessage, equalTo(MESSAGE))
     }
 
     @Test(expected = CipherException::class)
     fun decrypt_throwsException_forCorruptedPassword() {
-        messageCipher.decrypt(CORRUPTED_PASSWORD, messageCipher.encrypt(PASSWORD, MESSAGE))
+        messageCipher.decrypt(CORRUPTED_PASSWORD, ENCRYPTED_MESSAGE)
     }
 
     @Test(expected = CipherException::class)
