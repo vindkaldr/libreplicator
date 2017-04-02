@@ -20,19 +20,18 @@ package org.libreplicator.json
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.libreplicator.json.api.JsonMapper
+import org.libreplicator.json.api.JsonMixin
 import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.json.api.JsonWriteException
-import org.libreplicator.json.mixin.TimeTableMixin
-import org.libreplicator.model.TimeTable
 import javax.inject.Inject
 import kotlin.reflect.KClass
 
-class DefaultJsonMapper @Inject constructor() : JsonMapper {
-    private companion object {
-        private val objectMapper = jacksonObjectMapper()
-                .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
-                .addMixIn(TimeTable::class.java, TimeTableMixin::class.java)
-    }
+class DefaultJsonMapper @Inject constructor(private val jsonMixins: Set<JsonMixin>) : JsonMapper {
+    private val objectMapper = jacksonObjectMapper()
+            .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
+            .apply {
+                jsonMixins.forEach { addMixIn(it.targetClass.java, it.sourceClass.java) }
+            }
 
     override fun write(any: Any): String {
         try {

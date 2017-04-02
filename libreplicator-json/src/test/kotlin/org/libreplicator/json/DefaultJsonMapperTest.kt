@@ -22,6 +22,8 @@ import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.libreplicator.json.api.JsonMapper
+import org.libreplicator.json.api.JsonMixin
+import org.libreplicator.json.mixin.TimeTableMixin
 import org.libreplicator.model.EventLog
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.ReplicatorState
@@ -48,7 +50,7 @@ class DefaultJsonMapperTest {
 
     @Before
     fun setUp() {
-        jsonMapper = DefaultJsonMapper()
+        jsonMapper = DefaultJsonMapper(setOf(JsonMixin(TimeTable::class, TimeTableMixin::class)))
     }
 
     @Test

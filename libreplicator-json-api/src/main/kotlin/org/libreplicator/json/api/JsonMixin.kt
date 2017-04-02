@@ -15,26 +15,8 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.json.module
+package org.libreplicator.json.api
 
-import dagger.Module
-import dagger.Provides
-import dagger.multibindings.IntoSet
-import org.libreplicator.json.DefaultJsonMapper
-import org.libreplicator.json.api.JsonMapper
-import org.libreplicator.json.api.JsonMixin
-import org.libreplicator.json.mixin.TimeTableMixin
-import org.libreplicator.model.TimeTable
+import kotlin.reflect.KClass
 
-@Module
-class LibReplicatorJsonModule {
-    @Provides
-    fun provideJsonMapper(jsonMixins: Set<JsonMixin>): JsonMapper {
-        return DefaultJsonMapper(jsonMixins)
-    }
-
-    @Provides @IntoSet
-    fun provideTimeTableMixin(): JsonMixin {
-        return JsonMixin(TimeTable::class, TimeTableMixin::class)
-    }
-}
+data class JsonMixin(val targetClass: KClass<*>, val sourceClass: KClass<*>)
