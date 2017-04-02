@@ -17,11 +17,32 @@
 
 package org.libreplicator.network.channel
 
+import org.libreplicator.api.AlreadySubscribedException
+import org.libreplicator.api.NotSubscribedException
 import org.libreplicator.api.Observer
 import org.libreplicator.api.Subscription
 
-interface InsecureChannel {
-    fun send(remoteUrl: String, remotePort: Int, message: String)
-    fun subscribe(observer: Observer<String>): Subscription
-    fun hasSubscription(): Boolean
+class InsecureChannelMock : InsecureChannel {
+    private var hasSubscription = false
+
+    override fun send(remoteUrl: String, remotePort: Int, message: String) {
+    }
+
+    override fun subscribe(observer: Observer<String>): Subscription {
+        if (hasSubscription) {
+            throw AlreadySubscribedException()
+        }
+        hasSubscription = true
+
+        return object : Subscription {
+            override fun unsubscribe() {
+                if (!hasSubscription) {
+                    throw NotSubscribedException()
+                }
+                hasSubscription = false
+            }
+        }
+    }
+
+    override fun hasSubscription(): Boolean = hasSubscription
 }

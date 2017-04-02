@@ -26,7 +26,7 @@ import org.libreplicator.api.AlreadySubscribedException
 import org.libreplicator.api.NotSubscribedException
 import org.libreplicator.api.Subscription
 
-class InsecureChannelIntegrationTest {
+class DefaultInsecureChannelIntegrationTest {
     private companion object {
         private val URL = "localhost"
         private val PORT = 3600
@@ -37,20 +37,20 @@ class InsecureChannelIntegrationTest {
         private val OTHER_MESSAGE = "otherMessage"
     }
 
-    private lateinit var insecureChannel: InsecureChannel
+    private lateinit var insecureChannel: DefaultInsecureChannel
     private lateinit var messageObserver: MessageObserverDummy
     private lateinit var subscription: Subscription
 
-    private lateinit var remoteInsecureChannel: InsecureChannel
+    private lateinit var remoteInsecureChannel: DefaultInsecureChannel
     private lateinit var remoteMessageObserver: MessageObserverMock
     private lateinit var remoteSubscription: Subscription
 
     @Before
     fun setUp() {
-        insecureChannel = InsecureChannel(URL, PORT)
+        insecureChannel = DefaultInsecureChannel(URL, PORT)
         messageObserver = MessageObserverDummy()
 
-        remoteInsecureChannel = InsecureChannel(REMOTE_URL, REMOTE_PORT)
+        remoteInsecureChannel = DefaultInsecureChannel(REMOTE_URL, REMOTE_PORT)
     }
 
     @After
