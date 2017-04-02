@@ -29,7 +29,7 @@ import java.net.InetSocketAddress
 import java.net.SocketException
 import kotlin.concurrent.thread
 
-open class InsecureChannel(private val localUrl: String, private val localPort: Int) {
+class InsecureChannel(private val localUrl: String, private val localPort: Int) {
     private companion object {
         private val BUFFER_SIZE_IN_BYTES = 1024 * 1024
         private val LISTENING_CHECK_INTERVAL = 250L
