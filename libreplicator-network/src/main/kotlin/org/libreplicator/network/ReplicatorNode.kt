@@ -15,11 +15,19 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network.channel
+package org.libreplicator.network
 
-import org.libreplicator.api.Observer
+import org.apache.http.client.utils.URIBuilder
+import org.libreplicator.api.ReplicatorNode
+import java.net.URI
 
-class MessageObserverDummy : Observer<String> {
-    override fun observe(observable: String) {
-    }
+private const val HTTP_SCHEME = "http"
+
+fun ReplicatorNode.toUri(path: String): URI {
+    return URIBuilder()
+            .setScheme(HTTP_SCHEME)
+            .setHost(this.url)
+            .setPort(this.port)
+            .setPath(path)
+            .build()
 }

@@ -17,119 +17,100 @@
 
 package org.libreplicator.network
 
+import org.apache.http.client.config.RequestConfig
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.client.utils.URIBuilder
+import org.apache.http.conn.ConnectTimeoutException
+import org.apache.http.conn.HttpHostConnectException
+import org.apache.http.entity.StringEntity
+import org.apache.http.impl.client.HttpClients
+import org.apache.logging.log4j.core.util.IOUtils
+import org.eclipse.jetty.server.Request
+import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.server.handler.AbstractHandler
 import org.libreplicator.api.Observer
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.api.Subscription
 import org.libreplicator.json.api.JsonMapper
-import org.libreplicator.json.api.JsonReadException
-import org.libreplicator.json.api.JsonWriteException
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.network.api.LogRouter
 import org.slf4j.LoggerFactory
 import java.lang.Thread.sleep
-import java.net.DatagramPacket
-import java.net.DatagramSocket
-import java.net.InetSocketAddress
-import java.net.SocketException
-import java.net.UnknownHostException
 import javax.inject.Inject
-import kotlin.concurrent.thread
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 class DefaultLogRouter @Inject constructor(
         private val jsonMapper: JsonMapper,
         private val localNode: ReplicatorNode) : LogRouter {
 
-    private companion object {
+    companion object {
         private val logger = LoggerFactory.getLogger(DefaultLogRouter::class.java)
-        private val BUFFER_SIZE_IN_BYTES = 1024 * 1024
     }
 
-    private lateinit var socket: DatagramSocket
+    private var subscribedTo = false
 
-    private var hasSubscription = false
-    private var listening = false
+    override fun send(remoteNode: ReplicatorNode, message: ReplicatorMessage) {
+        val remoteUri = URIBuilder()
+                .setScheme("http")
+                .setHost(remoteNode.url)
+                .setPort(remoteNode.port)
+                .setPath("/sync")
+                .build()
 
-    override fun send(remoteNode: ReplicatorNode, message: ReplicatorMessage) = synchronized(this) {
+        val httpRequestConfig = RequestConfig.custom()
+                .setConnectTimeout(1)
+                .build()
+
+        val httpPost = HttpPost(remoteUri)
+        httpPost.entity = StringEntity(jsonMapper.write(message))!!
+        httpPost.config = httpRequestConfig
+
+        val httpClient = HttpClients.createDefault()
+
         try {
-            sendMessage(message, remoteNode)
+            httpClient.use { httpClient.execute(httpPost) }
         }
-        catch (unknownHostException: UnknownHostException) {
-            logger.error(unknownHostException.message, unknownHostException)
+        catch (e: HttpHostConnectException) {
+            logger.info("Failed to connect remote node!")
         }
-        catch (jsonWriteException: JsonWriteException) {
-            logger.error(jsonWriteException.message, jsonWriteException)
+        catch (e: ConnectTimeoutException) {
+            logger.info("Failed to connect remote node!")
         }
     }
 
     override fun subscribe(messageObserver: Observer<ReplicatorMessage>): Subscription = synchronized(this) {
-        socket = DatagramSocket(localNode.port)
-        hasSubscription = true
-        startThreadForListening(messageObserver)
-        waitUntilListeningStarted()
+        val server = Server(localNode.port)
+        server.handler = MyHandler(messageObserver)
+        server.start()
+
+        while (!server.isStarted) {
+            sleep(250)
+        }
+
+        subscribedTo = true
 
         return object : Subscription {
-            override fun unsubscribe() {
-                hasSubscription = false
-                socket.close()
-                waitUntilListeningFinished()
+            override fun unsubscribe() = synchronized(this) {
+                server.stop()
+                while (!server.isStopped) {
+                    sleep(250)
+                }
+                subscribedTo = false
             }
         }
     }
 
-    override fun hasSubscription(): Boolean = synchronized(this) {
-        return hasSubscription
-    }
+    override fun hasSubscription(): Boolean = subscribedTo
 
-    private fun sendMessage(message: ReplicatorMessage, remoteNode: ReplicatorNode) {
-        fun getNodeAddress(remoteNode: ReplicatorNode) = InetSocketAddress(remoteNode.url, remoteNode.port)
-
-        val messageAsByteArray = jsonMapper.write(message).toByteArray()
-
-        val packet = DatagramPacket(messageAsByteArray, messageAsByteArray.size, getNodeAddress(remoteNode))
-        socket.send(packet)
-    }
-
-    private fun startThreadForListening(messageObserver: Observer<ReplicatorMessage>) {
-        thread {
-            listening = true
-            while (true) {
-                try {
-                    messageObserver.observe(readMessage())
-                }
-                catch (jsonReadException: JsonReadException) {
-                    logger.error(jsonReadException.message, jsonReadException)
-                }
-                catch (socketException: SocketException) {
-                    if (hasSubscription) {
-                        logger.error(socketException.message, socketException)
-                        hasSubscription = false
-                        socket.close()
-                    }
-                    break
-                }
+    inner class MyHandler(private val messageObserver: Observer<ReplicatorMessage>): AbstractHandler() {
+        override fun handle(target: String?, baseRequest: Request?, request: HttpServletRequest?, response: HttpServletResponse?) {
+            if (baseRequest?.pathInfo == "/sync") {
+                val messageAsString = IOUtils.toString(baseRequest?.getReader())
+                messageObserver.observe(jsonMapper.read(messageAsString, ReplicatorMessage::class))
+                baseRequest?.setHandled(true)
             }
-            listening = false
         }
-    }
 
-    private fun waitUntilListeningStarted() {
-        while (!listening) {
-            sleep(1000)
-        }
-    }
-
-    private fun waitUntilListeningFinished() {
-        while (listening) {
-            sleep(1000)
-        }
-    }
-
-    private fun readMessage(): ReplicatorMessage {
-        fun extractMessage(packet: DatagramPacket) = String(packet.data.copyOfRange(0, packet.length))
-
-        val packet = DatagramPacket(ByteArray(BUFFER_SIZE_IN_BYTES), BUFFER_SIZE_IN_BYTES)
-        socket.receive(packet)
-
-        return jsonMapper.read(extractMessage(packet), ReplicatorMessage::class)
     }
 }

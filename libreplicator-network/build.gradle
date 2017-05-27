@@ -26,7 +26,8 @@ dependencies {
     compile group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
     kapt group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
 
-    compile group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.56'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: httpClientVersion
+    compile group: 'org.eclipse.jetty', name: 'jetty-server', version: jettyVersion
 
     testCompile group: 'junit', name: 'junit', version: junitVersion
     testCompile group: 'com.nhaarman', name: 'mockito-kotlin', version: mockitoKotlinVersion

@@ -15,6 +15,21 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network.cipher
+package org.libreplicator.network
 
-class CipherException : Throwable()
+import org.eclipse.jetty.server.Request
+
+private const val POST_VERB = "POST"
+
+fun Request?.isPostRequest(): Boolean =
+        this != null && this.method == POST_VERB
+
+fun Request?.isRequestedPath(path: String): Boolean =
+        this != null && this.pathInfo == path
+
+fun Request?.getMessage(): String =
+        this?.reader?.readText() ?: ""
+
+fun Request?.markHandled() {
+    this?.isHandled = true
+}

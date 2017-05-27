@@ -15,13 +15,23 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network.channel
+package org.libreplicator.network
 
-import org.libreplicator.api.Observer
-import org.libreplicator.api.Subscription
+import org.eclipse.jetty.server.Server
+import java.lang.Thread.sleep
 
-interface InsecureChannel {
-    fun send(remoteUrl: String, remotePort: Int, message: String)
-    fun subscribe(observer: Observer<String>): Subscription
-    fun hasSubscription(): Boolean
+private const val CHECK_TIMEOUT_IN_MILLIS = 250L
+
+fun Server.startAndWaitUntilStarted() {
+    this.start()
+    while (!server.isStarted) {
+        sleep(CHECK_TIMEOUT_IN_MILLIS)
+    }
+}
+
+fun Server.stopAndWaitUntilStarted() {
+    this.stop()
+    while (!server.isStopped) {
+        sleep(CHECK_TIMEOUT_IN_MILLIS)
+    }
 }
