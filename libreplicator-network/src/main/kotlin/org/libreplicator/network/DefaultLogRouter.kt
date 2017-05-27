@@ -17,14 +17,12 @@
 
 package org.libreplicator.network
 
-import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.methods.HttpPost
-import org.apache.http.client.utils.URIBuilder
 import org.apache.http.conn.ConnectTimeoutException
 import org.apache.http.conn.HttpHostConnectException
 import org.apache.http.entity.StringEntity
+import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
-import org.apache.logging.log4j.core.util.IOUtils
 import org.eclipse.jetty.server.Request
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.handler.AbstractHandler
@@ -32,10 +30,10 @@ import org.libreplicator.api.Observer
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.api.Subscription
 import org.libreplicator.json.api.JsonMapper
+import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.network.api.LogRouter
 import org.slf4j.LoggerFactory
-import java.lang.Thread.sleep
 import javax.inject.Inject
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -46,30 +44,14 @@ class DefaultLogRouter @Inject constructor(
 
     companion object {
         private val logger = LoggerFactory.getLogger(DefaultLogRouter::class.java)
+        private val SYNC_PATH = "/sync"
     }
 
-    private var subscribedTo = false
+    private var hasSubscription = false
 
-    override fun send(remoteNode: ReplicatorNode, message: ReplicatorMessage) {
-        val remoteUri = URIBuilder()
-                .setScheme("http")
-                .setHost(remoteNode.url)
-                .setPort(remoteNode.port)
-                .setPath("/sync")
-                .build()
-
-        val httpRequestConfig = RequestConfig.custom()
-                .setConnectTimeout(1)
-                .build()
-
-        val httpPost = HttpPost(remoteUri)
-        httpPost.entity = StringEntity(jsonMapper.write(message))!!
-        httpPost.config = httpRequestConfig
-
-        val httpClient = HttpClients.createDefault()
-
+    override fun send(remoteNode: ReplicatorNode, message: ReplicatorMessage) = synchronized(this) {
         try {
-            httpClient.use { httpClient.execute(httpPost) }
+            serializeAndSendMessage(remoteNode, message)
         }
         catch (e: HttpHostConnectException) {
             logger.info("Failed to connect remote node!")
@@ -79,38 +61,61 @@ class DefaultLogRouter @Inject constructor(
         }
     }
 
+    private fun serializeAndSendMessage(remoteNode: ReplicatorNode, message: ReplicatorMessage) {
+        val httpClient = createHttpClient()
+        val httpPostRequest = createHttpPostRequest(remoteNode, SYNC_PATH, message)
+
+        httpClient.use { httpClient.execute(httpPostRequest) }
+    }
+
+    private fun createHttpClient(): CloseableHttpClient = HttpClients.createDefault()
+
+    private fun createHttpPostRequest(remoteNode: ReplicatorNode, path: String, message: ReplicatorMessage): HttpPost {
+        val httpPost = HttpPost(remoteNode.toUri(path))
+        httpPost.entity = StringEntity(jsonMapper.write(message))
+        return httpPost
+    }
+
     override fun subscribe(messageObserver: Observer<ReplicatorMessage>): Subscription = synchronized(this) {
-        val server = Server(localNode.port)
-        server.handler = MyHandler(messageObserver)
-        server.start()
+        val server = createServer(localNode)
+        server.handler = ReplicatorMessageHandler(jsonMapper, messageObserver)
+        server.startAndWaitUntilStarted()
 
-        while (!server.isStarted) {
-            sleep(250)
-        }
-
-        subscribedTo = true
+        hasSubscription = true
 
         return object : Subscription {
             override fun unsubscribe() = synchronized(this) {
-                server.stop()
-                while (!server.isStopped) {
-                    sleep(250)
-                }
-                subscribedTo = false
+                server.stopAndWaitUntilStarted()
+                hasSubscription = false
             }
         }
     }
 
-    override fun hasSubscription(): Boolean = subscribedTo
+    private fun createServer(localNode: ReplicatorNode): Server = Server(localNode.port)
 
-    inner class MyHandler(private val messageObserver: Observer<ReplicatorMessage>): AbstractHandler() {
+    override fun hasSubscription(): Boolean = hasSubscription
+
+    private class ReplicatorMessageHandler(
+            private val jsonMapper: JsonMapper,
+            private val messageObserver: Observer<ReplicatorMessage>) : AbstractHandler() {
+
         override fun handle(target: String?, baseRequest: Request?, request: HttpServletRequest?, response: HttpServletResponse?) {
-            if (baseRequest?.pathInfo == "/sync") {
-                val messageAsString = IOUtils.toString(baseRequest?.getReader())
-                messageObserver.observe(jsonMapper.read(messageAsString, ReplicatorMessage::class))
-                baseRequest?.setHandled(true)
+            if (baseRequest.isPostRequest() && baseRequest.isRequestedPath(SYNC_PATH)) {
+                tryDeserializeAndObserveMessage(baseRequest)
+                baseRequest.markHandled()
             }
         }
 
+        private fun tryDeserializeAndObserveMessage(baseRequest: Request?) {
+            try {
+                messageObserver.observe(deserializeMessage(baseRequest.getMessage()))
+            }
+            catch (e: JsonReadException) {
+                logger.warn("Failed to deserialize message!")
+            }
+        }
+
+        private fun deserializeMessage(message: String): ReplicatorMessage =
+                jsonMapper.read(message, ReplicatorMessage::class)
     }
 }
