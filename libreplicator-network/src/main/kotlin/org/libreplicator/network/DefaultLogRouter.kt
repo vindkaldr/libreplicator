@@ -42,7 +42,7 @@ class DefaultLogRouter @Inject constructor(
         private val jsonMapper: JsonMapper,
         private val localNode: ReplicatorNode) : LogRouter {
 
-    companion object {
+    private companion object {
         private val logger = LoggerFactory.getLogger(DefaultLogRouter::class.java)
         private val SYNC_PATH = "/sync"
     }

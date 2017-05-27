@@ -17,25 +17,18 @@
 
 package org.libreplicator.network
 
-import com.nhaarman.mockito_kotlin.timeout
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
-import com.nhaarman.mockito_kotlin.whenever
+import org.hamcrest.Matchers.equalTo
 import org.junit.After
+import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.libreplicator.api.Observer
 import org.libreplicator.api.Subscription
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.model.EventNode
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.TimeTable
 import org.libreplicator.network.api.LogRouter
-import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
 
-@RunWith(MockitoJUnitRunner::class)
 class DefaultLogRouterIntegrationTest {
     companion object {
         private val MESSAGE = ReplicatorMessage("nodeId", listOf(), TimeTable())
@@ -45,26 +38,20 @@ class DefaultLogRouterIntegrationTest {
         private val NODE_2 = EventNode("node2", "localhost", 12346)
     }
 
-    @Mock private lateinit var mockJsonMapper: JsonMapper
+    private var jsonMapperStub: JsonMapper= JsonMapperStub(MESSAGE, SERIALIZED_MESSAGE)
 
     private lateinit var logRouter1: LogRouter
-    @Mock private lateinit var mockMessageObserver1: Observer<ReplicatorMessage>
+    private lateinit var messageObserverMock1: MessageObserverMock
     private lateinit var subscription1: Subscription
 
     private lateinit var logRouter2: LogRouter
-    @Mock private lateinit var mockMessageObserver2: Observer<ReplicatorMessage>
+    private lateinit var messageObserverMock2: MessageObserverMock
     private lateinit var subscription2: Subscription
 
     @Before
     fun setUp() {
-        whenever(mockJsonMapper.write(MESSAGE)).thenReturn(SERIALIZED_MESSAGE)
-        whenever(mockJsonMapper.read(SERIALIZED_MESSAGE, ReplicatorMessage::class)).thenReturn(MESSAGE)
-
-        logRouter1 = DefaultLogRouter(mockJsonMapper, NODE_1)
-        subscription1 = logRouter1.subscribe(mockMessageObserver1)
-
-        logRouter2 = DefaultLogRouter(mockJsonMapper, NODE_2)
-        subscription2 = logRouter2.subscribe(mockMessageObserver2)
+        logRouter1 = DefaultLogRouter(jsonMapperStub, NODE_1)
+        logRouter2 = DefaultLogRouter(jsonMapperStub, NODE_2)
     }
 
     @After
@@ -75,29 +62,32 @@ class DefaultLogRouterIntegrationTest {
 
     @Test
     fun router_shouldRouteMessage() {
+        messageObserverMock1 = MessageObserverMock.createWithExpectedMessageCount(1)
+        subscription1 = logRouter1.subscribe(messageObserverMock1)
+        messageObserverMock2 = MessageObserverMock.createWithExpectedMessageCount(1)
+        subscription2 = logRouter2.subscribe(messageObserverMock2)
+
         logRouter1.send(NODE_2, MESSAGE)
-
-        verify(mockMessageObserver2, timeout(1000)).observe(MESSAGE)
-        verifyNoMoreInteractions(mockMessageObserver2)
-
         logRouter2.send(NODE_1, MESSAGE)
 
-        verify(mockMessageObserver1, timeout(1000)).observe(MESSAGE)
-        verifyNoMoreInteractions(mockMessageObserver1)
+        assertThat(messageObserverMock1.getObservedMessages(), equalTo(listOf(MESSAGE)))
+        assertThat(messageObserverMock2.getObservedMessages(), equalTo(listOf(MESSAGE)))
     }
 
     @Test
     fun router_shouldRouteMessages() {
-        logRouter1.send(NODE_2, MESSAGE)
-        logRouter1.send(NODE_2, MESSAGE)
+        messageObserverMock1 = MessageObserverMock.createWithExpectedMessageCount(2)
+        subscription1 = logRouter1.subscribe(messageObserverMock1)
+        messageObserverMock2 = MessageObserverMock.createWithExpectedMessageCount(2)
+        subscription2 = logRouter2.subscribe(messageObserverMock2)
 
-        verify(mockMessageObserver2, timeout(1000).times(2)).observe(MESSAGE)
-        verifyNoMoreInteractions(mockMessageObserver2)
+        logRouter1.send(NODE_2, MESSAGE)
+        logRouter1.send(NODE_2, MESSAGE)
 
         logRouter2.send(NODE_1, MESSAGE)
         logRouter2.send(NODE_1, MESSAGE)
 
-        verify(mockMessageObserver1, timeout(1000).times(2)).observe(MESSAGE)
-        verifyNoMoreInteractions(mockMessageObserver1)
+        assertThat(messageObserverMock1.getObservedMessages(), equalTo(listOf(MESSAGE, MESSAGE)))
+        assertThat(messageObserverMock2.getObservedMessages(), equalTo(listOf(MESSAGE, MESSAGE)))
     }
 }
