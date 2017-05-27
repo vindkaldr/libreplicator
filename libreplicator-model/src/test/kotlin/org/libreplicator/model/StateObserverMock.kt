@@ -15,10 +15,24 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    compile project(':libreplicator-api')
-    testCompile project(':libreplicator-common-test')
+package org.libreplicator.model
 
-    testCompile group: 'junit', name: 'junit', version: junitVersion
-    testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrestVersion
+import org.libreplicator.api.Observer
+import org.libreplicator.common.test.ObjectObserver
+
+class StateObserverMock private constructor(expectedStateCount: Int): Observer<ReplicatorState> {
+    companion object {
+        fun createWithExpectedStateCount(expectedStateCount: Int) =
+                StateObserverMock(expectedStateCount)
+    }
+
+    private val objectObserver = ObjectObserver.createWithExpectedObjectCount<ReplicatorState>(expectedStateCount)
+
+    override fun observe(observable: ReplicatorState) {
+        objectObserver.observe(observable)
+    }
+
+    fun getObservedStates(): List<ReplicatorState> {
+        return objectObserver.getObservedObjects()
+    }
 }

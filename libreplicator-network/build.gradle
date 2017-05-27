@@ -22,6 +22,8 @@ dependencies {
     compile project(':libreplicator-model')
     compile project(':libreplicator-network-api')
 
+    testCompile project(':libreplicator-common-test')
+
     compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion
     compile group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
     kapt group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion

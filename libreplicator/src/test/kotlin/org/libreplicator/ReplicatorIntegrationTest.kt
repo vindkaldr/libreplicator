@@ -17,25 +17,13 @@
 
 package org.libreplicator
 
-import com.nhaarman.mockito_kotlin.argumentCaptor
-import com.nhaarman.mockito_kotlin.timeout
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
 import org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder
 import org.junit.After
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.libreplicator.api.Observer
-import org.libreplicator.api.RemoteEventLog
-import org.libreplicator.api.Replicator
-import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.api.Subscription
-import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
 
-@RunWith(MockitoJUnitRunner::class)
 class ReplicatorIntegrationTest {
     private companion object {
         private val LOG_1_1 = "log11"
@@ -44,23 +32,21 @@ class ReplicatorIntegrationTest {
         private val LOG_2_2 = "log22"
         private val LOG_3_1 = "log31"
         private val LOG_3_2 = "log32"
-
-        private val TIMEOUT_IN_MILLIS = 3000L
     }
 
-    private lateinit var libReplicatorFactory: LibReplicatorFactory
+    private val libReplicatorFactory = LibReplicatorFactory()
 
-    private lateinit var node1: ReplicatorNode
-    private lateinit var node2: ReplicatorNode
-    private lateinit var node3: ReplicatorNode
+    private val node1 = libReplicatorFactory.createReplicatorNode("nodeId1", "localhost", 12345)
+    private val node2 = libReplicatorFactory.createReplicatorNode("nodeId2", "localhost", 12346)
+    private val node3 = libReplicatorFactory.createReplicatorNode("nodeId3", "localhost", 12347)
 
-    private lateinit var replicator1: Replicator
-    private lateinit var replicator2: Replicator
-    private lateinit var replicator3: Replicator
+    private val replicator1 = libReplicatorFactory.createReplicator(node1, listOf(node2, node3))
+    private val replicator2 = libReplicatorFactory.createReplicator(node2, listOf(node1, node3))
+    private val replicator3 = libReplicatorFactory.createReplicator(node3, listOf(node1, node2))
 
-    @Mock private lateinit var mockLogObserver1: Observer<RemoteEventLog>
-    @Mock private lateinit var mockLogObserver2: Observer<RemoteEventLog>
-    @Mock private lateinit var mockLogObserver3: Observer<RemoteEventLog>
+    private val eventLogObserverMock1 = EventLogObserverMock.createWithExpectedEventLogCount(4)
+    private val eventLogObserverMock2 = EventLogObserverMock.createWithExpectedEventLogCount(4)
+    private val eventLogObserverMock3 = EventLogObserverMock.createWithExpectedEventLogCount(4)
 
     private lateinit var subscription1: Subscription
     private lateinit var subscription2: Subscription
@@ -68,20 +54,9 @@ class ReplicatorIntegrationTest {
 
     @Before
     fun setUp() {
-        libReplicatorFactory = LibReplicatorFactory()
-
-        node1 = libReplicatorFactory.createReplicatorNode("nodeId1", "localhost", 12345)
-        node2 = libReplicatorFactory.createReplicatorNode("nodeId2", "localhost", 12346)
-        node3 = libReplicatorFactory.createReplicatorNode("nodeId3", "localhost", 12347)
-
-        replicator1 = libReplicatorFactory.createReplicator(node1, listOf(node2, node3))
-        subscription1 = replicator1.subscribe(mockLogObserver1)
-
-        replicator2 = libReplicatorFactory.createReplicator(node2, listOf(node1, node3))
-        subscription2 = replicator2.subscribe(mockLogObserver2)
-
-        replicator3 = libReplicatorFactory.createReplicator(node3, listOf(node1, node2))
-        subscription3 = replicator3.subscribe(mockLogObserver3)
+        subscription1 = replicator1.subscribe(eventLogObserverMock1)
+        subscription2 = replicator2.subscribe(eventLogObserverMock2)
+        subscription3 = replicator3.subscribe(eventLogObserverMock3)
     }
 
     @After
@@ -93,38 +68,25 @@ class ReplicatorIntegrationTest {
 
     @Test
     fun replicator_shouldReplicateLogsBetweenNodes() {
-        replicate(replicator1, LOG_1_1)
-        replicate(replicator2, LOG_2_1)
-        replicate(replicator3, LOG_3_1)
+        replicator1.replicate(libReplicatorFactory.createLocalEventLog(LOG_1_1))
+        replicator2.replicate(libReplicatorFactory.createLocalEventLog(LOG_2_1))
+        replicator3.replicate(libReplicatorFactory.createLocalEventLog(LOG_3_1))
 
         subscription1.unsubscribe()
-        subscription1 = replicator1.subscribe(mockLogObserver1)
+        subscription1 = replicator1.subscribe(eventLogObserverMock1)
 
         subscription2.unsubscribe()
-        subscription2 = replicator2.subscribe(mockLogObserver2)
+        subscription2 = replicator2.subscribe(eventLogObserverMock2)
 
         subscription3.unsubscribe()
-        subscription3 = replicator3.subscribe(mockLogObserver3)
+        subscription3 = replicator3.subscribe(eventLogObserverMock3)
 
-        replicate(replicator1, LOG_1_2)
-        replicate(replicator2, LOG_2_2)
-        replicate(replicator3, LOG_3_2)
+        replicator1.replicate(libReplicatorFactory.createLocalEventLog(LOG_1_2))
+        replicator2.replicate(libReplicatorFactory.createLocalEventLog(LOG_2_2))
+        replicator3.replicate(libReplicatorFactory.createLocalEventLog(LOG_3_2))
 
-        verifyLogObserverAndAssertLogs(mockLogObserver1, LOG_2_1, LOG_3_1, LOG_2_2, LOG_3_2)
-        verifyLogObserverAndAssertLogs(mockLogObserver2, LOG_1_1, LOG_3_1, LOG_1_2, LOG_3_2)
-        verifyLogObserverAndAssertLogs(mockLogObserver3, LOG_1_1, LOG_2_1, LOG_1_2, LOG_2_2)
-    }
-
-    private fun replicate(replicator: Replicator, vararg logs: String) {
-        logs.forEach { replicator.replicate(libReplicatorFactory.createLocalEventLog(it)) }
-    }
-
-    private fun verifyLogObserverAndAssertLogs(mockLogObserver: Observer<RemoteEventLog>, vararg logs: String) {
-        val argumentCaptor = argumentCaptor<RemoteEventLog>()
-
-        verify(mockLogObserver, timeout(TIMEOUT_IN_MILLIS).times(logs.size)).observe(argumentCaptor.capture())
-        assertThat(argumentCaptor.allValues.map { it.log }, containsInAnyOrder(*logs))
-
-        verifyNoMoreInteractions(mockLogObserver)
+        assertThat(eventLogObserverMock1.getObservedLogs(), containsInAnyOrder(LOG_2_1, LOG_3_1, LOG_2_2, LOG_3_2))
+        assertThat(eventLogObserverMock2.getObservedLogs(), containsInAnyOrder(LOG_1_1, LOG_3_1, LOG_1_2, LOG_3_2))
+        assertThat(eventLogObserverMock3.getObservedLogs(), containsInAnyOrder(LOG_1_1, LOG_2_1, LOG_1_2, LOG_2_2))
     }
 }

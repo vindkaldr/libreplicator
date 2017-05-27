@@ -15,25 +15,27 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network
+package org.libreplicator
 
 import org.libreplicator.api.Observer
+import org.libreplicator.api.RemoteEventLog
 import org.libreplicator.common.test.ObjectObserver
-import org.libreplicator.model.ReplicatorMessage
 
-class MessageObserverMock private constructor(expectedMessageCount: Int) : Observer<ReplicatorMessage> {
+class EventLogObserverMock private constructor(expectedEventLogCount: Int) : Observer<RemoteEventLog> {
     companion object {
-        fun createWithExpectedMessageCount(expectedMessageCount: Int): MessageObserverMock =
-                MessageObserverMock(expectedMessageCount)
+        fun create() = createWithExpectedEventLogCount(0)
+
+        fun createWithExpectedEventLogCount(expectedEventLogCount: Int) =
+                EventLogObserverMock(expectedEventLogCount)
     }
 
-    private val messageObserver = ObjectObserver.createWithExpectedObjectCount<ReplicatorMessage>(expectedMessageCount)
+    private val eventLogObserver = ObjectObserver.createWithExpectedObjectCount<RemoteEventLog>(expectedEventLogCount)
 
-    override fun observe(observable: ReplicatorMessage) {
-        messageObserver.observe(observable)
+    override fun observe(observable: RemoteEventLog) {
+        eventLogObserver.observe(observable)
     }
 
-    fun getObservedMessages(): List<ReplicatorMessage> {
-        return messageObserver.getObservedObjects()
+    fun getObservedLogs(): List<String> {
+        return eventLogObserver.getObservedObjects().map { it.log }
     }
 }

@@ -17,26 +17,15 @@
 
 package org.libreplicator
 
-import com.nhaarman.mockito_kotlin.argumentCaptor
-import com.nhaarman.mockito_kotlin.timeout
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
 import org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder
 import org.junit.After
 import org.junit.Assert.assertThat
-import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.libreplicator.api.Observer
-import org.libreplicator.api.RemoteEventLog
-import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.Replicator
 import org.libreplicator.api.Subscription
 import org.libreplicator.journal.module.LibReplicatorJournalSettings
-import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
 import java.nio.file.Files
 
-@RunWith(MockitoJUnitRunner::class)
 class ReplicatorJournalingIntegrationTest {
     private companion object {
         private val DIRECTORY_OF_JOURNALS = Files.createTempDirectory("libreplicator-journals-")
@@ -52,33 +41,22 @@ class ReplicatorJournalingIntegrationTest {
         private val FIRST_LOG = "log1"
         private val SECOND_LOG = "log2"
         private val THIRD_LOG = "log3"
-
-        private val TIMEOUT_IN_MILLIS = 3000L
     }
 
-    private lateinit var localLibReplicatorSettings: LibReplicatorSettings
-    private lateinit var localReplicatorFactory: LibReplicatorFactory
-    @Mock private lateinit var mockLocalEventLogObserver: Observer<RemoteEventLog>
+    private val localLibReplicatorSettings = LibReplicatorSettings(
+            LibReplicatorJournalSettings(isJournalingEnabled = true, directoryOfJournals = DIRECTORY_OF_JOURNALS))
+
+    private val localReplicatorFactory = LibReplicatorFactory(localLibReplicatorSettings)
+    private val localEventLogObserverMock = EventLogObserverMock.create()
+    private val localNode = localReplicatorFactory.createReplicatorNode(LOCAL_NODE_ID, NODE_HOST, LOCAL_NODE_PORT)
+    private lateinit var localReplicator: Replicator
     private lateinit var localReplicatorSubscription: Subscription
 
-    private lateinit var remoteLibReplicatorFactory: LibReplicatorFactory
-    @Mock private lateinit var mockRemoteEventLogObserver: Observer<RemoteEventLog>
+    private val remoteLibReplicatorFactory = LibReplicatorFactory()
+    private val remoteEventLogObserverMock = EventLogObserverMock.createWithExpectedEventLogCount(3)
+    private val remoteNode = remoteLibReplicatorFactory.createReplicatorNode(REMOTE_NODE_ID, NODE_HOST, REMOTE_NODE_PORT)
+    private val remoteReplicator = remoteLibReplicatorFactory.createReplicator(remoteNode, listOf(localNode))
     private lateinit var remoteReplicatorSubscription: Subscription
-
-    private lateinit var localNode: ReplicatorNode
-    private lateinit var remoteNode: ReplicatorNode
-
-    @Before
-    fun setUp() {
-        localLibReplicatorSettings = LibReplicatorSettings(
-                LibReplicatorJournalSettings(isJournalingEnabled = true, directoryOfJournals = DIRECTORY_OF_JOURNALS))
-        localReplicatorFactory = LibReplicatorFactory(localLibReplicatorSettings)
-
-        remoteLibReplicatorFactory = LibReplicatorFactory()
-
-        localNode = localReplicatorFactory.createReplicatorNode(LOCAL_NODE_ID, NODE_HOST, LOCAL_NODE_PORT)
-        remoteNode = remoteLibReplicatorFactory.createReplicatorNode(REMOTE_NODE_ID, NODE_HOST, REMOTE_NODE_PORT)
-    }
 
     @After
     fun tearDown() {
@@ -90,31 +68,19 @@ class ReplicatorJournalingIntegrationTest {
 
     @Test
     fun replicator_shouldKeepState_whenJournalingEnabled() {
-        var localReplicator = localReplicatorFactory.createReplicator(localNode, listOf(remoteNode))
-        localReplicatorSubscription = localReplicator.subscribe(mockLocalEventLogObserver)
+        localReplicator = localReplicatorFactory.createReplicator(localNode, listOf(remoteNode))
+        localReplicatorSubscription = localReplicator.subscribe(localEventLogObserverMock)
 
         localReplicator.replicate(localReplicatorFactory.createLocalEventLog(FIRST_LOG))
         localReplicator.replicate(localReplicatorFactory.createLocalEventLog(SECOND_LOG))
-
         localReplicatorSubscription.unsubscribe()
 
+        remoteReplicatorSubscription = remoteReplicator.subscribe(remoteEventLogObserverMock)
+
         localReplicator = localReplicatorFactory.createReplicator(localNode, listOf(remoteNode))
-        localReplicatorSubscription = localReplicator.subscribe(mockLocalEventLogObserver)
-
-        val remoteReplicator = remoteLibReplicatorFactory.createReplicator(remoteNode, listOf(localNode))
-        remoteReplicatorSubscription = remoteReplicator.subscribe(mockRemoteEventLogObserver)
-
+        localReplicatorSubscription = localReplicator.subscribe(localEventLogObserverMock)
         localReplicator.replicate(localReplicatorFactory.createLocalEventLog(THIRD_LOG))
 
-        verifyLogObserverAndAssertLogs(mockRemoteEventLogObserver, FIRST_LOG, SECOND_LOG, THIRD_LOG)
-    }
-
-    private fun verifyLogObserverAndAssertLogs(mockLogObserver: Observer<RemoteEventLog>, vararg logs: String) {
-        val argumentCaptor = argumentCaptor<RemoteEventLog>()
-
-        verify(mockLogObserver, timeout(TIMEOUT_IN_MILLIS).times(logs.size)).observe(argumentCaptor.capture())
-        assertThat(argumentCaptor.allValues.map { it.log }, containsInAnyOrder(*logs))
-
-        verifyNoMoreInteractions(mockLogObserver)
+        assertThat(remoteEventLogObserverMock.getObservedLogs(), containsInAnyOrder(FIRST_LOG, SECOND_LOG, THIRD_LOG))
     }
 }

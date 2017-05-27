@@ -17,19 +17,13 @@
 
 package org.libreplicator.model
 
-import com.nhaarman.mockito_kotlin.verify
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.not
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.libreplicator.api.Observer
 import org.libreplicator.api.ReplicatorNode
-import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
 
-@RunWith(MockitoJUnitRunner::class)
 class ReplicatorStateTest {
     private companion object {
         private val NODE_1_ID = "node1"
@@ -54,11 +48,12 @@ class ReplicatorStateTest {
     }
 
     private lateinit var replicatorState: ReplicatorState
-    @Mock private lateinit var mockReplicatorStateObserver: Observer<ReplicatorState>
+    private lateinit var stateObserverMock: StateObserverMock
 
     @Before
     fun setUp() {
         replicatorState = ReplicatorState()
+        stateObserverMock = StateObserverMock.createWithExpectedStateCount(1)
     }
 
     @Test
@@ -125,11 +120,11 @@ class ReplicatorStateTest {
 
     @Test
     fun addLocalEventLog_notifiesReplicatorStateObserver() {
-        replicatorState.subscribe(mockReplicatorStateObserver)
+        replicatorState.subscribe(stateObserverMock)
 
         replicatorState.addLocalEventLog(NODE_1, NODE_1_EVENT_LOG_1)
 
-        verify(mockReplicatorStateObserver).observe(replicatorState)
+        assertThat(stateObserverMock.getObservedStates(), equalTo(listOf(replicatorState)))
     }
 
     @Test
@@ -143,10 +138,10 @@ class ReplicatorStateTest {
 
     @Test
     fun updateFromMessage_notifiesReplicatorStateObserver() {
-        replicatorState.subscribe(mockReplicatorStateObserver)
+        replicatorState.subscribe(stateObserverMock)
 
         replicatorState.updateFromMessage(NODE_1, listOf(NODE_2), NODE_2_REPLICATOR_MESSAGE)
 
-        verify(mockReplicatorStateObserver).observe(replicatorState)
+        assertThat(stateObserverMock.getObservedStates(), equalTo(listOf(replicatorState)))
     }
 }
