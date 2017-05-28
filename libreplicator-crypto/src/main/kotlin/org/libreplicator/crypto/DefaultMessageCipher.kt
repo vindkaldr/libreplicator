@@ -27,7 +27,7 @@ import org.bouncycastle.util.encoders.Hex
 import org.libreplicator.crypto.api.CipherException
 import org.libreplicator.crypto.api.MessageCipher
 
-class DefaultMessageCipher : MessageCipher {
+class DefaultMessageCipher(private val sharedSecret: String) : MessageCipher {
     private companion object {
         private val SALT = ByteArray(0)
         private val ITERATION_COUNT = 1024
@@ -41,16 +41,16 @@ class DefaultMessageCipher : MessageCipher {
         private val ZEROTH_POSITION = 0
     }
 
-    override fun encrypt(sharedSecret: String, message: String): String {
-        val cipherParameters = getCipherParameters(sharedSecret)
+    override fun encrypt(message: String): String {
+        val cipherParameters = getCipherParameters()
         val cipher = getCipherForEncryption(cipherParameters)
 
         return String(Hex.encode(cipherMessage(cipher, message.toByteArray())))
     }
 
-    override fun decrypt(sharedSecret: String, encryptedMessage: String): String {
+    override fun decrypt(encryptedMessage: String): String {
         try {
-            val cipherParameters = getCipherParameters(sharedSecret)
+            val cipherParameters = getCipherParameters()
             val cipher = getCipherForDecryption(cipherParameters)
 
             return String(cipherMessage(cipher, Hex.decode(encryptedMessage.toByteArray())))
@@ -60,7 +60,7 @@ class DefaultMessageCipher : MessageCipher {
         }
     }
 
-    private fun getCipherParameters(sharedSecret: String): CipherParameters {
+    private fun getCipherParameters(): CipherParameters {
         val parametersGenerator = PKCS5S2ParametersGenerator()
         parametersGenerator.init(sharedSecret.toByteArray(), SALT, ITERATION_COUNT)
 

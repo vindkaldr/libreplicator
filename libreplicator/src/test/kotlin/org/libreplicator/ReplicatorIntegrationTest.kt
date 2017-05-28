@@ -23,7 +23,6 @@ import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.libreplicator.api.Subscription
-import org.libreplicator.RemoteEventLogObserverMock
 
 class ReplicatorIntegrationTest {
     private companion object {

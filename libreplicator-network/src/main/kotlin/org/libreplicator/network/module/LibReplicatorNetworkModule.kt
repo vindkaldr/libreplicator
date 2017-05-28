@@ -20,6 +20,7 @@ package org.libreplicator.network.module
 import dagger.Module
 import dagger.Provides
 import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.crypto.api.MessageCipher
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.network.DefaultLogRouter
 import org.libreplicator.network.api.LogRouter
@@ -28,7 +29,7 @@ import javax.inject.Singleton
 @Module
 class LibReplicatorNetworkModule(private val localNode: ReplicatorNode) {
     @Provides @Singleton
-    fun provideLogRouter(jsonMapper: JsonMapper): LogRouter {
-        return DefaultLogRouter(jsonMapper, localNode)
+    fun provideLogRouter(jsonMapper: JsonMapper, messageCipher: MessageCipher): LogRouter {
+        return DefaultLogRouter(jsonMapper, messageCipher, localNode)
     }
 }

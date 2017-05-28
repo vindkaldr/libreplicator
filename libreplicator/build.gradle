@@ -17,6 +17,7 @@
 
 dependencies {
     compile project(':libreplicator-boundary')
+    compile project(':libreplicator-crypto')
     compile project(':libreplicator-interactor')
     compile project(':libreplicator-journal')
     compile project(':libreplicator-json')

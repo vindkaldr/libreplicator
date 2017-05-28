@@ -17,12 +17,20 @@
 
 package org.libreplicator.crypto.module
 
-import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import org.libreplicator.crypto.DefaultMessageCipher
 import org.libreplicator.crypto.api.MessageCipher
 
 @Module
-interface LibReplicatorCryptoModule {
-    @Binds fun bindMessageCipher(defaultMessageCipher: DefaultMessageCipher): MessageCipher
+class LibReplicatorCryptoModule(private val cryptoSettings: LibReplicatorCryptoSettings) {
+    @Provides fun provideMessageCipher(): MessageCipher {
+        if (cryptoSettings.isEncryptionEnabled && cryptoSettings.sharedSecret.isNotBlank()) {
+            return DefaultMessageCipher(cryptoSettings.sharedSecret)
+        }
+        return object : MessageCipher {
+            override fun encrypt(message: String): String = message
+            override fun decrypt(encryptedMessage: String): String = encryptedMessage
+        }
+    }
 }

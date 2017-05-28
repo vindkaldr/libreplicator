@@ -20,6 +20,7 @@ package org.libreplicator.module
 import dagger.Component
 import org.libreplicator.api.Replicator
 import org.libreplicator.boundary.module.LibReplicatorBoundaryModule
+import org.libreplicator.crypto.module.LibReplicatorCryptoModule
 import org.libreplicator.interactor.module.LibReplicatorInteractorModule
 import org.libreplicator.journal.module.LibReplicatorJournalModule
 import org.libreplicator.json.module.LibReplicatorJsonModule
@@ -27,8 +28,9 @@ import org.libreplicator.network.module.LibReplicatorNetworkModule
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = arrayOf(LibReplicatorBoundaryModule::class, LibReplicatorInteractorModule::class,
-        LibReplicatorJournalModule::class, LibReplicatorJsonModule::class, LibReplicatorNetworkModule::class))
+@Component(modules = arrayOf(LibReplicatorBoundaryModule::class, LibReplicatorCryptoModule::class,
+        LibReplicatorInteractorModule::class, LibReplicatorJournalModule::class,
+        LibReplicatorJsonModule::class, LibReplicatorNetworkModule::class))
 interface LibReplicatorComponent {
     fun getReplicator(): Replicator
 }

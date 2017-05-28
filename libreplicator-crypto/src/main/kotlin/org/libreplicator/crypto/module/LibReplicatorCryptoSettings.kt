@@ -15,11 +15,6 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator
+package org.libreplicator.crypto.module
 
-import org.libreplicator.crypto.module.LibReplicatorCryptoSettings
-import org.libreplicator.journal.module.LibReplicatorJournalSettings
-
-class LibReplicatorSettings(
-        val cryptoSettings: LibReplicatorCryptoSettings = LibReplicatorCryptoSettings(),
-        val journalSettings: LibReplicatorJournalSettings = LibReplicatorJournalSettings())
+class LibReplicatorCryptoSettings(val isEncryptionEnabled: Boolean = false, val sharedSecret: String = "")

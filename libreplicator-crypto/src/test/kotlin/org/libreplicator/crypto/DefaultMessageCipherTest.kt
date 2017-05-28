@@ -34,32 +34,37 @@ class DefaultMessageCipherTest {
         private val CORRUPTED_MESSAGE = "corruptedMessage"
     }
 
-    private val messageCipher: MessageCipher = DefaultMessageCipher()
-
     @Test
     fun encrypt_encryptsMessage() {
-        assertThat(messageCipher.encrypt(SHARED_SECRET, MESSAGE), not(equalTo(MESSAGE)))
+        val messageCipher: MessageCipher = DefaultMessageCipher(SHARED_SECRET)
+        assertThat(messageCipher.encrypt(MESSAGE), not(equalTo(MESSAGE)))
     }
 
     @Test
     fun decrypt_decryptsMessage() {
-        assertThat(messageCipher.decrypt(SHARED_SECRET, ENCRYPTED_MESSAGE), not(equalTo(ENCRYPTED_MESSAGE)))
+        val messageCipher: MessageCipher = DefaultMessageCipher(SHARED_SECRET)
+        assertThat(messageCipher.decrypt(ENCRYPTED_MESSAGE), not(equalTo(ENCRYPTED_MESSAGE)))
     }
 
     @Test
     fun cipher_encryptsThenDecryptsMessage_withSameSharedSecret() {
-        val encryptedMessage = messageCipher.encrypt(SHARED_SECRET, MESSAGE)
-        val decryptedMessage = messageCipher.decrypt(SHARED_SECRET, encryptedMessage)
+        val messageCipher: MessageCipher = DefaultMessageCipher(SHARED_SECRET)
+
+        val encryptedMessage = messageCipher.encrypt(MESSAGE)
+        val decryptedMessage = messageCipher.decrypt(encryptedMessage)
+
         assertThat(decryptedMessage, equalTo(MESSAGE))
     }
 
     @Test(expected = CipherException::class)
     fun decrypt_throwsException_forCorruptedSharedSecret() {
-        messageCipher.decrypt(CORRUPTED_SHARED_SECRET, ENCRYPTED_MESSAGE)
+        val messageCipher: MessageCipher = DefaultMessageCipher(CORRUPTED_SHARED_SECRET)
+        messageCipher.decrypt(ENCRYPTED_MESSAGE)
     }
 
     @Test(expected = CipherException::class)
     fun decrypt_throwsException_forCorruptedMessage() {
-        messageCipher.decrypt(SHARED_SECRET, CORRUPTED_MESSAGE)
+        val messageCipher: MessageCipher = DefaultMessageCipher(SHARED_SECRET)
+        messageCipher.decrypt(CORRUPTED_MESSAGE)
     }
 }

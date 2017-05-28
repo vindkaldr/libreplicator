@@ -21,6 +21,7 @@ import org.hamcrest.Matchers.equalTo
 import org.junit.Assert.assertThat
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.libreplicator.crypto.api.MessageCipher
 import org.libreplicator.journal.testdouble.JournalHandlerMock
 import org.libreplicator.journal.testdouble.ExistingJournalReaderMock
 import org.libreplicator.journal.testdouble.JournalDirectoryCreatorMock
@@ -57,11 +58,16 @@ class DefaultReplicatorStateJournalTest {
 
     private val jsonMapperStub: JsonMapper = JsonMapperStub(REPLICATOR_STATE, SERIALIZED_REPLICATOR_STATE)
 
+    private val messageCipherStub: MessageCipher = object : MessageCipher {
+        override fun encrypt(message: String): String = message
+        override fun decrypt(encryptedMessage: String): String = encryptedMessage
+    }
+
     @Test
     fun constructing_setsUp_journalDirectory() {
         val fileHandlerMock = JournalDirectoryCreatorMock()
 
-        DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub,
+        DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub, messageCipherStub,
                 JOURNALS_DIRECTORY, LOCAL_NODE, listOf(REMOTE_NODE_1, REMOTE_NODE_2))
 
         assertTrue(fileHandlerMock.createdDirectoryWith(JOURNALS_DIRECTORY, JOURNAL_DIRECTORY_NAME))
@@ -72,7 +78,7 @@ class DefaultReplicatorStateJournalTest {
         val fileHandlerMock = ErroneousJournalReaderMock(journal = LATEST_JOURNAL_FILE,
                 exceptionToThrow = NoSuchFileException(""))
 
-        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub,
+        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub, messageCipherStub,
                 JOURNALS_DIRECTORY, LOCAL_NODE, listOf(REMOTE_NODE_1, REMOTE_NODE_2))
 
         assertThat(replicatorStateJournal.getReplicatorState(), equalTo(ReplicatorState()))
@@ -83,7 +89,7 @@ class DefaultReplicatorStateJournalTest {
         val fileHandlerMock = ErroneousJournalReaderMock(journal = LATEST_JOURNAL_FILE,
                 exceptionToThrow = JsonReadException(NoSuchFileException("")))
 
-        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub,
+        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub, messageCipherStub,
                 JOURNALS_DIRECTORY, LOCAL_NODE, listOf(REMOTE_NODE_1, REMOTE_NODE_2))
 
         assertThat(replicatorStateJournal.getReplicatorState(), equalTo(ReplicatorState()))
@@ -94,7 +100,7 @@ class DefaultReplicatorStateJournalTest {
         val fileHandlerMock = ErroneousJournalReaderMock(journal = LATEST_JOURNAL_FILE,
                 exceptionToThrow = Throwable())
 
-        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub,
+        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub, messageCipherStub,
                 JOURNALS_DIRECTORY, LOCAL_NODE, listOf(REMOTE_NODE_1, REMOTE_NODE_2))
 
         assertThat(replicatorStateJournal.getReplicatorState(), equalTo(ReplicatorState()))
@@ -105,7 +111,7 @@ class DefaultReplicatorStateJournalTest {
         val fileHandlerMock = ExistingJournalReaderMock(journal = LATEST_JOURNAL_FILE,
                 content = SERIALIZED_REPLICATOR_STATE)
 
-        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub,
+        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub, messageCipherStub,
                 JOURNALS_DIRECTORY, LOCAL_NODE, listOf(REMOTE_NODE_1, REMOTE_NODE_2))
 
         assertThat(replicatorStateJournal.getReplicatorState(), equalTo(REPLICATOR_STATE))
@@ -116,7 +122,7 @@ class DefaultReplicatorStateJournalTest {
         val fileHandlerMock = JournalHandlerMock(journalsDirectory = JOURNALS_DIRECTORY,
                 journalDirectoryName = JOURNAL_DIRECTORY_NAME, journalDirectory = JOURNAL_DIRECTORY)
 
-        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub,
+        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub, messageCipherStub,
                 JOURNALS_DIRECTORY, LOCAL_NODE, listOf(REMOTE_NODE_1, REMOTE_NODE_2))
 
         assertTrue(fileHandlerMock.createdDirectory(JOURNALS_DIRECTORY, JOURNAL_DIRECTORY_NAME))

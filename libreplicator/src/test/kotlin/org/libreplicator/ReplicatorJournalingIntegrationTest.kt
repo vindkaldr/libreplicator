@@ -23,7 +23,6 @@ import org.junit.Assert.assertThat
 import org.junit.Test
 import org.libreplicator.api.Replicator
 import org.libreplicator.api.Subscription
-import org.libreplicator.RemoteEventLogObserverMock
 import org.libreplicator.journal.module.LibReplicatorJournalSettings
 import java.nio.file.Files
 
@@ -45,7 +44,7 @@ class ReplicatorJournalingIntegrationTest {
     }
 
     private val localLibReplicatorSettings = LibReplicatorSettings(
-            LibReplicatorJournalSettings(isJournalingEnabled = true, directoryOfJournals = DIRECTORY_OF_JOURNALS))
+            journalSettings = LibReplicatorJournalSettings(isJournalingEnabled = true, directoryOfJournals = DIRECTORY_OF_JOURNALS))
 
     private val localReplicatorFactory = LibReplicatorFactory(localLibReplicatorSettings)
     private val localEventLogObserverMock = RemoteEventLogObserverMock.create()

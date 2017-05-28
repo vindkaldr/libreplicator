@@ -20,6 +20,7 @@ package org.libreplicator
 import org.libreplicator.api.LocalEventLog
 import org.libreplicator.api.Replicator
 import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.crypto.module.LibReplicatorCryptoModule
 import org.libreplicator.interactor.module.LibReplicatorInteractorModule
 import org.libreplicator.journal.module.LibReplicatorJournalModule
 import org.libreplicator.model.factory.LocalEventLogFactory
@@ -30,9 +31,10 @@ import org.libreplicator.network.module.LibReplicatorNetworkModule
 class LibReplicatorFactory(private val settings: LibReplicatorSettings = LibReplicatorSettings()) {
     fun createReplicator(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>): Replicator {
         val component = DaggerLibReplicatorComponent.builder()
-                .libReplicatorNetworkModule(LibReplicatorNetworkModule(localNode))
+                .libReplicatorCryptoModule(LibReplicatorCryptoModule(settings.cryptoSettings))
                 .libReplicatorInteractorModule(LibReplicatorInteractorModule(localNode, remoteNodes))
                 .libReplicatorJournalModule(LibReplicatorJournalModule(settings.journalSettings, localNode, remoteNodes))
+                .libReplicatorNetworkModule(LibReplicatorNetworkModule(localNode))
                 .build()
 
         return component.getReplicator()
