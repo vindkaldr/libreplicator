@@ -15,16 +15,27 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    compile project(':libreplicator-journal-api')
-    compile project(':libreplicator-json-api')
-    compile project(':libreplicator-log')
-    compile project(':libreplicator-model')
+package org.libreplicator.journal.testdouble
 
-    compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion
-    compile group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
-    kapt group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
+import org.junit.Assert
+import org.libreplicator.journal.FileHandler
+import java.nio.file.Path
 
-    testCompile group: 'junit', name: 'junit', version: junitVersion
-    testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrestVersion
+class ExistingJournalReaderMock(private val journal: Path, private val content: String) : FileHandler {
+    override fun createDirectory(parentPath: Path, directoryName: String): Path {
+        return parentPath.resolve(directoryName)
+    }
+
+    override fun readFirstLine(path: Path): String {
+        if (journal != path) {
+            Assert.fail("Unexpected call!")
+        }
+        return content
+    }
+
+    override fun write(path: Path, line: String) {
+    }
+
+    override fun move(source: Path, destination: Path) {
+    }
 }

@@ -17,25 +17,23 @@
 
 package org.libreplicator.journal
 
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
-import com.nhaarman.mockito_kotlin.whenever
-import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.Matchers.equalTo
 import org.junit.Assert.assertThat
-import org.junit.Before
+import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.junit.runner.RunWith
+import org.libreplicator.journal.testdouble.JournalHandlerMock
+import org.libreplicator.journal.testdouble.ExistingJournalReaderMock
+import org.libreplicator.journal.testdouble.JournalDirectoryCreatorMock
+import org.libreplicator.journal.testdouble.ErroneousJournalReaderMock
+import org.libreplicator.journal.testdouble.JsonMapperStub
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.model.EventLog
 import org.libreplicator.model.EventNode
 import org.libreplicator.model.ReplicatorState
-import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
 import java.nio.file.NoSuchFileException
 import java.nio.file.Paths
 
-@RunWith(MockitoJUnitRunner::class)
 class DefaultReplicatorStateJournalTest {
     private companion object {
         private val JOURNALS_DIRECTORY = Paths.get(".")
@@ -57,66 +55,75 @@ class DefaultReplicatorStateJournalTest {
         private val REPLICATOR_STATE = ReplicatorState(mutableSetOf(EventLog(LOCAL_NODE.nodeId, 0, "")))
     }
 
-    @Mock private lateinit var mockFileHandler: FileHandler
-    @Mock private lateinit var mockJsonMapper: JsonMapper
-
-    private lateinit var replicatorStateJournal: DefaultReplicatorStateJournal
-
-    @Before
-    fun setUp() {
-        whenever(mockFileHandler.createDirectory(JOURNALS_DIRECTORY, JOURNAL_DIRECTORY_NAME))
-                .thenReturn(JOURNAL_DIRECTORY)
-
-        whenever(mockFileHandler.readFirstLine(LATEST_JOURNAL_FILE)).thenReturn(SERIALIZED_REPLICATOR_STATE)
-        whenever(mockJsonMapper.read(SERIALIZED_REPLICATOR_STATE, ReplicatorState::class))
-                .thenReturn(REPLICATOR_STATE)
-
-        whenever(mockJsonMapper.write(REPLICATOR_STATE)).thenReturn(SERIALIZED_REPLICATOR_STATE)
-
-        replicatorStateJournal = DefaultReplicatorStateJournal(mockFileHandler, mockJsonMapper,
-                JOURNALS_DIRECTORY, LOCAL_NODE, listOf(REMOTE_NODE_1, REMOTE_NODE_2))
-    }
+    private val jsonMapperStub: JsonMapper = JsonMapperStub(REPLICATOR_STATE, SERIALIZED_REPLICATOR_STATE)
 
     @Test
     fun constructing_setsUp_journalDirectory() {
-        verify(mockFileHandler).createDirectory(JOURNALS_DIRECTORY, JOURNAL_DIRECTORY_NAME)
-        verifyNoMoreInteractions(mockFileHandler)
+        val fileHandlerMock = JournalDirectoryCreatorMock()
+
+        DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub,
+                JOURNALS_DIRECTORY, LOCAL_NODE, listOf(REMOTE_NODE_1, REMOTE_NODE_2))
+
+        assertTrue(fileHandlerMock.createdDirectoryWith(JOURNALS_DIRECTORY, JOURNAL_DIRECTORY_NAME))
     }
 
     @Test
     fun getReplicatorState_returnsInitialState_whenJournalNotPresent() {
-        whenever(mockFileHandler.readFirstLine(LATEST_JOURNAL_FILE)).thenThrow(NoSuchFileException::class.java)
+        val fileHandlerMock = ErroneousJournalReaderMock(journal = LATEST_JOURNAL_FILE,
+                exceptionToThrow = NoSuchFileException(""))
+
+        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub,
+                JOURNALS_DIRECTORY, LOCAL_NODE, listOf(REMOTE_NODE_1, REMOTE_NODE_2))
 
         assertThat(replicatorStateJournal.getReplicatorState(), equalTo(ReplicatorState()))
     }
 
     @Test
     fun getReplicatorState_returnsInitialState_whenJournalNotReadable() {
-        whenever(mockFileHandler.readFirstLine(LATEST_JOURNAL_FILE)).thenThrow(JsonReadException::class.java)
+        val fileHandlerMock = ErroneousJournalReaderMock(journal = LATEST_JOURNAL_FILE,
+                exceptionToThrow = JsonReadException(NoSuchFileException("")))
+
+        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub,
+                JOURNALS_DIRECTORY, LOCAL_NODE, listOf(REMOTE_NODE_1, REMOTE_NODE_2))
 
         assertThat(replicatorStateJournal.getReplicatorState(), equalTo(ReplicatorState()))
     }
 
     @Test
     fun getReplicatorState_returnsInitialState_whenProblemEncountered() {
-        whenever(mockFileHandler.readFirstLine(LATEST_JOURNAL_FILE)).thenThrow(Throwable::class.java)
+        val fileHandlerMock = ErroneousJournalReaderMock(journal = LATEST_JOURNAL_FILE,
+                exceptionToThrow = Throwable())
+
+        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub,
+                JOURNALS_DIRECTORY, LOCAL_NODE, listOf(REMOTE_NODE_1, REMOTE_NODE_2))
 
         assertThat(replicatorStateJournal.getReplicatorState(), equalTo(ReplicatorState()))
     }
 
     @Test
     fun getReplicatorState_returnsState() {
+        val fileHandlerMock = ExistingJournalReaderMock(journal = LATEST_JOURNAL_FILE,
+                content = SERIALIZED_REPLICATOR_STATE)
+
+        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub,
+                JOURNALS_DIRECTORY, LOCAL_NODE, listOf(REMOTE_NODE_1, REMOTE_NODE_2))
+
         assertThat(replicatorStateJournal.getReplicatorState(), equalTo(REPLICATOR_STATE))
     }
 
     @Test
     fun journal_writesState() {
-        verify(mockFileHandler).createDirectory(JOURNALS_DIRECTORY, JOURNAL_DIRECTORY_NAME)
+        val fileHandlerMock = JournalHandlerMock(journalsDirectory = JOURNALS_DIRECTORY,
+                journalDirectoryName = JOURNAL_DIRECTORY_NAME, journalDirectory = JOURNAL_DIRECTORY)
+
+        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub,
+                JOURNALS_DIRECTORY, LOCAL_NODE, listOf(REMOTE_NODE_1, REMOTE_NODE_2))
+
+        assertTrue(fileHandlerMock.createdDirectory(JOURNALS_DIRECTORY, JOURNAL_DIRECTORY_NAME))
 
         replicatorStateJournal.observe(REPLICATOR_STATE)
 
-        verify(mockFileHandler).write(JOURNAL_FILE, SERIALIZED_REPLICATOR_STATE)
-        verify(mockFileHandler).move(JOURNAL_FILE, LATEST_JOURNAL_FILE)
-        verifyNoMoreInteractions(mockFileHandler)
+        assertTrue(fileHandlerMock.wroteJournal(JOURNAL_FILE, SERIALIZED_REPLICATOR_STATE))
+        assertTrue(fileHandlerMock.movedJournal(JOURNAL_FILE, LATEST_JOURNAL_FILE))
     }
 }
