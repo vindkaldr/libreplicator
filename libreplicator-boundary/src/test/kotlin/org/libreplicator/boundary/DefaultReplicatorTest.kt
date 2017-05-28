@@ -17,67 +17,46 @@
 
 package org.libreplicator.boundary
 
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.whenever
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.Assert.assertThat
-import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.libreplicator.api.AlreadySubscribedException
 import org.libreplicator.api.LocalEventLog
 import org.libreplicator.api.NotSubscribedException
-import org.libreplicator.api.Observer
-import org.libreplicator.api.RemoteEventLog
-import org.libreplicator.api.Replicator
 import org.libreplicator.api.Subscription
-import org.libreplicator.interactor.api.LogDispatcher
-import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
 
-@RunWith(MockitoJUnitRunner::class)
 class DefaultReplicatorTest {
-    @Mock private lateinit var mockLogDispatcher: LogDispatcher
-
-    @Mock private lateinit var mockLocalEventLog: LocalEventLog
-    @Mock private lateinit var mockRemoteEventLogObserver: Observer<RemoteEventLog>
-    @Mock private lateinit var mockSubscription: Subscription
-
-    private lateinit var replicator: Replicator
-
-    @Before
-    fun setUp() {
-        replicator = DefaultReplicator(mockLogDispatcher)
-    }
+    private val localEventLogDummy: LocalEventLog = LocalEventLogDummy()
+    private val remoteEventLogObserverDummy = RemoteEventLogObserverDummy()
+    private var subscriptionDummy: Subscription = SubscriptionDummy()
 
     @Test(expected = NotSubscribedException::class)
     fun replicate_shouldThrowException_whenNotSubscribed() {
-        replicator.replicate(mockLocalEventLog)
+        DefaultReplicator(NotSubscribedLogDispatcherDummy()).replicate(localEventLogDummy)
     }
 
     @Test
     fun replicate_shouldPassLocalEventLogToDispatcher() {
-        whenever(mockLogDispatcher.hasSubscription()).thenReturn(true)
+        val subscribedLogDispatcherMock = SubscribedLogDispatcherMock.createWithExpectedLocalEventLog()
+        val replicator = DefaultReplicator(subscribedLogDispatcherMock)
 
-        replicator.replicate(mockLocalEventLog)
+        replicator.replicate(localEventLogDummy)
 
-        verify(mockLogDispatcher).dispatch(mockLocalEventLog)
+        assertThat(subscribedLogDispatcherMock.getObservedLocalEventLogs(), equalTo(listOf(localEventLogDummy)))
     }
 
     @Test(expected = AlreadySubscribedException::class)
     fun subscribe_shouldThrowException_whenAlreadySubscribed() {
-        whenever(mockLogDispatcher.hasSubscription()).thenReturn(true)
-
-        replicator.subscribe(mockRemoteEventLogObserver)
+        DefaultReplicator(SubscribedLogDispatcherDummy()).subscribe(remoteEventLogObserverDummy)
     }
 
     @Test
     fun subscribe_shouldPassRemoteEventLogObserverToDispatcher_thenReturnSubscription() {
-        whenever(mockLogDispatcher.subscribe(mockRemoteEventLogObserver)).thenReturn(mockSubscription)
+        val notSubscribedLogDispatcherMock = NotSubscribedLogDispatcherMock(remoteEventLogObserverDummy, subscriptionDummy)
+        val replicator = DefaultReplicator(notSubscribedLogDispatcherMock)
 
-        val subscription = replicator.subscribe(mockRemoteEventLogObserver)
+        val subscription = replicator.subscribe(remoteEventLogObserverDummy)
 
-        verify(mockLogDispatcher).subscribe(mockRemoteEventLogObserver)
-        assertThat(subscription, equalTo(mockSubscription))
+        assertThat(subscription, equalTo(subscriptionDummy))
     }
 }

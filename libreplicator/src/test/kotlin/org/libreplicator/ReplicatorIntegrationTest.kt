@@ -23,6 +23,7 @@ import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.libreplicator.api.Subscription
+import org.libreplicator.RemoteEventLogObserverMock
 
 class ReplicatorIntegrationTest {
     private companion object {
@@ -44,9 +45,9 @@ class ReplicatorIntegrationTest {
     private val replicator2 = libReplicatorFactory.createReplicator(node2, listOf(node1, node3))
     private val replicator3 = libReplicatorFactory.createReplicator(node3, listOf(node1, node2))
 
-    private val eventLogObserverMock1 = EventLogObserverMock.createWithExpectedEventLogCount(4)
-    private val eventLogObserverMock2 = EventLogObserverMock.createWithExpectedEventLogCount(4)
-    private val eventLogObserverMock3 = EventLogObserverMock.createWithExpectedEventLogCount(4)
+    private val eventLogObserverMock1 = RemoteEventLogObserverMock.createWithExpectedEventLogCount(4)
+    private val eventLogObserverMock2 = RemoteEventLogObserverMock.createWithExpectedEventLogCount(4)
+    private val eventLogObserverMock3 = RemoteEventLogObserverMock.createWithExpectedEventLogCount(4)
 
     private lateinit var subscription1: Subscription
     private lateinit var subscription2: Subscription

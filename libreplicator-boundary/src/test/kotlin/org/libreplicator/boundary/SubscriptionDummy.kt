@@ -15,8 +15,11 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    compile project(':libreplicator-api')
+package org.libreplicator.boundary
 
-    compile group: 'junit', name: 'junit', version: junitVersion
+import org.libreplicator.api.Subscription
+
+class SubscriptionDummy : Subscription {
+    override fun unsubscribe() {
+    }
 }

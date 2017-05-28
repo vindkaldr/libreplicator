@@ -15,8 +15,21 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    compile project(':libreplicator-api')
+package org.libreplicator.boundary
 
-    compile group: 'junit', name: 'junit', version: junitVersion
+import org.libreplicator.api.LocalEventLog
+import org.libreplicator.api.Observer
+import org.libreplicator.api.RemoteEventLog
+import org.libreplicator.api.Subscription
+import org.libreplicator.interactor.api.LogDispatcher
+
+class SubscribedLogDispatcherDummy : LogDispatcher {
+    override fun dispatch(localEventLog: LocalEventLog) {
+    }
+
+    override fun subscribe(remoteEventLogObserver: Observer<RemoteEventLog>): Subscription {
+        return SubscriptionDummy()
+    }
+
+    override fun hasSubscription(): Boolean = true
 }

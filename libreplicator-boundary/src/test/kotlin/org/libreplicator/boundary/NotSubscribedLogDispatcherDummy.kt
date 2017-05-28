@@ -15,27 +15,21 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator
+package org.libreplicator.boundary
 
+import org.libreplicator.api.LocalEventLog
 import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteEventLog
-import org.libreplicator.common.test.ObjectObserver
+import org.libreplicator.api.Subscription
+import org.libreplicator.interactor.api.LogDispatcher
 
-class EventLogObserverMock private constructor(expectedEventLogCount: Int) : Observer<RemoteEventLog> {
-    companion object {
-        fun create() = createWithExpectedEventLogCount(0)
-
-        fun createWithExpectedEventLogCount(expectedEventLogCount: Int) =
-                EventLogObserverMock(expectedEventLogCount)
+class NotSubscribedLogDispatcherDummy : LogDispatcher {
+    override fun dispatch(localEventLog: LocalEventLog) {
     }
 
-    private val eventLogObserver = ObjectObserver.createWithExpectedObjectCount<RemoteEventLog>(expectedEventLogCount)
-
-    override fun observe(observable: RemoteEventLog) {
-        eventLogObserver.observe(observable)
+    override fun subscribe(remoteEventLogObserver: Observer<RemoteEventLog>): Subscription {
+        return SubscriptionDummy()
     }
 
-    fun getObservedLogs(): List<String> {
-        return eventLogObserver.getObservedObjects().map { it.log }
-    }
+    override fun hasSubscription(): Boolean = false
 }
