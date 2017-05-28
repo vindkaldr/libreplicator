@@ -15,22 +15,14 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-rootProject.name = 'libreplicator-root'
+package org.libreplicator.crypto.module
 
-include ':libreplicator'
-include ':libreplicator-api'
-include ':libreplicator-boundary'
-include ':libreplicator-common-test'
-include ':libreplicator-crypto'
-include ':libreplicator-crypto-api'
-include ':libreplicator-interactor'
-include ':libreplicator-interactor-api'
-include ':libreplicator-journal'
-include ':libreplicator-journal-api'
-include ':libreplicator-json'
-include ':libreplicator-json-api'
-include ':libreplicator-log'
-include ':libreplicator-model'
-include ':libreplicator-network'
-include ':libreplicator-network-api'
+import dagger.Binds
+import dagger.Module
+import org.libreplicator.crypto.DefaultMessageCipher
+import org.libreplicator.crypto.api.MessageCipher
 
+@Module
+interface LibReplicatorCryptoModule {
+    @Binds fun bindMessageCipher(defaultMessageCipher: DefaultMessageCipher): MessageCipher
+}
