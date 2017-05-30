@@ -21,12 +21,9 @@ import org.junit.Assert
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 
-class ObjectObserver<T> private constructor(private val expectedObjectCount: Int) {
-    companion object {
-        private val TIMEOUT_IN_SECONDS = 3L
-
-        fun <T> createWithExpectedObjectCount(expectedObjectCount: Int): ObjectObserver<T> =
-                ObjectObserver(expectedObjectCount)
+class ObjectObserver<T> constructor(private val numberOfExpectedObjects: Int = 0) {
+    private companion object {
+        private val TIMEOUT_IN_SECONDS = 1L
     }
 
     private val observedObjects: MutableList<T> = mutableListOf()
@@ -38,9 +35,13 @@ class ObjectObserver<T> private constructor(private val expectedObjectCount: Int
     }
 
     fun getObservedObjects(): List<T> {
-        if (!semaphore.tryAcquire(expectedObjectCount, TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)) {
+        if (!semaphore.tryAcquire(numberOfExpectedObjects, TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)) {
             Assert.fail("Timeout reached!")
         }
         return observedObjects
+    }
+
+    fun observedAnyObjects(): Boolean {
+        return semaphore.tryAcquire(TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)
     }
 }

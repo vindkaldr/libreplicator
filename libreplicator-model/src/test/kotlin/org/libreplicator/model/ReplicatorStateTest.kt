@@ -53,7 +53,7 @@ class ReplicatorStateTest {
     @Before
     fun setUp() {
         replicatorState = ReplicatorState()
-        stateObserverMock = StateObserverMock.createWithExpectedStateCount(1)
+        stateObserverMock = StateObserverMock(numberOfExpectedStates = 1)
     }
 
     @Test

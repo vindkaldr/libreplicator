@@ -20,13 +20,9 @@ package org.libreplicator.model
 import org.libreplicator.api.Observer
 import org.libreplicator.common.test.ObjectObserver
 
-class StateObserverMock private constructor(expectedStateCount: Int): Observer<ReplicatorState> {
-    companion object {
-        fun createWithExpectedStateCount(expectedStateCount: Int) =
-                StateObserverMock(expectedStateCount)
-    }
-
-    private val objectObserver = ObjectObserver.createWithExpectedObjectCount<ReplicatorState>(expectedStateCount)
+class StateObserverMock constructor(numberOfExpectedStates: Int = 0): Observer<ReplicatorState> {
+    private val objectObserver: ObjectObserver<ReplicatorState> =
+            ObjectObserver(numberOfExpectedObjects = numberOfExpectedStates)
 
     override fun observe(observable: ReplicatorState) {
         objectObserver.observe(observable)

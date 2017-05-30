@@ -37,7 +37,7 @@ class DefaultReplicatorTest {
 
     @Test
     fun replicate_shouldPassLocalEventLogToDispatcher() {
-        val subscribedLogDispatcherMock = SubscribedLogDispatcherMock.createWithExpectedLocalEventLog()
+        val subscribedLogDispatcherMock = SubscribedLogDispatcherMock()
         val replicator = DefaultReplicator(subscribedLogDispatcherMock)
 
         replicator.replicate(localEventLogDummy)

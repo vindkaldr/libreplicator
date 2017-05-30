@@ -26,7 +26,7 @@ import org.libreplicator.api.Subscription
 import org.libreplicator.journal.module.LibReplicatorJournalSettings
 import java.nio.file.Files
 
-class ReplicatorJournalingIntegrationTest {
+class ReplicatorJournalIntegrationTest {
     private companion object {
         private val DIRECTORY_OF_JOURNALS = Files.createTempDirectory("libreplicator-journals-")
 
@@ -47,13 +47,13 @@ class ReplicatorJournalingIntegrationTest {
             journalSettings = LibReplicatorJournalSettings(isJournalingEnabled = true, directoryOfJournals = DIRECTORY_OF_JOURNALS))
 
     private val localReplicatorFactory = LibReplicatorFactory(localLibReplicatorSettings)
-    private val localEventLogObserverMock = RemoteEventLogObserverMock.create()
+    private val localEventLogObserverMock = RemoteEventLogObserverMock()
     private val localNode = localReplicatorFactory.createReplicatorNode(LOCAL_NODE_ID, NODE_HOST, LOCAL_NODE_PORT)
     private lateinit var localReplicator: Replicator
     private lateinit var localReplicatorSubscription: Subscription
 
     private val remoteLibReplicatorFactory = LibReplicatorFactory()
-    private val remoteEventLogObserverMock = RemoteEventLogObserverMock.createWithExpectedEventLogCount(3)
+    private val remoteEventLogObserverMock = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 3)
     private val remoteNode = remoteLibReplicatorFactory.createReplicatorNode(REMOTE_NODE_ID, NODE_HOST, REMOTE_NODE_PORT)
     private val remoteReplicator = remoteLibReplicatorFactory.createReplicator(remoteNode, listOf(localNode))
     private lateinit var remoteReplicatorSubscription: Subscription

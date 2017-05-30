@@ -21,13 +21,9 @@ import org.libreplicator.api.Observer
 import org.libreplicator.common.test.ObjectObserver
 import org.libreplicator.model.ReplicatorMessage
 
-class MessageObserverMock private constructor(expectedMessageCount: Int) : Observer<ReplicatorMessage> {
-    companion object {
-        fun createWithExpectedMessageCount(expectedMessageCount: Int): MessageObserverMock =
-                MessageObserverMock(expectedMessageCount)
-    }
-
-    private val messageObserver = ObjectObserver.createWithExpectedObjectCount<ReplicatorMessage>(expectedMessageCount)
+class MessageObserverMock constructor(numberOfExpectedMessages: Int = 0) : Observer<ReplicatorMessage> {
+    private val messageObserver: ObjectObserver<ReplicatorMessage> =
+            ObjectObserver(numberOfExpectedObjects = numberOfExpectedMessages)
 
     override fun observe(observable: ReplicatorMessage) {
         messageObserver.observe(observable)

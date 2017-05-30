@@ -68,9 +68,9 @@ class DefaultLogRouterIntegrationTest {
 
     @Test
     fun router_shouldRouteMessage() {
-        messageObserverMock1 = MessageObserverMock.createWithExpectedMessageCount(1)
+        messageObserverMock1 = MessageObserverMock(numberOfExpectedMessages = 1)
         subscription1 = logRouter1.subscribe(messageObserverMock1)
-        messageObserverMock2 = MessageObserverMock.createWithExpectedMessageCount(1)
+        messageObserverMock2 = MessageObserverMock(numberOfExpectedMessages = 1)
         subscription2 = logRouter2.subscribe(messageObserverMock2)
 
         logRouter1.send(NODE_2, MESSAGE)
@@ -82,9 +82,9 @@ class DefaultLogRouterIntegrationTest {
 
     @Test
     fun router_shouldRouteMessages() {
-        messageObserverMock1 = MessageObserverMock.createWithExpectedMessageCount(2)
+        messageObserverMock1 = MessageObserverMock(numberOfExpectedMessages = 2)
         subscription1 = logRouter1.subscribe(messageObserverMock1)
-        messageObserverMock2 = MessageObserverMock.createWithExpectedMessageCount(2)
+        messageObserverMock2 = MessageObserverMock(numberOfExpectedMessages = 2)
         subscription2 = logRouter2.subscribe(messageObserverMock2)
 
         logRouter1.send(NODE_2, MESSAGE)

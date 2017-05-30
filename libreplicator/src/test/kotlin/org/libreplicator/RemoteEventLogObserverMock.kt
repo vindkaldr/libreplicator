@@ -21,15 +21,9 @@ import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteEventLog
 import org.libreplicator.common.test.ObjectObserver
 
-class RemoteEventLogObserverMock private constructor(expectedEventLogCount: Int) : Observer<RemoteEventLog> {
-    companion object {
-        fun create() = createWithExpectedEventLogCount(0)
-
-        fun createWithExpectedEventLogCount(expectedEventLogCount: Int) =
-                RemoteEventLogObserverMock(expectedEventLogCount)
-    }
-
-    private val eventLogObserver = ObjectObserver.createWithExpectedObjectCount<RemoteEventLog>(expectedEventLogCount)
+class RemoteEventLogObserverMock constructor(numberOfExpectedEventLogs: Int = 0) : Observer<RemoteEventLog> {
+    private val eventLogObserver: ObjectObserver<RemoteEventLog> =
+            ObjectObserver(numberOfExpectedObjects = numberOfExpectedEventLogs)
 
     override fun observe(observable: RemoteEventLog) {
         eventLogObserver.observe(observable)
@@ -37,5 +31,9 @@ class RemoteEventLogObserverMock private constructor(expectedEventLogCount: Int)
 
     fun getObservedLogs(): List<String> {
         return eventLogObserver.getObservedObjects().map { it.log }
+    }
+
+    fun observedAnyLogs(): Boolean {
+        return eventLogObserver.observedAnyObjects()
     }
 }

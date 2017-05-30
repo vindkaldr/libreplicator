@@ -24,12 +24,9 @@ import org.libreplicator.api.Subscription
 import org.libreplicator.common.test.ObjectObserver
 import org.libreplicator.interactor.api.LogDispatcher
 
-class SubscribedLogDispatcherMock private constructor(expectedLocalEventLogCount: Int): LogDispatcher {
-    companion object {
-        fun createWithExpectedLocalEventLog() = SubscribedLogDispatcherMock(1)
-    }
-
-    private val objectObserver = ObjectObserver.createWithExpectedObjectCount<LocalEventLog>(expectedLocalEventLogCount)
+class SubscribedLogDispatcherMock constructor(numberOfExpectedLocalEventLogs: Int = 0): LogDispatcher {
+    private val objectObserver: ObjectObserver<LocalEventLog> =
+            ObjectObserver(numberOfExpectedObjects = numberOfExpectedLocalEventLogs)
 
     override fun dispatch(localEventLog: LocalEventLog) {
         objectObserver.observe(localEventLog)
