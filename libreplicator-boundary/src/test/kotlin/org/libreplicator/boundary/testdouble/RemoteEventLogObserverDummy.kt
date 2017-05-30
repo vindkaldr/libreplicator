@@ -15,29 +15,12 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network
+package org.libreplicator.boundary.testdouble
 
-import org.junit.Assert
-import org.libreplicator.json.api.JsonMapper
-import org.libreplicator.model.ReplicatorMessage
-import kotlin.reflect.KClass
+import org.libreplicator.api.Observer
+import org.libreplicator.api.RemoteEventLog
 
-class JsonMapperStub (
-        private val message: ReplicatorMessage,
-        private val deserializedMessage: String) : JsonMapper {
-
-    override fun write(any: Any): String {
-        if (any != message) {
-            Assert.fail("Unexpected call!")
-        }
-        return deserializedMessage
-    }
-
-    override fun <T : Any> read(string: String, kotlinType: KClass<T>): T {
-        if (string != deserializedMessage || kotlinType != ReplicatorMessage::class) {
-            Assert.fail("Unexpected call!")
-        }
-        @Suppress("UNCHECKED_CAST")
-        return message as T
+class RemoteEventLogObserverDummy : Observer<RemoteEventLog> {
+    override fun observe(observable: RemoteEventLog) {
     }
 }

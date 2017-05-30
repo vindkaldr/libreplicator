@@ -24,6 +24,13 @@ import org.libreplicator.api.AlreadySubscribedException
 import org.libreplicator.api.LocalEventLog
 import org.libreplicator.api.NotSubscribedException
 import org.libreplicator.api.Subscription
+import org.libreplicator.boundary.testdouble.LocalEventLogDummy
+import org.libreplicator.boundary.testdouble.NotSubscribedLogDispatcherDummy
+import org.libreplicator.boundary.testdouble.NotSubscribedLogDispatcherMock
+import org.libreplicator.boundary.testdouble.RemoteEventLogObserverDummy
+import org.libreplicator.boundary.testdouble.SubscribedLogDispatcherDummy
+import org.libreplicator.boundary.testdouble.SubscribedLogDispatcherMock
+import org.libreplicator.boundary.testdouble.SubscriptionDummy
 
 class DefaultReplicatorTest {
     private val localEventLogDummy: LocalEventLog = LocalEventLogDummy()

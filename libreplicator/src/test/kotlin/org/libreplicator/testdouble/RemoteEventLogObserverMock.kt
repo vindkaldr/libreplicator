@@ -15,11 +15,25 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.boundary
+package org.libreplicator.testdouble
 
-import org.libreplicator.api.Subscription
+import org.libreplicator.api.Observer
+import org.libreplicator.api.RemoteEventLog
+import org.libreplicator.common.test.ObjectObserver
 
-class SubscriptionDummy : Subscription {
-    override fun unsubscribe() {
+class RemoteEventLogObserverMock constructor(numberOfExpectedEventLogs: Int = 0) : Observer<RemoteEventLog> {
+    private val eventLogObserver: ObjectObserver<RemoteEventLog> =
+            ObjectObserver(numberOfExpectedObjects = numberOfExpectedEventLogs)
+
+    override fun observe(observable: RemoteEventLog) {
+        eventLogObserver.observe(observable)
+    }
+
+    fun getObservedLogs(): List<String> {
+        return eventLogObserver.getObservedObjects().map { it.log }
+    }
+
+    fun observedAnyLogs(): Boolean {
+        return eventLogObserver.observedAnyObjects()
     }
 }

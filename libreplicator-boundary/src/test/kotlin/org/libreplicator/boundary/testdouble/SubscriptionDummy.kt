@@ -15,20 +15,11 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.model
+package org.libreplicator.boundary.testdouble
 
-import org.libreplicator.api.Observer
-import org.libreplicator.common.test.ObjectObserver
+import org.libreplicator.api.Subscription
 
-class StateObserverMock constructor(numberOfExpectedStates: Int = 0): Observer<ReplicatorState> {
-    private val objectObserver: ObjectObserver<ReplicatorState> =
-            ObjectObserver(numberOfExpectedObjects = numberOfExpectedStates)
-
-    override fun observe(observable: ReplicatorState) {
-        objectObserver.observe(observable)
-    }
-
-    fun getObservedStates(): List<ReplicatorState> {
-        return objectObserver.getObservedObjects()
+class SubscriptionDummy : Subscription {
+    override fun unsubscribe() {
     }
 }

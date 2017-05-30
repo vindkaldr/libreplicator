@@ -24,6 +24,7 @@ import org.junit.Test
 import org.libreplicator.api.Replicator
 import org.libreplicator.api.Subscription
 import org.libreplicator.journal.module.LibReplicatorJournalSettings
+import org.libreplicator.testdouble.RemoteEventLogObserverMock
 import java.nio.file.Files
 
 class ReplicatorJournalIntegrationTest {

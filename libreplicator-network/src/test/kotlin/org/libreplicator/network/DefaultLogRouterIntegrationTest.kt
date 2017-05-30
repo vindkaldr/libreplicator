@@ -29,6 +29,8 @@ import org.libreplicator.model.EventNode
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.TimeTable
 import org.libreplicator.network.api.LogRouter
+import org.libreplicator.network.testdouble.JsonMapperStub
+import org.libreplicator.network.testdouble.MessageObserverMock
 
 class DefaultLogRouterIntegrationTest {
     companion object {

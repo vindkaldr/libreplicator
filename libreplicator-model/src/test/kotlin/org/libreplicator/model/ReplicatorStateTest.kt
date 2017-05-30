@@ -23,6 +23,7 @@ import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.model.testdouble.StateObserverMock
 
 class ReplicatorStateTest {
     private companion object {

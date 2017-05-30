@@ -22,6 +22,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertThat
 import org.junit.Test
 import org.libreplicator.crypto.module.LibReplicatorCryptoSettings
+import org.libreplicator.testdouble.RemoteEventLogObserverMock
 
 class ReplicatorCryptoIntegrationTest {
     private companion object {
