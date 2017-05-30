@@ -18,7 +18,7 @@
 package org.libreplicator.journal
 
 import org.libreplicator.api.ReplicatorNode
-import org.libreplicator.crypto.api.MessageCipher
+import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.journal.api.ReplicatorStateJournal
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonReadException
@@ -30,7 +30,7 @@ import javax.inject.Inject
 class DefaultReplicatorStateJournal @Inject constructor(
         private val fileHandler: FileHandler,
         private val jsonMapper: JsonMapper,
-        private val messageCipher: MessageCipher,
+        private val cipher: Cipher,
         journalsDirectory: Path,
         localNode: ReplicatorNode,
         remoteNodes: List<ReplicatorNode>) : ReplicatorStateJournal {
@@ -47,7 +47,7 @@ class DefaultReplicatorStateJournal @Inject constructor(
 
     override fun getReplicatorState(): ReplicatorState {
         return try {
-            jsonMapper.read(messageCipher.decrypt(fileHandler.readFirstLine(latestJournalFile)), ReplicatorState::class)
+            jsonMapper.read(cipher.decrypt(fileHandler.readFirstLine(latestJournalFile)), ReplicatorState::class)
         }
         catch (jsonReadException: JsonReadException) {
             ReplicatorState()
@@ -61,7 +61,7 @@ class DefaultReplicatorStateJournal @Inject constructor(
     }
 
     override fun observe(observable: ReplicatorState) {
-        fileHandler.write(journalFile, messageCipher.encrypt(jsonMapper.write(observable)))
+        fileHandler.write(journalFile, cipher.encrypt(jsonMapper.write(observable)))
         fileHandler.move(journalFile, latestJournalFile)
     }
 

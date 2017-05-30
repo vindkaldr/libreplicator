@@ -19,18 +19,18 @@ package org.libreplicator.crypto.module
 
 import dagger.Module
 import dagger.Provides
-import org.libreplicator.crypto.DefaultMessageCipher
-import org.libreplicator.crypto.api.MessageCipher
+import org.libreplicator.crypto.DefaultCipher
+import org.libreplicator.crypto.api.Cipher
 
 @Module
 class LibReplicatorCryptoModule(private val cryptoSettings: LibReplicatorCryptoSettings) {
-    @Provides fun provideMessageCipher(): MessageCipher {
+    @Provides fun provideMessageCipher(): Cipher {
         if (cryptoSettings.isEncryptionEnabled && cryptoSettings.sharedSecret.isNotBlank()) {
-            return DefaultMessageCipher(cryptoSettings.sharedSecret)
+            return DefaultCipher(cryptoSettings.sharedSecret)
         }
-        return object : MessageCipher {
-            override fun encrypt(message: String): String = message
-            override fun decrypt(encryptedMessage: String): String = encryptedMessage
+        return object : Cipher {
+            override fun encrypt(content: String): String = content
+            override fun decrypt(encryptedContent: String): String = encryptedContent
         }
     }
 }

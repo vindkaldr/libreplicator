@@ -25,9 +25,9 @@ import org.bouncycastle.crypto.modes.CBCBlockCipher
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher
 import org.bouncycastle.util.encoders.Hex
 import org.libreplicator.crypto.api.CipherException
-import org.libreplicator.crypto.api.MessageCipher
+import org.libreplicator.crypto.api.Cipher
 
-class DefaultMessageCipher(private val sharedSecret: String) : MessageCipher {
+class DefaultCipher(private val sharedSecret: String) : Cipher {
     private companion object {
         private val SALT = ByteArray(0)
         private val ITERATION_COUNT = 1024
@@ -41,19 +41,19 @@ class DefaultMessageCipher(private val sharedSecret: String) : MessageCipher {
         private val ZEROTH_POSITION = 0
     }
 
-    override fun encrypt(message: String): String {
+    override fun encrypt(content: String): String {
         val cipherParameters = getCipherParameters()
         val cipher = getCipherForEncryption(cipherParameters)
 
-        return String(Hex.encode(cipherMessage(cipher, message.toByteArray())))
+        return String(Hex.encode(cipherContent(cipher, content.toByteArray())))
     }
 
-    override fun decrypt(encryptedMessage: String): String {
+    override fun decrypt(encryptedContent: String): String {
         try {
             val cipherParameters = getCipherParameters()
             val cipher = getCipherForDecryption(cipherParameters)
 
-            return String(cipherMessage(cipher, Hex.decode(encryptedMessage.toByteArray())))
+            return String(cipherContent(cipher, Hex.decode(encryptedContent.toByteArray())))
         }
         catch (throwable: Throwable) {
             throw CipherException()
@@ -81,10 +81,10 @@ class DefaultMessageCipher(private val sharedSecret: String) : MessageCipher {
 
     private fun getCipher(): BufferedBlockCipher = PaddedBufferedBlockCipher(CBCBlockCipher(AESEngine()))
 
-    private fun cipherMessage(cipher: BufferedBlockCipher, message: ByteArray): ByteArray {
-        val buffer = ByteArray(cipher.getOutputSize(message.size))
+    private fun cipherContent(cipher: BufferedBlockCipher, content: ByteArray): ByteArray {
+        val buffer = ByteArray(cipher.getOutputSize(content.size))
 
-        val numberOfCopiedBytes = cipher.processBytes(message, ZEROTH_POSITION, message.size, buffer, ZEROTH_POSITION)
+        val numberOfCopiedBytes = cipher.processBytes(content, ZEROTH_POSITION, content.size, buffer, ZEROTH_POSITION)
         val nextNumberOfCopiedBytes = cipher.doFinal(buffer, numberOfCopiedBytes)
 
         return buffer.copyOf(numberOfCopiedBytes + nextNumberOfCopiedBytes)

@@ -29,7 +29,7 @@ import org.eclipse.jetty.server.handler.AbstractHandler
 import org.libreplicator.api.Observer
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.api.Subscription
-import org.libreplicator.crypto.api.MessageCipher
+import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.model.ReplicatorMessage
@@ -41,7 +41,7 @@ import javax.servlet.http.HttpServletResponse
 
 class DefaultLogRouter @Inject constructor(
         private val jsonMapper: JsonMapper,
-        private val messageCipher: MessageCipher,
+        private val cipher: Cipher,
         private val localNode: ReplicatorNode) : LogRouter {
 
     private companion object {
@@ -74,13 +74,13 @@ class DefaultLogRouter @Inject constructor(
 
     private fun createHttpPostRequest(remoteNode: ReplicatorNode, path: String, message: ReplicatorMessage): HttpPost {
         val httpPost = HttpPost(remoteNode.toUri(path))
-        httpPost.entity = StringEntity(messageCipher.encrypt(jsonMapper.write(message)))
+        httpPost.entity = StringEntity(cipher.encrypt(jsonMapper.write(message)))
         return httpPost
     }
 
     override fun subscribe(messageObserver: Observer<ReplicatorMessage>): Subscription = synchronized(this) {
         val server = createServer(localNode)
-        server.handler = ReplicatorMessageHandler(jsonMapper, messageCipher, messageObserver)
+        server.handler = ReplicatorMessageHandler(jsonMapper, cipher, messageObserver)
         server.startAndWaitUntilStarted()
 
         hasSubscription = true
@@ -99,7 +99,7 @@ class DefaultLogRouter @Inject constructor(
 
     private class ReplicatorMessageHandler(
             private val jsonMapper: JsonMapper,
-            private val messageCipher: MessageCipher,
+            private val cipher: Cipher,
             private val messageObserver: Observer<ReplicatorMessage>) : AbstractHandler() {
 
         override fun handle(target: String?, baseRequest: Request?, request: HttpServletRequest?, response: HttpServletResponse?) {
@@ -111,7 +111,7 @@ class DefaultLogRouter @Inject constructor(
 
         private fun tryDeserializeAndObserveMessage(baseRequest: Request?) {
             try {
-                messageObserver.observe(deserializeMessage(messageCipher.decrypt(baseRequest.getMessage())))
+                messageObserver.observe(deserializeMessage(cipher.decrypt(baseRequest.getMessage())))
             }
             catch (e: JsonReadException) {
                 logger.warn("Failed to deserialize message!")

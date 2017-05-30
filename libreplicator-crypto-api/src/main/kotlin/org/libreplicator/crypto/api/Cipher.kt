@@ -17,7 +17,7 @@
 
 package org.libreplicator.crypto.api
 
-interface MessageCipher {
-    fun encrypt(message: String): String
-    fun decrypt(encryptedMessage: String): String
+interface Cipher {
+    fun encrypt(content: String): String
+    fun decrypt(encryptedContent: String): String
 }

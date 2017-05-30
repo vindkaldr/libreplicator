@@ -20,7 +20,7 @@ package org.libreplicator.journal.module
 import dagger.Module
 import dagger.Provides
 import org.libreplicator.api.ReplicatorNode
-import org.libreplicator.crypto.api.MessageCipher
+import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.journal.DefaultFileHandler
 import org.libreplicator.journal.DefaultReplicatorStateJournal
 import org.libreplicator.journal.FileHandler
@@ -40,12 +40,12 @@ class LibReplicatorJournalModule (
     }
 
     @Provides @Singleton
-    fun provideReplicatorState(fileHandler: FileHandler, jsonMapper: JsonMapper, messageCipher: MessageCipher): ReplicatorState {
+    fun provideReplicatorState(fileHandler: FileHandler, jsonMapper: JsonMapper, cipher: Cipher): ReplicatorState {
         if (!journalSettings.isJournalingEnabled) {
             return ReplicatorState()
         }
 
-        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandler, jsonMapper, messageCipher,
+        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandler, jsonMapper, cipher,
                 journalSettings.directoryOfJournals, localNode, remoteNodes)
         val replicatorState = replicatorStateJournal.getReplicatorState()
 

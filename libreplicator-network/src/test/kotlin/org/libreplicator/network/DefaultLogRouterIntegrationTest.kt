@@ -23,7 +23,7 @@ import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.libreplicator.api.Subscription
-import org.libreplicator.crypto.api.MessageCipher
+import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.model.EventNode
 import org.libreplicator.model.ReplicatorMessage
@@ -43,9 +43,9 @@ class DefaultLogRouterIntegrationTest {
 
     private var jsonMapperStub: JsonMapper= JsonMapperStub(MESSAGE, SERIALIZED_MESSAGE)
 
-    private val messageCipherStub: MessageCipher = object : MessageCipher {
-        override fun encrypt(message: String): String = message
-        override fun decrypt(encryptedMessage: String): String = encryptedMessage
+    private val cipherStub: Cipher = object : Cipher {
+        override fun encrypt(content: String): String = content
+        override fun decrypt(encryptedContent: String): String = encryptedContent
     }
 
     private lateinit var logRouter1: LogRouter
@@ -58,8 +58,8 @@ class DefaultLogRouterIntegrationTest {
 
     @Before
     fun setUp() {
-        logRouter1 = DefaultLogRouter(jsonMapperStub, messageCipherStub, NODE_1)
-        logRouter2 = DefaultLogRouter(jsonMapperStub, messageCipherStub, NODE_2)
+        logRouter1 = DefaultLogRouter(jsonMapperStub, cipherStub, NODE_1)
+        logRouter2 = DefaultLogRouter(jsonMapperStub, cipherStub, NODE_2)
     }
 
     @After

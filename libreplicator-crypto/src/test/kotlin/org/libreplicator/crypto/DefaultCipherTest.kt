@@ -22,49 +22,49 @@ import org.hamcrest.Matchers.not
 import org.junit.Assert.assertThat
 import org.junit.Test
 import org.libreplicator.crypto.api.CipherException
-import org.libreplicator.crypto.api.MessageCipher
+import org.libreplicator.crypto.api.Cipher
 
-class DefaultMessageCipherTest {
+class DefaultCipherTest {
     private companion object {
         private val SHARED_SECRET = "sharedSecret"
         private val CORRUPTED_SHARED_SECRET = "corruptedSharedSecret"
 
-        private val MESSAGE = "message"
-        private val ENCRYPTED_MESSAGE = "a34202b818283972eea9cb5cacdec659"
-        private val CORRUPTED_MESSAGE = "corruptedMessage"
+        private val CONTENT = "content"
+        private val ENCRYPTED_CONTENT = "3e6870c7402fd311a09b8cbcdb9b03c2"
+        private val CORRUPTED_ENCRYPTED_CONTENT = "corruptedEncryptedContent"
     }
 
     @Test
-    fun encrypt_encryptsMessage() {
-        val messageCipher: MessageCipher = DefaultMessageCipher(SHARED_SECRET)
-        assertThat(messageCipher.encrypt(MESSAGE), not(equalTo(MESSAGE)))
+    fun encrypt_encryptsContent() {
+        val cipher: Cipher = DefaultCipher(SHARED_SECRET)
+        assertThat(cipher.encrypt(CONTENT), not(equalTo(CONTENT)))
     }
 
     @Test
-    fun decrypt_decryptsMessage() {
-        val messageCipher: MessageCipher = DefaultMessageCipher(SHARED_SECRET)
-        assertThat(messageCipher.decrypt(ENCRYPTED_MESSAGE), not(equalTo(ENCRYPTED_MESSAGE)))
+    fun decrypt_decryptsContent() {
+        val cipher: Cipher = DefaultCipher(SHARED_SECRET)
+        assertThat(cipher.decrypt(ENCRYPTED_CONTENT), not(equalTo(ENCRYPTED_CONTENT)))
     }
 
     @Test
-    fun cipher_encryptsThenDecryptsMessage_withSameSharedSecret() {
-        val messageCipher: MessageCipher = DefaultMessageCipher(SHARED_SECRET)
+    fun cipher_encryptsThenDecryptsContent_withSameSharedSecret() {
+        val cipher: Cipher = DefaultCipher(SHARED_SECRET)
 
-        val encryptedMessage = messageCipher.encrypt(MESSAGE)
-        val decryptedMessage = messageCipher.decrypt(encryptedMessage)
+        val encryptedContent = cipher.encrypt(CONTENT)
+        val decryptedContent = cipher.decrypt(encryptedContent)
 
-        assertThat(decryptedMessage, equalTo(MESSAGE))
+        assertThat(decryptedContent, equalTo(CONTENT))
     }
 
     @Test(expected = CipherException::class)
     fun decrypt_throwsException_forCorruptedSharedSecret() {
-        val messageCipher: MessageCipher = DefaultMessageCipher(CORRUPTED_SHARED_SECRET)
-        messageCipher.decrypt(ENCRYPTED_MESSAGE)
+        val cipher: Cipher = DefaultCipher(CORRUPTED_SHARED_SECRET)
+        cipher.decrypt(ENCRYPTED_CONTENT)
     }
 
     @Test(expected = CipherException::class)
-    fun decrypt_throwsException_forCorruptedMessage() {
-        val messageCipher: MessageCipher = DefaultMessageCipher(SHARED_SECRET)
-        messageCipher.decrypt(CORRUPTED_MESSAGE)
+    fun decrypt_throwsException_forCorruptedEncryptedContent() {
+        val cipher: Cipher = DefaultCipher(SHARED_SECRET)
+        cipher.decrypt(CORRUPTED_ENCRYPTED_CONTENT)
     }
 }
