@@ -20,12 +20,12 @@ package org.libreplicator
 import org.libreplicator.api.LocalEventLog
 import org.libreplicator.api.Replicator
 import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.component.DaggerLibReplicatorComponent
 import org.libreplicator.crypto.module.LibReplicatorCryptoModule
 import org.libreplicator.interactor.module.LibReplicatorInteractorModule
 import org.libreplicator.journal.module.LibReplicatorJournalModule
 import org.libreplicator.model.factory.LocalEventLogFactory
 import org.libreplicator.model.factory.ReplicatorNodeFactory
-import org.libreplicator.module.DaggerLibReplicatorComponent
 import org.libreplicator.network.module.LibReplicatorNetworkModule
 
 class LibReplicatorFactory(private val settings: LibReplicatorSettings = LibReplicatorSettings()) {
