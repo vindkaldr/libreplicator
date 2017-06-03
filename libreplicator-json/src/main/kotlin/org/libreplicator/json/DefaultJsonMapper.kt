@@ -17,7 +17,6 @@
 
 package org.libreplicator.json
 
-import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonMixin
@@ -28,7 +27,6 @@ import kotlin.reflect.KClass
 
 class DefaultJsonMapper @Inject constructor(private val jsonMixins: Set<JsonMixin>) : JsonMapper {
     private val objectMapper = jacksonObjectMapper()
-            .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
             .apply {
                 jsonMixins.forEach { addMixIn(it.targetClass.java, it.sourceClass.java) }
             }
