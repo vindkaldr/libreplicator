@@ -49,7 +49,10 @@ class DefaultLogRouter @Inject constructor(
         private val SYNC_PATH = "/sync"
     }
 
+    private lateinit var httpClient: CloseableHttpClient
     private var hasSubscription = false
+
+    private fun createHttpClient(): CloseableHttpClient = HttpClients.createDefault()
 
     override fun send(remoteNode: ReplicatorNode, message: ReplicatorMessage) = synchronized(this) {
         try {
@@ -64,13 +67,9 @@ class DefaultLogRouter @Inject constructor(
     }
 
     private fun serializeAndSendMessage(remoteNode: ReplicatorNode, message: ReplicatorMessage) {
-        val httpClient = createHttpClient()
         val httpPostRequest = createHttpPostRequest(remoteNode, SYNC_PATH, message)
-
-        httpClient.use { httpClient.execute(httpPostRequest) }
+        httpClient.execute(httpPostRequest)
     }
-
-    private fun createHttpClient(): CloseableHttpClient = HttpClients.createDefault()
 
     private fun createHttpPostRequest(remoteNode: ReplicatorNode, path: String, message: ReplicatorMessage): HttpPost {
         val httpPost = HttpPost(remoteNode.toUri(path))
@@ -83,11 +82,14 @@ class DefaultLogRouter @Inject constructor(
         server.handler = ReplicatorMessageHandler(jsonMapper, cipher, messageObserver)
         server.startAndWaitUntilStarted()
 
+        httpClient = createHttpClient()
         hasSubscription = true
 
         return object : Subscription {
             override fun unsubscribe() = synchronized(this) {
                 server.stopAndWaitUntilStarted()
+
+                httpClient.close()
                 hasSubscription = false
             }
         }
