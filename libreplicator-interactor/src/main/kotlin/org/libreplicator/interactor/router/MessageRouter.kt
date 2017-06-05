@@ -15,13 +15,15 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.journal
+package org.libreplicator.interactor.router
 
-import java.nio.file.Path
+import org.libreplicator.api.Observer
+import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.Subscription
+import org.libreplicator.model.ReplicatorMessage
 
-interface FileHandler {
-    fun createDirectory(parentPath: Path, directoryName: String): Path
-    fun readFirstLine(path: Path): String
-    fun write(path: Path, line: String)
-    fun move(source: Path, destination: Path)
+interface MessageRouter {
+    fun routeMessage(remoteNode: ReplicatorNode, message: ReplicatorMessage)
+    fun subscribe(messageObserver: Observer<ReplicatorMessage>): Subscription
+    fun hasSubscription(): Boolean
 }

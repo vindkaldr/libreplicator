@@ -15,23 +15,22 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network
+package org.libreplicator.interactor.router
 
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.libreplicator.api.NotSubscribedException
 import org.libreplicator.client.api.ReplicatorClient
+import org.libreplicator.interactor.router.testdouble.MessageObserverDummy
+import org.libreplicator.interactor.router.testdouble.ReplicatorClientMock
+import org.libreplicator.interactor.router.testdouble.ReplicatorClientProviderStub
+import org.libreplicator.interactor.router.testdouble.ReplicatorServerMock
+import org.libreplicator.interactor.router.testdouble.ReplicatorServerProviderStub
+import org.libreplicator.interactor.router.testdouble.SubscriptionMock
 import org.libreplicator.model.EventNode
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.TimeTable
-import org.libreplicator.network.api.MessageRouter
-import org.libreplicator.network.testdouble.MessageObserverDummy
-import org.libreplicator.network.testdouble.ReplicatorClientMock
-import org.libreplicator.network.testdouble.ReplicatorClientProviderStub
-import org.libreplicator.network.testdouble.ReplicatorServerMock
-import org.libreplicator.network.testdouble.ReplicatorServerProviderStub
-import org.libreplicator.network.testdouble.SubscriptionMock
 import org.libreplicator.server.api.ReplicatorServer
 import javax.inject.Provider
 

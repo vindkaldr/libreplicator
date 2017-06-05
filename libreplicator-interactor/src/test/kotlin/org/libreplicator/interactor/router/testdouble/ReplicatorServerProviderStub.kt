@@ -15,13 +15,13 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network.testdouble
+package org.libreplicator.interactor.router.testdouble
 
-import org.libreplicator.client.api.ReplicatorClient
+import org.libreplicator.server.api.ReplicatorServer
 import javax.inject.Provider
 
-class ReplicatorClientProviderStub constructor(
-        private val replicatorClient: ReplicatorClient) : Provider<ReplicatorClient> {
+class ReplicatorServerProviderStub constructor(
+        private val replicatorServer: ReplicatorServer) : Provider<ReplicatorServer> {
 
-    override fun get(): ReplicatorClient = replicatorClient
+    override fun get(): ReplicatorServer = replicatorServer
 }

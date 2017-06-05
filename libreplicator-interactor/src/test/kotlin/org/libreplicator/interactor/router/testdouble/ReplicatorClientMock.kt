@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network.testdouble
+package org.libreplicator.interactor.router.testdouble
 
 import org.junit.Assert
 import org.libreplicator.api.ReplicatorNode

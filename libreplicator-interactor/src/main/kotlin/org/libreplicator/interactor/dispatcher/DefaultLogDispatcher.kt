@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.interactor
+package org.libreplicator.interactor.dispatcher
 
 import org.libreplicator.api.LocalEventLog
 import org.libreplicator.api.Observer
@@ -23,9 +23,9 @@ import org.libreplicator.api.RemoteEventLog
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.api.Subscription
 import org.libreplicator.interactor.api.LogDispatcher
+import org.libreplicator.interactor.router.MessageRouter
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.ReplicatorState
-import org.libreplicator.network.api.MessageRouter
 import javax.inject.Inject
 
 class DefaultLogDispatcher @Inject constructor(

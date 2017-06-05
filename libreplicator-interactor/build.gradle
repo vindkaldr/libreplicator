@@ -17,9 +17,13 @@
 
 dependencies {
     compile project(':libreplicator-api')
+    compile project(':libreplicator-client-api')
     compile project(':libreplicator-interactor-api')
+    compile project(':libreplicator-log')
     compile project(':libreplicator-model')
-    compile project(':libreplicator-network-api')
+    compile project(':libreplicator-server-api')
+
+    testCompile project(':libreplicator-common-test')
 
     compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion
     compile group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion

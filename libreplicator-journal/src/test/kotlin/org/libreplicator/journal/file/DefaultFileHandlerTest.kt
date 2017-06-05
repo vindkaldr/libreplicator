@@ -15,9 +15,9 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.journal
+package org.libreplicator.journal.file
 
-import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.isEmptyString
 import org.junit.After
 import org.junit.Assert.assertThat

@@ -15,14 +15,13 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network.module
+package org.libreplicator.journal.file
 
-import dagger.Binds
-import dagger.Module
-import org.libreplicator.network.DefaultMessageRouter
-import org.libreplicator.network.api.MessageRouter
+import java.nio.file.Path
 
-@Module
-interface LibReplicatorNetworkModule {
-    @Binds fun bindMessageRouter(defaultMessageRouter: DefaultMessageRouter): MessageRouter
+interface FileHandler {
+    fun createDirectory(parentPath: Path, directoryName: String): Path
+    fun readFirstLine(path: Path): String
+    fun write(path: Path, line: String)
+    fun move(source: Path, destination: Path)
 }

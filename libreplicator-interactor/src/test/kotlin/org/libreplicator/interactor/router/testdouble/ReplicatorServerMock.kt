@@ -15,22 +15,28 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network.testdouble
+package org.libreplicator.interactor.router.testdouble
 
 import org.junit.Assert
+import org.libreplicator.api.Observer
 import org.libreplicator.api.Subscription
+import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.server.api.ReplicatorServer
 
-class SubscriptionMock : Subscription {
-    private var subscribed = true
+class ReplicatorServerMock constructor(private val subscription: Subscription) : ReplicatorServer {
+    private var observedMessageObserver: Observer<ReplicatorMessage>? = null
 
-    override fun unsubscribe() {
-        if (!subscribed) {
+    override fun subscribe(messageObserver: Observer<ReplicatorMessage>): Subscription {
+        if (hasSubscription()) {
             Assert.fail("Unexpected call!")
         }
-        subscribed = false
+        observedMessageObserver = messageObserver
+        return subscription
     }
 
-    fun hasBeenUnsubscribedFrom(): Boolean {
-        return !subscribed
+    override fun hasSubscription(): Boolean = observedMessageObserver != null
+
+    fun hasBeenSubscribedTo(messageObserver: Observer<ReplicatorMessage>): Boolean {
+        return observedMessageObserver == messageObserver
     }
 }

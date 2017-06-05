@@ -18,7 +18,7 @@
 package org.libreplicator.journal.testdouble
 
 import org.junit.Assert
-import org.libreplicator.journal.FileHandler
+import org.libreplicator.journal.file.FileHandler
 import java.nio.file.Path
 import java.nio.file.Paths
 

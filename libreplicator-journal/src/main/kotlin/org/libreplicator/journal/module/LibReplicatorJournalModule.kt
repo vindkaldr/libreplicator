@@ -21,9 +21,9 @@ import dagger.Module
 import dagger.Provides
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.crypto.api.Cipher
-import org.libreplicator.journal.DefaultFileHandler
 import org.libreplicator.journal.DefaultReplicatorStateJournal
-import org.libreplicator.journal.FileHandler
+import org.libreplicator.journal.file.DefaultFileHandler
+import org.libreplicator.journal.file.FileHandler
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.model.ReplicatorState
 import javax.inject.Singleton

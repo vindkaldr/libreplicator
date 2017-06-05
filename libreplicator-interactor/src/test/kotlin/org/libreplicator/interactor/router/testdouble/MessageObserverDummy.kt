@@ -15,13 +15,12 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network.testdouble
+package org.libreplicator.interactor.router.testdouble
 
-import org.libreplicator.server.api.ReplicatorServer
-import javax.inject.Provider
+import org.libreplicator.api.Observer
+import org.libreplicator.model.ReplicatorMessage
 
-class ReplicatorServerProviderStub constructor(
-        private val replicatorServer: ReplicatorServer) : Provider<ReplicatorServer> {
-
-    override fun get(): ReplicatorServer = replicatorServer
+class MessageObserverDummy : Observer<ReplicatorMessage> {
+    override fun observe(observable: ReplicatorMessage) {
+    }
 }

@@ -20,6 +20,7 @@ package org.libreplicator.journal
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.journal.api.ReplicatorStateJournal
+import org.libreplicator.journal.file.FileHandler
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.model.ReplicatorState

@@ -20,10 +20,14 @@ package org.libreplicator.interactor.module
 import dagger.Module
 import dagger.Provides
 import org.libreplicator.api.ReplicatorNode
-import org.libreplicator.interactor.DefaultLogDispatcher
+import org.libreplicator.client.api.ReplicatorClient
 import org.libreplicator.interactor.api.LogDispatcher
+import org.libreplicator.interactor.dispatcher.DefaultLogDispatcher
+import org.libreplicator.interactor.router.DefaultMessageRouter
+import org.libreplicator.interactor.router.MessageRouter
 import org.libreplicator.model.ReplicatorState
-import org.libreplicator.network.api.MessageRouter
+import org.libreplicator.server.api.ReplicatorServer
+import javax.inject.Provider
 import javax.inject.Singleton
 
 @Module
@@ -34,5 +38,11 @@ class LibReplicatorInteractorModule(
     @Provides @Singleton
     fun provideLogDispatcher(messageRouter: MessageRouter, replicatorState: ReplicatorState): LogDispatcher {
         return DefaultLogDispatcher(messageRouter, replicatorState, localNode, remoteNodes)
+    }
+
+    @Provides
+    fun provideMessageRouter(replicatorClientProvider: Provider<ReplicatorClient>,
+            replicatorServerProvider: Provider<ReplicatorServer>): MessageRouter {
+        return DefaultMessageRouter(replicatorClientProvider, replicatorServerProvider)
     }
 }

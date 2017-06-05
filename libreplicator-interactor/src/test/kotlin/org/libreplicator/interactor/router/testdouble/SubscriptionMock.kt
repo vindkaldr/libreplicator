@@ -15,20 +15,22 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    compile project(':libreplicator-api')
-    compile project(':libreplicator-client-api')
-    compile project(':libreplicator-log')
-    compile project(':libreplicator-model')
-    compile project(':libreplicator-network-api')
-    compile project(':libreplicator-server-api')
+package org.libreplicator.interactor.router.testdouble
 
-    testCompile project(':libreplicator-common-test')
+import org.junit.Assert
+import org.libreplicator.api.Subscription
 
-    compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion
-    compile group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
-    kapt group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
+class SubscriptionMock : Subscription {
+    private var subscribed = true
 
-    testCompile group: 'junit', name: 'junit', version: junitVersion
-    testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrestVersion
+    override fun unsubscribe() {
+        if (!subscribed) {
+            Assert.fail("Unexpected call!")
+        }
+        subscribed = false
+    }
+
+    fun hasBeenUnsubscribedFrom(): Boolean {
+        return !subscribed
+    }
 }

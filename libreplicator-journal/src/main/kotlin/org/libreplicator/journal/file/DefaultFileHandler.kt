@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.journal
+package org.libreplicator.journal.file
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -33,7 +33,7 @@ class DefaultFileHandler @Inject constructor() : FileHandler {
     override fun readFirstLine(path: Path): String {
         val allLines = Files.readAllLines(path)
         if (allLines.isEmpty()) {
-            return "";
+            return ""
         }
         return allLines.first()
     }

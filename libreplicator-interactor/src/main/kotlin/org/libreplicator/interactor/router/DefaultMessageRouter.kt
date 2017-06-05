@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network
+package org.libreplicator.interactor.router
 
 import org.libreplicator.api.NotSubscribedException
 import org.libreplicator.api.Observer
@@ -23,7 +23,6 @@ import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.api.Subscription
 import org.libreplicator.client.api.ReplicatorClient
 import org.libreplicator.model.ReplicatorMessage
-import org.libreplicator.network.api.MessageRouter
 import org.libreplicator.server.api.ReplicatorServer
 import javax.inject.Inject
 import javax.inject.Provider
@@ -45,7 +44,7 @@ class DefaultMessageRouter @Inject constructor(
     override fun subscribe(messageObserver: Observer<ReplicatorMessage>): Subscription = synchronized(this) {
         replicatorClient = replicatorClientProvider.get()
         replicatorServer = replicatorServerProvider.get()
-        
+
         val subscription = replicatorServer.subscribe(messageObserver)
 
         return object : Subscription {
