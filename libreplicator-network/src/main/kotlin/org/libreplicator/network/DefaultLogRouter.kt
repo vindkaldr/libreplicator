@@ -17,8 +17,9 @@
 
 package org.libreplicator.network
 
+import org.apache.http.NoHttpResponseException
+import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.methods.HttpPost
-import org.apache.http.conn.ConnectTimeoutException
 import org.apache.http.conn.HttpHostConnectException
 import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.CloseableHttpClient
@@ -35,6 +36,7 @@ import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.network.api.LogRouter
 import org.slf4j.LoggerFactory
+import java.net.SocketTimeoutException
 import javax.inject.Inject
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -52,17 +54,26 @@ class DefaultLogRouter @Inject constructor(
     private lateinit var httpClient: CloseableHttpClient
     private var hasSubscription = false
 
-    private fun createHttpClient(): CloseableHttpClient = HttpClients.createDefault()
+    private fun createHttpClient(): CloseableHttpClient = createClient()
+
+    private fun createClient(): CloseableHttpClient = HttpClients.custom()
+            .setDefaultRequestConfig(RequestConfig.custom()
+                    .setSocketTimeout(1000)
+                    .build())
+            .build()
 
     override fun send(remoteNode: ReplicatorNode, message: ReplicatorMessage) = synchronized(this) {
         try {
             serializeAndSendMessage(remoteNode, message)
         }
         catch (e: HttpHostConnectException) {
-            logger.info("Failed to connect remote node!")
+            logger.info("Failed to connect to remote node!")
         }
-        catch (e: ConnectTimeoutException) {
-            logger.info("Failed to connect remote node!")
+        catch (e: NoHttpResponseException) {
+            logger.warn("Failed to reuse connection!")
+        }
+        catch (e: SocketTimeoutException) {
+            logger.warn("Failed to connect to remote node!")
         }
     }
 
@@ -107,6 +118,7 @@ class DefaultLogRouter @Inject constructor(
         override fun handle(target: String?, baseRequest: Request?, request: HttpServletRequest?, response: HttpServletResponse?) {
             if (baseRequest.isPostRequest() && baseRequest.isRequestedPath(SYNC_PATH)) {
                 tryDeserializeAndObserveMessage(baseRequest)
+                response?.status = HttpServletResponse.SC_NO_CONTENT
                 baseRequest.markHandled()
             }
         }
