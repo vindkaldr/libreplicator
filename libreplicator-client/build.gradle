@@ -15,23 +15,17 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-rootProject.name = 'libreplicator-root'
+dependencies {
+    compile project(':libreplicator-client-api')
+    compile project(':libreplicator-crypto-api')
+    compile project(':libreplicator-json-api')
+    compile project(':libreplicator-log')
 
-include ':libreplicator'
-include ':libreplicator-api'
-include ':libreplicator-boundary'
-include ':libreplicator-client'
-include ':libreplicator-client-api'
-include ':libreplicator-common-test'
-include ':libreplicator-crypto'
-include ':libreplicator-crypto-api'
-include ':libreplicator-interactor'
-include ':libreplicator-interactor-api'
-include ':libreplicator-journal'
-include ':libreplicator-journal-api'
-include ':libreplicator-json'
-include ':libreplicator-json-api'
-include ':libreplicator-log'
-include ':libreplicator-model'
-include ':libreplicator-network'
-include ':libreplicator-network-api'
+    compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion
+    compile group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
+    kapt group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
+
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: httpClientVersion
+
+    testCompile group: 'com.github.tomakehurst', name: 'wiremock', version: wireMockVersion
+}

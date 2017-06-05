@@ -25,11 +25,11 @@ import org.libreplicator.api.Subscription
 import org.libreplicator.interactor.api.LogDispatcher
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.ReplicatorState
-import org.libreplicator.network.api.LogRouter
+import org.libreplicator.network.api.MessageRouter
 import javax.inject.Inject
 
 class DefaultLogDispatcher @Inject constructor(
-        private val logRouter: LogRouter,
+        private val messageRouter: MessageRouter,
         private val replicatorState: ReplicatorState,
         private val localNode: ReplicatorNode,
         private val remoteNodes: List<ReplicatorNode>) : LogDispatcher {
@@ -37,14 +37,14 @@ class DefaultLogDispatcher @Inject constructor(
     override fun dispatch(localEventLog: LocalEventLog) = synchronized(this) {
         replicatorState.addLocalEventLog(localNode, localEventLog)
         replicatorState.getNodesWithMissingEventLogs(remoteNodes)
-                .forEach { logRouter.send(it.key, ReplicatorMessage(localNode.nodeId, it.value, replicatorState.timeTable)) }
+                .forEach { messageRouter.routeMessage(it.key, ReplicatorMessage(localNode.nodeId, it.value, replicatorState.timeTable)) }
     }
 
     override fun subscribe(remoteEventLogObserver: Observer<RemoteEventLog>): Subscription = synchronized(this) {
-        return logRouter.subscribe(ReplicatorMessageObserver(remoteEventLogObserver))
+        return messageRouter.subscribe(ReplicatorMessageObserver(remoteEventLogObserver))
     }
 
-    override fun hasSubscription(): Boolean = logRouter.hasSubscription()
+    override fun hasSubscription(): Boolean = messageRouter.hasSubscription()
 
     inner class ReplicatorMessageObserver
     constructor(private val remoteEventLogObserver: Observer<RemoteEventLog>) : Observer<ReplicatorMessage> {

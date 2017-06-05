@@ -15,19 +15,25 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network
+package org.libreplicator.client.testdouble
 
-import org.apache.http.client.utils.URIBuilder
-import org.libreplicator.api.ReplicatorNode
-import java.net.URI
+import org.junit.Assert
+import org.libreplicator.crypto.api.Cipher
 
-private const val HTTP_SCHEME = "http"
+class CipherStub(
+        private val message: String,
+        private val encryptedMessage: String) : Cipher {
 
-fun ReplicatorNode.toUri(path: String): URI {
-    return URIBuilder()
-            .setScheme(HTTP_SCHEME)
-            .setHost(this.url)
-            .setPort(this.port)
-            .setPath(path)
-            .build()
+    override fun encrypt(content: String): String {
+        if (content != message) {
+            Assert.fail("Unexpected call!")
+        }
+        return encryptedMessage
+    }
+    override fun decrypt(encryptedContent: String): String {
+        if (encryptedContent != encryptedMessage) {
+            Assert.fail("Unexpected call!")
+        }
+        return message
+    }
 }

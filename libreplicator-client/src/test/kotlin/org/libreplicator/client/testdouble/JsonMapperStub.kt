@@ -15,23 +15,29 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network.module
+package org.libreplicator.client.testdouble
 
-import dagger.Module
-import dagger.Provides
-import org.libreplicator.api.ReplicatorNode
-import org.libreplicator.client.api.ReplicatorClient
-import org.libreplicator.crypto.api.Cipher
+import org.junit.Assert
 import org.libreplicator.json.api.JsonMapper
-import org.libreplicator.network.DefaultMessageRouter
-import org.libreplicator.network.api.MessageRouter
-import javax.inject.Provider
-import javax.inject.Singleton
+import org.libreplicator.model.ReplicatorMessage
+import kotlin.reflect.KClass
 
-@Module
-class LibReplicatorNetworkModule(private val localNode: ReplicatorNode) {
-    @Provides @Singleton
-    fun provideLogRouter(replicatorClientProvider: Provider<ReplicatorClient>, jsonMapper: JsonMapper, cipher: Cipher): MessageRouter {
-        return DefaultMessageRouter(replicatorClientProvider, jsonMapper, cipher, localNode)
+class JsonMapperStub(
+        private val message: ReplicatorMessage,
+        private val deserializedMessage: String) : JsonMapper {
+
+    override fun write(any: Any): String {
+        if (any != message) {
+            Assert.fail("Unexpected call!")
+        }
+        return deserializedMessage
+    }
+
+    override fun <T : Any> read(string: String, kotlinType: KClass<T>): T {
+        if (string != deserializedMessage || kotlinType != ReplicatorMessage::class) {
+            Assert.fail("Unexpected call!")
+        }
+        @Suppress("UNCHECKED_CAST")
+        return message as T
     }
 }

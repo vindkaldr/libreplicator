@@ -15,15 +15,13 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network.api
+package org.libreplicator.network.testdouble
 
-import org.libreplicator.api.Observer
-import org.libreplicator.api.ReplicatorNode
-import org.libreplicator.api.Subscription
-import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.client.api.ReplicatorClient
+import javax.inject.Provider
 
-interface LogRouter {
-    fun send(remoteNode: ReplicatorNode, message: ReplicatorMessage)
-    fun subscribe(messageObserver: Observer<ReplicatorMessage>): Subscription
-    fun hasSubscription(): Boolean
+class ReplicatorClientProviderStub constructor(
+        private val replicatorClient: ReplicatorClient) : Provider<ReplicatorClient> {
+
+    override fun get(): ReplicatorClient = replicatorClient
 }

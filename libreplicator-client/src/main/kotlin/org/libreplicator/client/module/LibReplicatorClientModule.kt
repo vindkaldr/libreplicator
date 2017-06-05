@@ -15,23 +15,14 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network.module
+package org.libreplicator.client.module
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
-import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.client.DefaultReplicatorClient
 import org.libreplicator.client.api.ReplicatorClient
-import org.libreplicator.crypto.api.Cipher
-import org.libreplicator.json.api.JsonMapper
-import org.libreplicator.network.DefaultMessageRouter
-import org.libreplicator.network.api.MessageRouter
-import javax.inject.Provider
-import javax.inject.Singleton
 
 @Module
-class LibReplicatorNetworkModule(private val localNode: ReplicatorNode) {
-    @Provides @Singleton
-    fun provideLogRouter(replicatorClientProvider: Provider<ReplicatorClient>, jsonMapper: JsonMapper, cipher: Cipher): MessageRouter {
-        return DefaultMessageRouter(replicatorClientProvider, jsonMapper, cipher, localNode)
-    }
+interface LibReplicatorClientModule {
+    @Binds fun bindReplicatorClient(defaultReplicatorClient: DefaultReplicatorClient): ReplicatorClient
 }

@@ -18,26 +18,36 @@
 package org.libreplicator.network.testdouble
 
 import org.junit.Assert
-import org.libreplicator.json.api.JsonMapper
+import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.client.api.ReplicatorClient
 import org.libreplicator.model.ReplicatorMessage
-import kotlin.reflect.KClass
 
-class JsonMapperStub(
-        private val message: ReplicatorMessage,
-        private val deserializedMessage: String) : JsonMapper {
+class ReplicatorClientMock : ReplicatorClient {
+    private var observedRemoteNode: ReplicatorNode? = null
+    private var observedMessage: ReplicatorMessage? = null
 
-    override fun write(any: Any): String {
-        if (any != message) {
+    private var observedClose: Boolean = false
+
+    override fun send(remoteNode: ReplicatorNode, message: ReplicatorMessage) {
+        if (observedRemoteNode != null && observedMessage != null) {
             Assert.fail("Unexpected call!")
         }
-        return deserializedMessage
+        observedRemoteNode = remoteNode
+        observedMessage = message
     }
 
-    override fun <T : Any> read(string: String, kotlinType: KClass<T>): T {
-        if (string != deserializedMessage || kotlinType != ReplicatorMessage::class) {
+    override fun close() {
+        if (observedClose) {
             Assert.fail("Unexpected call!")
         }
-        @Suppress("UNCHECKED_CAST")
-        return message as T
+        observedClose = true
+    }
+
+    fun sentMessage(remoteNode: ReplicatorNode, message: ReplicatorMessage): Boolean {
+        return observedRemoteNode == remoteNode && observedMessage == message
+    }
+
+    fun wasClosed(): Boolean {
+        return observedClose
     }
 }

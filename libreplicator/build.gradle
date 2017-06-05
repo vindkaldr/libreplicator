@@ -17,6 +17,7 @@
 
 dependencies {
     compile project(':libreplicator-boundary')
+    compile project(':libreplicator-client')
     compile project(':libreplicator-crypto')
     compile project(':libreplicator-interactor')
     compile project(':libreplicator-journal')
@@ -33,4 +34,3 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: junitVersion
     testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrestVersion
 }
-

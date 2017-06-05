@@ -17,6 +17,7 @@
 
 dependencies {
     compile project(':libreplicator-api')
+    compile project(':libreplicator-client-api')
     compile project(':libreplicator-crypto-api')
     compile project(':libreplicator-json-api')
     compile project(':libreplicator-log')
@@ -29,7 +30,6 @@ dependencies {
     compile group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
     kapt group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
 
-    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: httpClientVersion
     compile group: 'org.eclipse.jetty', name: 'jetty-server', version: jettyVersion
 
     testCompile group: 'junit', name: 'junit', version: junitVersion
