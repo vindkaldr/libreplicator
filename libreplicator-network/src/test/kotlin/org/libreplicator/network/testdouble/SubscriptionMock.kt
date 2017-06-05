@@ -15,21 +15,22 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network
+package org.libreplicator.network.testdouble
 
-import org.eclipse.jetty.server.Request
+import org.junit.Assert
+import org.libreplicator.api.Subscription
 
-private const val POST_VERB = "POST"
+class SubscriptionMock : Subscription {
+    private var subscribed = true
 
-fun Request?.isPostRequest(): Boolean =
-        this != null && this.method == POST_VERB
+    override fun unsubscribe() {
+        if (!subscribed) {
+            Assert.fail("Unexpected call!")
+        }
+        subscribed = false
+    }
 
-fun Request?.isRequestedPath(path: String): Boolean =
-        this != null && this.pathInfo == path
-
-fun Request?.getMessage(): String =
-        this?.reader?.readText() ?: ""
-
-fun Request?.markHandled() {
-    this?.isHandled = true
+    fun hasBeenUnsubscribedFrom(): Boolean {
+        return !subscribed
+    }
 }

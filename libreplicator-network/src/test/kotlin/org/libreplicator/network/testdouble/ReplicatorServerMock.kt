@@ -18,36 +18,25 @@
 package org.libreplicator.network.testdouble
 
 import org.junit.Assert
-import org.libreplicator.api.ReplicatorNode
-import org.libreplicator.client.api.ReplicatorClient
+import org.libreplicator.api.Observer
+import org.libreplicator.api.Subscription
 import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.server.api.ReplicatorServer
 
-class ReplicatorClientMock : ReplicatorClient {
-    private var observedRemoteNode: ReplicatorNode? = null
-    private var observedMessage: ReplicatorMessage? = null
+class ReplicatorServerMock constructor(private val subscription: Subscription) : ReplicatorServer {
+    private var observedMessageObserver: Observer<ReplicatorMessage>? = null
 
-    private var observedClose: Boolean = false
-
-    override fun synchronizeWithNode(remoteNode: ReplicatorNode, message: ReplicatorMessage) {
-        if (observedRemoteNode != null && observedMessage != null) {
+    override fun subscribe(messageObserver: Observer<ReplicatorMessage>): Subscription {
+        if (hasSubscription()) {
             Assert.fail("Unexpected call!")
         }
-        observedRemoteNode = remoteNode
-        observedMessage = message
+        observedMessageObserver = messageObserver
+        return subscription
     }
 
-    override fun close() {
-        if (observedClose) {
-            Assert.fail("Unexpected call!")
-        }
-        observedClose = true
-    }
+    override fun hasSubscription(): Boolean = observedMessageObserver != null
 
-    fun sentMessage(remoteNode: ReplicatorNode, message: ReplicatorMessage): Boolean {
-        return observedRemoteNode == remoteNode && observedMessage == message
-    }
-
-    fun wasClosed(): Boolean {
-        return observedClose
+    fun hasBeenSubscribedTo(messageObserver: Observer<ReplicatorMessage>): Boolean {
+        return observedMessageObserver == messageObserver
     }
 }

@@ -18,19 +18,16 @@
 dependencies {
     compile project(':libreplicator-api')
     compile project(':libreplicator-client-api')
-    compile project(':libreplicator-crypto-api')
-    compile project(':libreplicator-json-api')
     compile project(':libreplicator-log')
     compile project(':libreplicator-model')
     compile project(':libreplicator-network-api')
+    compile project(':libreplicator-server-api')
 
     testCompile project(':libreplicator-common-test')
 
     compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion
     compile group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
     kapt group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
-
-    compile group: 'org.eclipse.jetty', name: 'jetty-server', version: jettyVersion
 
     testCompile group: 'junit', name: 'junit', version: junitVersion
     testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrestVersion

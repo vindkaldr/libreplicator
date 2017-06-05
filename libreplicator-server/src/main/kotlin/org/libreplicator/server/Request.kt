@@ -15,14 +15,21 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network.module
+package org.libreplicator.server
 
-import dagger.Binds
-import dagger.Module
-import org.libreplicator.network.DefaultMessageRouter
-import org.libreplicator.network.api.MessageRouter
+import org.eclipse.jetty.server.Request
 
-@Module
-interface LibReplicatorNetworkModule {
-    @Binds fun bindMessageRouter(defaultMessageRouter: DefaultMessageRouter): MessageRouter
+private const val POST_VERB = "POST"
+
+fun Request?.isPostRequest(): Boolean =
+        this != null && this.method == POST_VERB
+
+fun Request?.isRequestedPath(path: String): Boolean =
+        this != null && this.pathInfo == path
+
+fun Request?.getMessage(): String =
+        this?.reader?.readText() ?: ""
+
+fun Request?.markHandled() {
+    this?.isHandled = true
 }

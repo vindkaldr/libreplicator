@@ -15,14 +15,23 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network.module
+package org.libreplicator.server
 
-import dagger.Binds
-import dagger.Module
-import org.libreplicator.network.DefaultMessageRouter
-import org.libreplicator.network.api.MessageRouter
+import org.eclipse.jetty.server.Server
+import java.lang.Thread.sleep
 
-@Module
-interface LibReplicatorNetworkModule {
-    @Binds fun bindMessageRouter(defaultMessageRouter: DefaultMessageRouter): MessageRouter
+private const val CHECK_TIMEOUT_IN_MILLIS = 250L
+
+fun Server.startAndWaitUntilStarted() {
+    this.start()
+    while (!server.isStarted) {
+        sleep(CHECK_TIMEOUT_IN_MILLIS)
+    }
+}
+
+fun Server.stopAndWaitUntilStarted() {
+    this.stop()
+    while (!server.isStopped) {
+        sleep(CHECK_TIMEOUT_IN_MILLIS)
+    }
 }

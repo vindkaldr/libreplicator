@@ -15,21 +15,15 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network.testdouble
+dependencies {
+    compile project(':libreplicator-crypto-api')
+    compile project(':libreplicator-json-api')
+    compile project(':libreplicator-log')
+    compile project(':libreplicator-server-api')
 
-import org.libreplicator.api.Observer
-import org.libreplicator.common.test.ObjectObserver
-import org.libreplicator.model.ReplicatorMessage
+    compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion
+    compile group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
+    kapt group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
 
-class MessageObserverMock constructor(numberOfExpectedMessages: Int = 0) : Observer<ReplicatorMessage> {
-    private val messageObserver: ObjectObserver<ReplicatorMessage> =
-            ObjectObserver(numberOfExpectedObjects = numberOfExpectedMessages)
-
-    override fun observe(observable: ReplicatorMessage) {
-        messageObserver.observe(observable)
-    }
-
-    fun getObservedMessages(): List<ReplicatorMessage> {
-        return messageObserver.getObservedObjects()
-    }
+    compile group: 'org.eclipse.jetty', name: 'jetty-server', version: jettyVersion
 }

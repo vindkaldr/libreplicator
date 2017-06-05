@@ -22,40 +22,46 @@ import org.junit.Before
 import org.junit.Test
 import org.libreplicator.api.NotSubscribedException
 import org.libreplicator.client.api.ReplicatorClient
-import org.libreplicator.crypto.api.Cipher
-import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.model.EventNode
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.TimeTable
 import org.libreplicator.network.api.MessageRouter
-import org.libreplicator.network.testdouble.CipherStub
-import org.libreplicator.network.testdouble.JsonMapperStub
 import org.libreplicator.network.testdouble.MessageObserverDummy
 import org.libreplicator.network.testdouble.ReplicatorClientMock
 import org.libreplicator.network.testdouble.ReplicatorClientProviderStub
+import org.libreplicator.network.testdouble.ReplicatorServerMock
+import org.libreplicator.network.testdouble.ReplicatorServerProviderStub
+import org.libreplicator.network.testdouble.SubscriptionMock
+import org.libreplicator.server.api.ReplicatorServer
 import javax.inject.Provider
 
 class DefaultMessageRouterTest {
     private companion object {
         private val MESSAGE = ReplicatorMessage("nodeId", listOf(), TimeTable())
-        private val SERIALIZED_MESSAGE = "{\"nodeId\":\"nodeId\",\"eventLogs\":[],\"timeTable\":[]}"
-        private val LOCAL_NODE = EventNode("localNode", "localhost", 12345)
         private val REMOTE_NODE = EventNode("remoteNode", "localhost", 12346)
     }
 
-    private lateinit var replicatorClient: ReplicatorClientMock
+    private lateinit var replicatorClientMock: ReplicatorClientMock
     private lateinit var replicatorClientProviderStub: Provider<ReplicatorClient>
-    private val jsonMapperStub: JsonMapper = JsonMapperStub(message = MESSAGE, deserializedMessage = SERIALIZED_MESSAGE)
-    private val cipherStub: Cipher = CipherStub()
+
+    private lateinit var messageObserverDummy: MessageObserverDummy
+    private lateinit var subscriptionMock: SubscriptionMock
+    private lateinit var replicatorServerMock: ReplicatorServerMock
+    private lateinit var replicatorServerProviderStub: Provider<ReplicatorServer>
 
     private lateinit var messageRouter: MessageRouter
 
     @Before
     fun setUp() {
-        replicatorClient = ReplicatorClientMock()
-        replicatorClientProviderStub = ReplicatorClientProviderStub(replicatorClient)
+        replicatorClientMock = ReplicatorClientMock()
+        replicatorClientProviderStub = ReplicatorClientProviderStub(replicatorClientMock)
 
-        messageRouter = DefaultMessageRouter(replicatorClientProviderStub, jsonMapperStub, cipherStub, LOCAL_NODE)
+        messageObserverDummy = MessageObserverDummy()
+        subscriptionMock = SubscriptionMock()
+        replicatorServerMock = ReplicatorServerMock(subscriptionMock)
+        replicatorServerProviderStub = ReplicatorServerProviderStub(replicatorServerMock)
+
+        messageRouter = DefaultMessageRouter(replicatorClientProviderStub, replicatorServerProviderStub)
     }
 
     @Test(expected = NotSubscribedException::class)
@@ -65,17 +71,31 @@ class DefaultMessageRouterTest {
 
     @Test
     fun routeMessage_shouldPassRemoteNodeAndMessage_toReplicatorClient() {
-        messageRouter.subscribe(MessageObserverDummy())
+        messageRouter.subscribe(messageObserverDummy)
 
         messageRouter.routeMessage(REMOTE_NODE, MESSAGE)
 
-        assertTrue(replicatorClient.sentMessage(REMOTE_NODE, MESSAGE))
+        assertTrue(replicatorClientMock.sentMessage(REMOTE_NODE, MESSAGE))
     }
 
     @Test
     fun unsubscribe_shouldCloseReplicatorClient() {
-        messageRouter.subscribe(MessageObserverDummy()).unsubscribe()
+        messageRouter.subscribe(messageObserverDummy).unsubscribe()
 
-        assertTrue(replicatorClient.wasClosed())
+        assertTrue(replicatorClientMock.wasClosed())
+    }
+
+    @Test
+    fun subscribe_shouldSubscribe_toReplicatorServer() {
+        messageRouter.subscribe(messageObserverDummy)
+
+        assertTrue(replicatorServerMock.hasBeenSubscribedTo(messageObserverDummy))
+    }
+
+    @Test
+    fun unsubscribe_shouldUnsubscribe_fromReplicatorServer() {
+        messageRouter.subscribe(messageObserverDummy).unsubscribe()
+
+        assertTrue(subscriptionMock.hasBeenUnsubscribedFrom())
     }
 }

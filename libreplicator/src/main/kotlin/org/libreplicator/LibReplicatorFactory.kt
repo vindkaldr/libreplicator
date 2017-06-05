@@ -26,7 +26,7 @@ import org.libreplicator.interactor.module.LibReplicatorInteractorModule
 import org.libreplicator.journal.module.LibReplicatorJournalModule
 import org.libreplicator.model.factory.LocalEventLogFactory
 import org.libreplicator.model.factory.ReplicatorNodeFactory
-import org.libreplicator.network.module.LibReplicatorNetworkModule
+import org.libreplicator.server.module.LibReplicatorServerModule
 
 class LibReplicatorFactory(private val settings: LibReplicatorSettings = LibReplicatorSettings()) {
     fun createReplicator(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>): Replicator {
@@ -34,7 +34,7 @@ class LibReplicatorFactory(private val settings: LibReplicatorSettings = LibRepl
                 .libReplicatorCryptoModule(LibReplicatorCryptoModule(settings.cryptoSettings))
                 .libReplicatorInteractorModule(LibReplicatorInteractorModule(localNode, remoteNodes))
                 .libReplicatorJournalModule(LibReplicatorJournalModule(settings.journalSettings, localNode, remoteNodes))
-                .libReplicatorNetworkModule(LibReplicatorNetworkModule(localNode))
+                .libReplicatorServerModule(LibReplicatorServerModule(localNode))
                 .build()
 
         return component.getReplicator()

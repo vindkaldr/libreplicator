@@ -15,23 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.network
-
-import org.eclipse.jetty.server.Server
-import java.lang.Thread.sleep
-
-private const val CHECK_TIMEOUT_IN_MILLIS = 250L
-
-fun Server.startAndWaitUntilStarted() {
-    this.start()
-    while (!server.isStarted) {
-        sleep(CHECK_TIMEOUT_IN_MILLIS)
-    }
-}
-
-fun Server.stopAndWaitUntilStarted() {
-    this.stop()
-    while (!server.isStopped) {
-        sleep(CHECK_TIMEOUT_IN_MILLIS)
-    }
+dependencies {
+    compile project(':libreplicator-api')
+    compile project(':libreplicator-model')
 }

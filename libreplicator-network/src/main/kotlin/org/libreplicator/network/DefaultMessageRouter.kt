@@ -17,91 +17,44 @@
 
 package org.libreplicator.network
 
-import org.eclipse.jetty.server.Request
-import org.eclipse.jetty.server.Server
-import org.eclipse.jetty.server.handler.AbstractHandler
 import org.libreplicator.api.NotSubscribedException
 import org.libreplicator.api.Observer
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.api.Subscription
 import org.libreplicator.client.api.ReplicatorClient
-import org.libreplicator.crypto.api.Cipher
-import org.libreplicator.json.api.JsonMapper
-import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.network.api.MessageRouter
-import org.slf4j.LoggerFactory
+import org.libreplicator.server.api.ReplicatorServer
 import javax.inject.Inject
 import javax.inject.Provider
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 class DefaultMessageRouter @Inject constructor(
         private val replicatorClientProvider: Provider<ReplicatorClient>,
-        private val jsonMapper: JsonMapper,
-        private val cipher: Cipher,
-        private val localNode: ReplicatorNode) : MessageRouter {
-
-    private companion object {
-        private val logger = LoggerFactory.getLogger(DefaultMessageRouter::class.java)
-        private val SYNC_PATH = "/sync"
-    }
+        private val replicatorServerProvider: Provider<ReplicatorServer>) : MessageRouter {
 
     private lateinit var replicatorClient: ReplicatorClient
-    private var hasSubscription = false
+    private var replicatorServer = replicatorServerProvider.get()
 
     override fun routeMessage(remoteNode: ReplicatorNode, message: ReplicatorMessage) = synchronized(this) {
-        if (!hasSubscription) {
+        if (!hasSubscription()) {
             throw NotSubscribedException()
         }
         replicatorClient.synchronizeWithNode(remoteNode, message)
     }
 
     override fun subscribe(messageObserver: Observer<ReplicatorMessage>): Subscription = synchronized(this) {
-        val server = createServer(localNode)
-        server.handler = ReplicatorMessageHandler(jsonMapper, cipher, messageObserver)
-        server.startAndWaitUntilStarted()
-
         replicatorClient = replicatorClientProvider.get()
-        hasSubscription = true
+        replicatorServer = replicatorServerProvider.get()
+        
+        val subscription = replicatorServer.subscribe(messageObserver)
 
         return object : Subscription {
             override fun unsubscribe() = synchronized(this) {
-                server.stopAndWaitUntilStarted()
-
                 replicatorClient.close()
-                hasSubscription = false
+                subscription.unsubscribe()
             }
         }
     }
 
-    private fun createServer(localNode: ReplicatorNode): Server = Server(localNode.port)
-
-    override fun hasSubscription(): Boolean = hasSubscription
-
-    private class ReplicatorMessageHandler(
-            private val jsonMapper: JsonMapper,
-            private val cipher: Cipher,
-            private val messageObserver: Observer<ReplicatorMessage>) : AbstractHandler() {
-
-        override fun handle(target: String?, baseRequest: Request?, request: HttpServletRequest?, response: HttpServletResponse?) {
-            if (baseRequest.isPostRequest() && baseRequest.isRequestedPath(SYNC_PATH)) {
-                tryDeserializeAndObserveMessage(baseRequest)
-                response?.status = HttpServletResponse.SC_NO_CONTENT
-                baseRequest.markHandled()
-            }
-        }
-
-        private fun tryDeserializeAndObserveMessage(baseRequest: Request?) {
-            try {
-                messageObserver.observe(deserializeMessage(cipher.decrypt(baseRequest.getMessage())))
-            }
-            catch (e: JsonReadException) {
-                logger.warn("Failed to deserialize message!")
-            }
-        }
-
-        private fun deserializeMessage(message: String): ReplicatorMessage =
-                jsonMapper.read(message, ReplicatorMessage::class)
-    }
+    override fun hasSubscription(): Boolean = replicatorServer.hasSubscription()
 }

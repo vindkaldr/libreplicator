@@ -26,13 +26,14 @@ import org.libreplicator.interactor.module.LibReplicatorInteractorModule
 import org.libreplicator.journal.module.LibReplicatorJournalModule
 import org.libreplicator.json.module.LibReplicatorJsonModule
 import org.libreplicator.network.module.LibReplicatorNetworkModule
+import org.libreplicator.server.module.LibReplicatorServerModule
 import javax.inject.Singleton
 
 @Singleton
 @Component(modules = arrayOf(LibReplicatorBoundaryModule::class, LibReplicatorClientModule::class,
         LibReplicatorCryptoModule::class, LibReplicatorInteractorModule::class,
         LibReplicatorJournalModule::class, LibReplicatorJsonModule::class,
-        LibReplicatorNetworkModule::class))
+        LibReplicatorNetworkModule::class, LibReplicatorServerModule::class))
 interface LibReplicatorComponent {
     fun getReplicator(): Replicator
 }

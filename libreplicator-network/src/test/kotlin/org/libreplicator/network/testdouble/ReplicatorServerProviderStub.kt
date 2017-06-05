@@ -17,9 +17,11 @@
 
 package org.libreplicator.network.testdouble
 
-import org.libreplicator.crypto.api.Cipher
+import org.libreplicator.server.api.ReplicatorServer
+import javax.inject.Provider
 
-class CipherStub : Cipher {
-    override fun encrypt(content: String): String = content
-    override fun decrypt(encryptedContent: String): String = encryptedContent
+class ReplicatorServerProviderStub constructor(
+        private val replicatorServer: ReplicatorServer) : Provider<ReplicatorServer> {
+
+    override fun get(): ReplicatorServer = replicatorServer
 }
