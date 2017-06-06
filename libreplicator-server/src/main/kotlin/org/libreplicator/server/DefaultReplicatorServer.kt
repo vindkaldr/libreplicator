@@ -20,6 +20,8 @@ package org.libreplicator.server
 import org.eclipse.jetty.server.Request
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.handler.AbstractHandler
+import org.libreplicator.api.AlreadySubscribedException
+import org.libreplicator.api.NotSubscribedException
 import org.libreplicator.api.Observer
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.api.Subscription
@@ -46,6 +48,10 @@ class DefaultReplicatorServer @Inject constructor(
     private var hasSubscription = false
 
     override fun subscribe(messageObserver: Observer<ReplicatorMessage>): Subscription {
+        if (hasSubscription) {
+            throw AlreadySubscribedException()
+        }
+
         val server = createServer(localNode)
         server.handler = ReplicatorMessageHandler(jsonMapper, cipher, messageObserver)
         server.startAndWaitUntilStarted()
@@ -53,6 +59,10 @@ class DefaultReplicatorServer @Inject constructor(
 
         return object : Subscription {
             override fun unsubscribe() = synchronized(this) {
+                if (!hasSubscription) {
+                    throw NotSubscribedException()
+                }
+
                 server.stopAndWaitUntilStarted()
                 hasSubscription = false
             }

@@ -34,9 +34,9 @@ import org.libreplicator.client.testdouble.CipherStub
 import org.libreplicator.client.testdouble.JsonMapperStub
 import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.json.api.JsonMapper
-import org.libreplicator.model.EventNode
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.TimeTable
+import org.libreplicator.model.factory.ReplicatorNodeFactory
 
 class DefaultReplicatorClientIntegrationTest {
     private companion object {
@@ -44,7 +44,7 @@ class DefaultReplicatorClientIntegrationTest {
         private val SERIALIZED_MESSAGE = "{\"nodeId\":\"nodeId\",\"eventLogs\":[],\"timeTable\":[]}"
         private val ENCRYPTED_MESSAGE = "a99a56aea35c30206f31da9a0164641855dbe332b34f9197d327"
 
-        private val REMOTE_NODE = EventNode("remoteNode", "localhost", 12346)
+        private val REMOTE_NODE = ReplicatorNodeFactory().create("remoteNode", "localhost", 12346)
         private val SYNC_PATH = "/sync"
     }
 
@@ -69,7 +69,7 @@ class DefaultReplicatorClientIntegrationTest {
     }
 
     @Test
-    fun replicatorClient_shouldSendMessage_inCorrectForm() {
+    fun replicatorClient_shouldSerializeAndEncryptMessage() {
         wireMockServer.stubFor(post(urlPathEqualTo(SYNC_PATH))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.NO_CONTENT_204)))
@@ -77,6 +77,19 @@ class DefaultReplicatorClientIntegrationTest {
         replicatorClient.synchronizeWithNode(REMOTE_NODE, MESSAGE)
 
         wireMockServer.verify(postRequestedFor(urlPathMatching(SYNC_PATH))
+                .withRequestBody(equalTo(ENCRYPTED_MESSAGE)))
+    }
+
+    @Test
+    fun replicatorClient_shouldSerializeAndEncryptMessages() {
+        wireMockServer.stubFor(post(urlPathEqualTo(SYNC_PATH))
+                .willReturn(aResponse()
+                        .withStatus(HttpStatus.NO_CONTENT_204)))
+
+        replicatorClient.synchronizeWithNode(REMOTE_NODE, MESSAGE)
+        replicatorClient.synchronizeWithNode(REMOTE_NODE, MESSAGE)
+
+        wireMockServer.verify(2, postRequestedFor(urlPathMatching(SYNC_PATH))
                 .withRequestBody(equalTo(ENCRYPTED_MESSAGE)))
     }
 }
