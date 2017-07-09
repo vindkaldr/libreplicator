@@ -28,6 +28,9 @@ class ReplicatorClientMock : ReplicatorClient {
 
     private var observedClose: Boolean = false
 
+    override fun initialize() {
+    }
+
     override fun synchronizeWithNode(remoteNode: ReplicatorNode, message: ReplicatorMessage) {
         if (observedRemoteNode != null && observedMessage != null) {
             Assert.fail("Unexpected call!")

@@ -21,8 +21,9 @@ import dagger.Binds
 import dagger.Module
 import org.libreplicator.client.DefaultReplicatorClient
 import org.libreplicator.client.api.ReplicatorClient
+import javax.inject.Singleton
 
 @Module
 interface LibReplicatorClientModule {
-    @Binds fun bindReplicatorClient(defaultReplicatorClient: DefaultReplicatorClient): ReplicatorClient
+    @Binds @Singleton fun bindReplicatorClient(defaultReplicatorClient: DefaultReplicatorClient): ReplicatorClient
 }

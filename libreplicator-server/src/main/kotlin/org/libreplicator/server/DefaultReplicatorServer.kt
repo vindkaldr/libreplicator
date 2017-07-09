@@ -17,33 +17,23 @@
 
 package org.libreplicator.server
 
-import org.eclipse.jetty.server.Request
-import org.eclipse.jetty.server.Server
-import org.eclipse.jetty.server.handler.AbstractHandler
 import org.libreplicator.api.AlreadySubscribedException
 import org.libreplicator.api.NotSubscribedException
 import org.libreplicator.api.Observer
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.api.Subscription
 import org.libreplicator.crypto.api.Cipher
+import org.libreplicator.httpserver.api.HttpServer
 import org.libreplicator.json.api.JsonMapper
-import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.server.api.ReplicatorServer
-import org.slf4j.LoggerFactory
 import javax.inject.Inject
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 class DefaultReplicatorServer @Inject constructor(
         private val jsonMapper: JsonMapper,
         private val cipher: Cipher,
+        private val httpServer: HttpServer,
         private val localNode: ReplicatorNode) : ReplicatorServer {
-
-    private companion object {
-        private val logger = LoggerFactory.getLogger(DefaultReplicatorServer::class.java)
-        private val SYNC_PATH = "/sync"
-    }
 
     private var hasSubscription = false
 
@@ -51,10 +41,7 @@ class DefaultReplicatorServer @Inject constructor(
         if (hasSubscription) {
             throw AlreadySubscribedException()
         }
-
-        val server = createServer(localNode)
-        server.handler = ReplicatorMessageHandler(jsonMapper, cipher, messageObserver)
-        server.startAndWaitUntilStarted()
+        httpServer.startAndWaitUntilStarted(localNode.port, "/sync", ReplicatorSyncServlet(jsonMapper, cipher, messageObserver))
         hasSubscription = true
 
         return object : Subscription {
@@ -62,39 +49,10 @@ class DefaultReplicatorServer @Inject constructor(
                 if (!hasSubscription) {
                     throw NotSubscribedException()
                 }
-
-                server.stopAndWaitUntilStarted()
+                httpServer.stopAndWaitUntilStopped()
                 hasSubscription = false
             }
         }
-    }
-
-    private fun createServer(localNode: ReplicatorNode): Server = Server(localNode.port)
-
-    private class ReplicatorMessageHandler(
-            private val jsonMapper: JsonMapper,
-            private val cipher: Cipher,
-            private val messageObserver: Observer<ReplicatorMessage>) : AbstractHandler() {
-
-        override fun handle(target: String?, baseRequest: Request?, request: HttpServletRequest?, response: HttpServletResponse?) {
-            if (baseRequest.isPostRequest() && baseRequest.isRequestedPath(SYNC_PATH)) {
-                tryDeserializeAndObserveMessage(baseRequest)
-                response?.status = HttpServletResponse.SC_NO_CONTENT
-                baseRequest.markHandled()
-            }
-        }
-
-        private fun tryDeserializeAndObserveMessage(baseRequest: Request?) {
-            try {
-                messageObserver.observe(deserializeMessage(cipher.decrypt(baseRequest.getMessage())))
-            }
-            catch (e: JsonReadException) {
-                logger.warn("Failed to deserialize message!")
-            }
-        }
-
-        private fun deserializeMessage(message: String): ReplicatorMessage =
-                jsonMapper.read(message, ReplicatorMessage::class)
     }
 
     override fun hasSubscription(): Boolean = hasSubscription

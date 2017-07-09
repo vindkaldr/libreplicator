@@ -21,5 +21,6 @@ import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.model.EventNode
 
 class ReplicatorNodeFactory {
+    fun create(nodeId: String): ReplicatorNode = EventNode(nodeId)
     fun create(nodeId: String, url: String, port: Int): ReplicatorNode = EventNode(nodeId, url, port)
 }

@@ -25,14 +25,10 @@ import org.libreplicator.client.api.ReplicatorClient
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.server.api.ReplicatorServer
 import javax.inject.Inject
-import javax.inject.Provider
 
 class DefaultMessageRouter @Inject constructor(
-        private val replicatorClientProvider: Provider<ReplicatorClient>,
-        private val replicatorServerProvider: Provider<ReplicatorServer>) : MessageRouter {
-
-    private lateinit var replicatorClient: ReplicatorClient
-    private var replicatorServer = replicatorServerProvider.get()
+        private val replicatorClient: ReplicatorClient,
+        private val replicatorServer: ReplicatorServer) : MessageRouter {
 
     override fun routeMessage(remoteNode: ReplicatorNode, message: ReplicatorMessage) = synchronized(this) {
         if (!hasSubscription()) {
@@ -42,9 +38,7 @@ class DefaultMessageRouter @Inject constructor(
     }
 
     override fun subscribe(messageObserver: Observer<ReplicatorMessage>): Subscription = synchronized(this) {
-        replicatorClient = replicatorClientProvider.get()
-        replicatorServer = replicatorServerProvider.get()
-
+        replicatorClient.initialize()
         val subscription = replicatorServer.subscribe(messageObserver)
 
         return object : Subscription {

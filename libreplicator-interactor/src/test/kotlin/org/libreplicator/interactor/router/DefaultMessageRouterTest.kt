@@ -21,18 +21,13 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.libreplicator.api.NotSubscribedException
-import org.libreplicator.client.api.ReplicatorClient
 import org.libreplicator.interactor.router.testdouble.MessageObserverDummy
 import org.libreplicator.interactor.router.testdouble.ReplicatorClientMock
-import org.libreplicator.interactor.router.testdouble.ReplicatorClientProviderStub
 import org.libreplicator.interactor.router.testdouble.ReplicatorServerMock
-import org.libreplicator.interactor.router.testdouble.ReplicatorServerProviderStub
 import org.libreplicator.interactor.router.testdouble.SubscriptionMock
 import org.libreplicator.model.EventNode
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.TimeTable
-import org.libreplicator.server.api.ReplicatorServer
-import javax.inject.Provider
 
 class DefaultMessageRouterTest {
     private companion object {
@@ -41,26 +36,22 @@ class DefaultMessageRouterTest {
     }
 
     private lateinit var replicatorClientMock: ReplicatorClientMock
-    private lateinit var replicatorClientProviderStub: Provider<ReplicatorClient>
 
     private lateinit var messageObserverDummy: MessageObserverDummy
     private lateinit var subscriptionMock: SubscriptionMock
     private lateinit var replicatorServerMock: ReplicatorServerMock
-    private lateinit var replicatorServerProviderStub: Provider<ReplicatorServer>
 
     private lateinit var messageRouter: MessageRouter
 
     @Before
     fun setUp() {
         replicatorClientMock = ReplicatorClientMock()
-        replicatorClientProviderStub = ReplicatorClientProviderStub(replicatorClientMock)
 
         messageObserverDummy = MessageObserverDummy()
         subscriptionMock = SubscriptionMock()
         replicatorServerMock = ReplicatorServerMock(subscriptionMock)
-        replicatorServerProviderStub = ReplicatorServerProviderStub(replicatorServerMock)
 
-        messageRouter = DefaultMessageRouter(replicatorClientProviderStub, replicatorServerProviderStub)
+        messageRouter = DefaultMessageRouter(replicatorClientMock, replicatorServerMock)
     }
 
     @Test(expected = NotSubscribedException::class)

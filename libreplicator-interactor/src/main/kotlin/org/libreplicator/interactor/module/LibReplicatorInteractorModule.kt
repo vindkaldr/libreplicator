@@ -27,7 +27,6 @@ import org.libreplicator.interactor.router.DefaultMessageRouter
 import org.libreplicator.interactor.router.MessageRouter
 import org.libreplicator.model.ReplicatorState
 import org.libreplicator.server.api.ReplicatorServer
-import javax.inject.Provider
 import javax.inject.Singleton
 
 @Module
@@ -41,8 +40,7 @@ class LibReplicatorInteractorModule(
     }
 
     @Provides
-    fun provideMessageRouter(replicatorClientProvider: Provider<ReplicatorClient>,
-            replicatorServerProvider: Provider<ReplicatorServer>): MessageRouter {
-        return DefaultMessageRouter(replicatorClientProvider, replicatorServerProvider)
+    fun provideMessageRouter(replicatorClient: ReplicatorClient, replicatorServer: ReplicatorServer): MessageRouter {
+        return DefaultMessageRouter(replicatorClient, replicatorServer)
     }
 }

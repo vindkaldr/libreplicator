@@ -22,6 +22,9 @@ import org.libreplicator.api.Replicator
 import org.libreplicator.boundary.module.LibReplicatorBoundaryModule
 import org.libreplicator.client.module.LibReplicatorClientModule
 import org.libreplicator.crypto.module.LibReplicatorCryptoModule
+import org.libreplicator.gateway.module.LibReplicatorGatewayModule
+import org.libreplicator.httpclient.module.LibReplicatorHttpClientModule
+import org.libreplicator.httpserver.module.LibReplicatorHttpServerModule
 import org.libreplicator.interactor.module.LibReplicatorInteractorModule
 import org.libreplicator.journal.module.LibReplicatorJournalModule
 import org.libreplicator.json.module.LibReplicatorJsonModule
@@ -29,9 +32,16 @@ import org.libreplicator.server.module.LibReplicatorServerModule
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = arrayOf(LibReplicatorBoundaryModule::class, LibReplicatorClientModule::class,
-        LibReplicatorCryptoModule::class, LibReplicatorInteractorModule::class,
-        LibReplicatorJournalModule::class, LibReplicatorJsonModule::class,
+@Component(modules = arrayOf(
+        LibReplicatorBoundaryModule::class,
+        LibReplicatorClientModule::class,
+        LibReplicatorCryptoModule::class,
+        LibReplicatorGatewayModule::class,
+        LibReplicatorHttpClientModule::class,
+        LibReplicatorHttpServerModule::class,
+        LibReplicatorInteractorModule::class,
+        LibReplicatorJournalModule::class,
+        LibReplicatorJsonModule::class,
         LibReplicatorServerModule::class))
 interface LibReplicatorComponent {
     fun getReplicator(): Replicator

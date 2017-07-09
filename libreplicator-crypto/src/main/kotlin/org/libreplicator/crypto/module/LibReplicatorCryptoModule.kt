@@ -24,7 +24,7 @@ import org.libreplicator.crypto.api.Cipher
 
 @Module
 class LibReplicatorCryptoModule(private val cryptoSettings: LibReplicatorCryptoSettings) {
-    @Provides fun provideMessageCipher(): Cipher {
+    @Provides fun provideCipher(): Cipher {
         if (cryptoSettings.isEncryptionEnabled && cryptoSettings.sharedSecret.isNotBlank()) {
             return DefaultCipher(cryptoSettings.sharedSecret)
         }

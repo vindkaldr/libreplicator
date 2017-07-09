@@ -21,6 +21,7 @@ import dagger.Module
 import dagger.Provides
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.crypto.api.Cipher
+import org.libreplicator.httpserver.api.HttpServer
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.server.DefaultReplicatorServer
 import org.libreplicator.server.api.ReplicatorServer
@@ -29,7 +30,7 @@ import javax.inject.Singleton
 @Module
 class LibReplicatorServerModule constructor(private val localNode: ReplicatorNode) {
     @Provides @Singleton
-    fun provideReplicatorServer(jsonMapper: JsonMapper, cipher: Cipher): ReplicatorServer {
-        return DefaultReplicatorServer(jsonMapper, cipher, localNode)
+    fun provideReplicatorServer(jsonMapper: JsonMapper, cipher: Cipher, httpServer: HttpServer): ReplicatorServer {
+        return DefaultReplicatorServer(jsonMapper, cipher, httpServer, localNode)
     }
 }

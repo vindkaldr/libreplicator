@@ -17,61 +17,32 @@
 
 package org.libreplicator.client
 
-import org.apache.http.NoHttpResponseException
-import org.apache.http.client.config.RequestConfig
-import org.apache.http.client.methods.HttpPost
-import org.apache.http.conn.HttpHostConnectException
-import org.apache.http.entity.StringEntity
-import org.apache.http.impl.client.CloseableHttpClient
-import org.apache.http.impl.client.HttpClients
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.client.api.ReplicatorClient
+import org.libreplicator.httpclient.api.HttpClient
 import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.model.ReplicatorMessage
-import org.slf4j.LoggerFactory
-import java.net.SocketTimeoutException
 import javax.inject.Inject
+import javax.inject.Provider
 
 class DefaultReplicatorClient @Inject constructor(
         private val jsonMapper: JsonMapper,
-        private val cipher: Cipher) : ReplicatorClient {
+        private val cipher: Cipher,
+        private val httpClientProvider: Provider<HttpClient>) : ReplicatorClient {
 
     private companion object {
-        private val logger = LoggerFactory.getLogger(DefaultReplicatorClient::class.java)
         private val SYNC_PATH = "/sync"
     }
 
-    private val httpClient: CloseableHttpClient = HttpClients.custom()
-            .setDefaultRequestConfig(RequestConfig.custom()
-                    .setSocketTimeout(1000)
-                    .build())
-            .build()
+    private lateinit var httpClient: HttpClient
+
+    override fun initialize() {
+        httpClient = httpClientProvider.get()
+    }
 
     override fun synchronizeWithNode(remoteNode: ReplicatorNode, message: ReplicatorMessage) {
-        try {
-            serializeAndSendMessage(remoteNode, message)
-        }
-        catch (e: HttpHostConnectException) {
-            logger.info("Failed to connect to remote node!")
-        }
-        catch (e: NoHttpResponseException) {
-            logger.warn("Failed to reuse connection!")
-        }
-        catch (e: SocketTimeoutException) {
-            logger.warn("Failed to connect to remote node!")
-        }
-    }
-
-    private fun serializeAndSendMessage(remoteNode: ReplicatorNode, message: ReplicatorMessage) {
-        val httpPostRequest = createHttpPostRequest(remoteNode, SYNC_PATH, message)
-        httpClient.execute(httpPostRequest)
-    }
-
-    private fun createHttpPostRequest(remoteNode: ReplicatorNode, path: String, message: ReplicatorMessage): HttpPost {
-        val httpPost = HttpPost(remoteNode.toUri(path))
-        httpPost.entity = StringEntity(cipher.encrypt(jsonMapper.write(message)))
-        return httpPost
+        httpClient.post(remoteNode.url, remoteNode.port, SYNC_PATH, cipher.encrypt(jsonMapper.write(message)))
     }
 
     override fun close() = httpClient.close()

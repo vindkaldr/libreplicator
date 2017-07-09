@@ -19,4 +19,7 @@ package org.libreplicator.model
 
 import org.libreplicator.api.ReplicatorNode
 
-data class EventNode(override val nodeId: String, override val url: String, override val port: Int) : ReplicatorNode
+data class EventNode(
+        override val nodeId: String,
+        override val url: String = "",
+        override val port: Int = 0) : ReplicatorNode
