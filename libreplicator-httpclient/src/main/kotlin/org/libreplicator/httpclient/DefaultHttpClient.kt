@@ -46,10 +46,11 @@ class DefaultHttpClient @Inject constructor() : HttpClient {
     override fun post(url: String, port: Int, path: String, content: String): Boolean {
         try {
             httpClient.execute(createHttpPostRequest(toUri(url, port, path), content))
+            logger.trace("Connected to remote node")
             return true
         }
         catch (e: HttpHostConnectException) {
-            logger.info("Failed to connect to remote node!")
+            logger.warn("Failed to connect to remote node!")
         }
         catch (e: NoHttpResponseException) {
             logger.warn("Failed to reuse connection!")

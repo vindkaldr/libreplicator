@@ -17,6 +17,7 @@
 
 package org.libreplicator
 
+import kotlinx.coroutines.experimental.runBlocking
 import org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder
 import org.junit.After
 import org.junit.Assert.assertThat
@@ -60,7 +61,7 @@ class ReplicatorJournalIntegrationTest {
     private lateinit var remoteReplicatorSubscription: Subscription
 
     @After
-    fun tearDown() {
+    fun tearDown() = runBlocking {
         DIRECTORY_OF_JOURNALS.toFile().deleteRecursively()
 
         localReplicatorSubscription.unsubscribe()
@@ -68,7 +69,7 @@ class ReplicatorJournalIntegrationTest {
     }
 
     @Test
-    fun replicator_shouldKeepState_whenJournalingEnabled() {
+    fun replicator_shouldKeepState_whenJournalingEnabled() = runBlocking {
         localReplicator = localReplicatorFactory.createReplicator(localNode, listOf(remoteNode))
         localReplicatorSubscription = localReplicator.subscribe(localEventLogObserverMock)
 

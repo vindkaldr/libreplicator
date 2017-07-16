@@ -19,11 +19,12 @@ package org.libreplicator.interactor.router
 
 import org.libreplicator.api.Observer
 import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.Subscribable
 import org.libreplicator.api.Subscription
 import org.libreplicator.model.ReplicatorMessage
 
-interface MessageRouter {
+interface MessageRouter : Subscribable<ReplicatorMessage> {
     fun routeMessage(remoteNode: ReplicatorNode, message: ReplicatorMessage)
-    fun subscribe(messageObserver: Observer<ReplicatorMessage>): Subscription
+    override suspend fun subscribe(observer: Observer<ReplicatorMessage>): Subscription
     fun hasSubscription(): Boolean
 }

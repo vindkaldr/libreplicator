@@ -19,6 +19,9 @@ package org.libreplicator.journal.module
 
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.runBlocking
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.journal.DefaultReplicatorStateJournal
@@ -40,9 +43,9 @@ class LibReplicatorJournalModule (
     }
 
     @Provides @Singleton
-    fun provideReplicatorState(fileHandler: FileHandler, jsonMapper: JsonMapper, cipher: Cipher): ReplicatorState {
+    fun provideReplicatorState(fileHandler: FileHandler, jsonMapper: JsonMapper, cipher: Cipher): ReplicatorState = runBlocking {
         if (!journalSettings.isJournalingEnabled) {
-            return ReplicatorState()
+            return@runBlocking ReplicatorState()
         }
 
         val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandler, jsonMapper, cipher,
@@ -50,6 +53,7 @@ class LibReplicatorJournalModule (
         val replicatorState = replicatorStateJournal.getReplicatorState()
 
         replicatorState.subscribe(replicatorStateJournal)
-        return replicatorState
+
+        return@runBlocking replicatorState
     }
 }

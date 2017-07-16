@@ -17,6 +17,7 @@
 
 package org.libreplicator.journal
 
+import kotlinx.coroutines.experimental.runBlocking
 import org.hamcrest.Matchers.equalTo
 import org.junit.Assert.assertThat
 import org.junit.Assert.assertTrue
@@ -118,7 +119,7 @@ class DefaultReplicatorStateJournalTest {
     }
 
     @Test
-    fun journal_writesState() {
+    fun journal_writesState() = runBlocking {
         val fileHandlerMock = JournalHandlerMock(journalsDirectory = JOURNALS_DIRECTORY,
                 journalDirectoryName = JOURNAL_DIRECTORY_NAME, journalDirectory = JOURNAL_DIRECTORY)
 

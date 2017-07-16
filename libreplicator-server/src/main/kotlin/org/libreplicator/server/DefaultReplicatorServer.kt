@@ -23,34 +23,52 @@ import org.libreplicator.api.Observer
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.api.Subscription
 import org.libreplicator.crypto.api.Cipher
+import org.libreplicator.gateway.api.InternetGateway
 import org.libreplicator.httpserver.api.HttpServer
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.server.api.ReplicatorServer
+import org.slf4j.LoggerFactory
 import javax.inject.Inject
+
+const val LIBREPLICATOR_DESCRIPTION = "libreplicator"
 
 class DefaultReplicatorServer @Inject constructor(
         private val jsonMapper: JsonMapper,
         private val cipher: Cipher,
         private val httpServer: HttpServer,
-        private val localNode: ReplicatorNode) : ReplicatorServer {
+        private val internetGateway: InternetGateway,
+        private val localNode: ReplicatorNode
+) : ReplicatorServer {
+    private companion object {
+        private val logger = LoggerFactory.getLogger(DefaultReplicatorServer::class.java)
+    }
 
     private var hasSubscription = false
 
-    override fun subscribe(messageObserver: Observer<ReplicatorMessage>): Subscription {
+    override suspend fun subscribe(observer: Observer<ReplicatorMessage>): Subscription {
+        logger.trace("Subscribing to server..")
         if (hasSubscription) {
             throw AlreadySubscribedException()
         }
-        httpServer.startAndWaitUntilStarted(localNode.port, "/sync", ReplicatorSyncServlet(jsonMapper, cipher, messageObserver))
+        httpServer.start(localNode.port, "/sync", ReplicatorSyncServlet(jsonMapper, cipher, observer))
         hasSubscription = true
 
+//        async(CommonPool) {
+//            internetGateway.addPortMapping(AddPortMapping(localNode.port, InternetProtocol.TCP, localNode.port, LIBREPLICATOR_DESCRIPTION))
+//        }.await()
+
         return object : Subscription {
-            override fun unsubscribe() = synchronized(this) {
+            override suspend fun unsubscribe() {
+                logger.trace("Unsubscribing from server..")
                 if (!hasSubscription) {
                     throw NotSubscribedException()
                 }
-                httpServer.stopAndWaitUntilStopped()
+                httpServer.stop()
                 hasSubscription = false
+//                async(CommonPool) {
+//                    internetGateway.deletePortMapping(DeletePortMapping(localNode.port, InternetProtocol.TCP))
+//                }
             }
         }
     }

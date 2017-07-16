@@ -18,6 +18,7 @@
 dependencies {
     compile project(':libreplicator-api')
     compile project(':libreplicator-interactor-api')
+    compile project(':libreplicator-log')
 
     testCompile project(':libreplicator-common-test')
 

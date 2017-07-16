@@ -25,7 +25,7 @@ class RemoteEventLogObserverMock constructor(numberOfExpectedEventLogs: Int = 0)
     private val eventLogObserver: ObjectObserver<RemoteEventLog> =
             ObjectObserver(numberOfExpectedObjects = numberOfExpectedEventLogs)
 
-    override fun observe(observable: RemoteEventLog) {
+    override suspend fun observe(observable: RemoteEventLog) {
         eventLogObserver.observe(observable)
     }
 

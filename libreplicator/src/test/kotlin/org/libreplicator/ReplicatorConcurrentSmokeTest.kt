@@ -17,9 +17,11 @@
 
 package org.libreplicator
 
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Test
 import org.libreplicator.api.ReplicatorNode
-import org.libreplicator.common.test.ConcurrentExecutor
 import org.libreplicator.testdouble.RemoteEventLogObserverDummy
 
 class ReplicatorConcurrentSmokeTest {
@@ -33,17 +35,14 @@ class ReplicatorConcurrentSmokeTest {
     private val node2 = libReplicatorFactory.createReplicatorNode("nodeId2", "localhost", 12346)
     private val node3 = libReplicatorFactory.createReplicatorNode("nodeId3", "localhost", 12347)
 
-    private val concurrentExecutor = ConcurrentExecutor(threadPoolSize = 3)
-
     @Test
-    fun replicator_shouldHandleUnavailabilityOfNodes() {
-        concurrentExecutor.submitExecution { testRunReplicator(node1, listOf(node2, node3)) }
-        concurrentExecutor.submitExecution { testRunReplicator(node2, listOf(node1, node3)) }
-        concurrentExecutor.submitExecution { testRunReplicator(node3, listOf(node1, node2)) }
-        concurrentExecutor.awaitExecutions()
+    fun replicator_shouldHandleUnavailabilityOfNodes() = runBlocking<Unit> {
+        listOf(launch(CommonPool) { testRunReplicator(node1, listOf(node2, node3)) },
+                launch(CommonPool) { testRunReplicator(node2, listOf(node1, node3)) },
+                launch(CommonPool) { testRunReplicator(node3, listOf(node1, node2)) }).forEach { it.join() }
     }
 
-    private fun testRunReplicator(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>) {
+    private suspend fun testRunReplicator(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>) {
         val replicator = libReplicatorFactory.createReplicator(localNode, remoteNodes)
 
         var subscription = replicator.subscribe(RemoteEventLogObserverDummy())

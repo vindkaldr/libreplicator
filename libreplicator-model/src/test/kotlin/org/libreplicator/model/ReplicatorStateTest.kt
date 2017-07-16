@@ -17,6 +17,7 @@
 
 package org.libreplicator.model
 
+import kotlinx.coroutines.experimental.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.not
 import org.junit.Assert.assertThat
@@ -104,7 +105,7 @@ class ReplicatorStateTest {
     }
 
     @Test
-    fun addLocalEventLog_createsAnOutgoingEventLog() {
+    fun addLocalEventLog_createsAnOutgoingEventLog() = runBlocking {
         replicatorState.addLocalEventLog(NODE_1, NODE_1_EVENT_LOG_1)
 
         val remoteNodesWithMissingEventLogs = replicatorState.getNodesWithMissingEventLogs(listOf(NODE_2))
@@ -120,7 +121,7 @@ class ReplicatorStateTest {
     }
 
     @Test
-    fun addLocalEventLog_notifiesReplicatorStateObserver() {
+    fun addLocalEventLog_notifiesReplicatorStateObserver() = runBlocking {
         replicatorState.subscribe(stateObserverMock)
 
         replicatorState.addLocalEventLog(NODE_1, NODE_1_EVENT_LOG_1)
@@ -129,7 +130,7 @@ class ReplicatorStateTest {
     }
 
     @Test
-    fun updateFromMessage_administersOutgoingEventLog() {
+    fun updateFromMessage_administersOutgoingEventLog() = runBlocking {
         replicatorState.updateFromMessage(NODE_1, listOf(NODE_2, NODE_3), NODE_2_REPLICATOR_MESSAGE)
 
         val missingEventLogs = replicatorState.getNodesWithMissingEventLogs(listOf(NODE_2, NODE_3))
@@ -138,7 +139,7 @@ class ReplicatorStateTest {
     }
 
     @Test
-    fun updateFromMessage_notifiesReplicatorStateObserver() {
+    fun updateFromMessage_notifiesReplicatorStateObserver() = runBlocking {
         replicatorState.subscribe(stateObserverMock)
 
         replicatorState.updateFromMessage(NODE_1, listOf(NODE_2), NODE_2_REPLICATOR_MESSAGE)

@@ -21,6 +21,5 @@ import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteEventLog
 
 class RemoteEventLogObserverDummy : Observer<RemoteEventLog> {
-    override fun observe(observable: RemoteEventLog) {
-    }
+    override suspend fun observe(observable: RemoteEventLog) {}
 }

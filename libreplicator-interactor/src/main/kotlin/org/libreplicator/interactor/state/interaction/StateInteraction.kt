@@ -15,8 +15,22 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.api
+package org.libreplicator.interactor.state.interaction
 
-interface Observer<in T> {
-    suspend fun observe(observable: T)
+import kotlinx.coroutines.experimental.channels.SendChannel
+import org.libreplicator.api.LocalEventLog
+import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.model.EventLog
+import org.libreplicator.model.ReplicatorMessage
+
+sealed class StateInteraction {
+    class ObserveLocalEvent(
+            val localEventLog: LocalEventLog,
+            val channel: SendChannel<Map<ReplicatorNode, List<EventLog>>>
+    ) : StateInteraction()
+
+    class ObserveRemoteMessage(
+            val message: ReplicatorMessage,
+            val channel: SendChannel<List<EventLog>>
+    ) : StateInteraction()
 }

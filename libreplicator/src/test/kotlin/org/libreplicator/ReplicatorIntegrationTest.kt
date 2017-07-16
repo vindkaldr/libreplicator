@@ -17,6 +17,7 @@
 
 package org.libreplicator
 
+import kotlinx.coroutines.experimental.runBlocking
 import org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder
 import org.junit.After
 import org.junit.Assert.assertThat
@@ -54,21 +55,21 @@ class ReplicatorIntegrationTest {
     private lateinit var subscription3: Subscription
 
     @Before
-    fun setUp() {
+    fun setUp() = runBlocking {
         subscription1 = replicator1.subscribe(eventLogObserverMock1)
         subscription2 = replicator2.subscribe(eventLogObserverMock2)
         subscription3 = replicator3.subscribe(eventLogObserverMock3)
     }
 
     @After
-    fun tearDown() {
+    fun tearDown() = runBlocking {
         subscription1.unsubscribe()
         subscription2.unsubscribe()
         subscription3.unsubscribe()
     }
 
     @Test
-    fun replicator_shouldReplicateLogsBetweenNodes() {
+    fun replicator_shouldReplicateLogsBetweenNodes() = runBlocking {
         replicator1.replicate(libReplicatorFactory.createLocalEventLog(LOG_1_1))
         replicator2.replicate(libReplicatorFactory.createLocalEventLog(LOG_2_1))
         replicator3.replicate(libReplicatorFactory.createLocalEventLog(LOG_3_1))

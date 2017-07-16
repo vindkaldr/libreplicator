@@ -15,20 +15,8 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.common.test
+package org.libreplicator.api
 
-import java.util.concurrent.Executors
-import java.util.concurrent.Future
-
-class ConcurrentExecutor(threadPoolSize: Int) {
-    private val executorService = Executors.newFixedThreadPool(threadPoolSize)
-    private val submittedExecutions = mutableListOf<Future<*>>()
-
-    fun submitExecution(execution: () -> Unit) {
-        submittedExecutions.add(executorService.submit(execution))
-    }
-
-    fun awaitExecutions() {
-        submittedExecutions.forEach { it.get() }
-    }
+interface Subscribable<out T> {
+    suspend fun subscribe(observer: Observer<T>): Subscription
 }

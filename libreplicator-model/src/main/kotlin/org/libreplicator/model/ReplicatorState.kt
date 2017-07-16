@@ -20,21 +20,25 @@ package org.libreplicator.model
 import org.libreplicator.api.LocalEventLog
 import org.libreplicator.api.Observer
 import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.Subscribable
+import org.libreplicator.api.Subscription
 
 data class ReplicatorState constructor(
         var logs: MutableSet<EventLog> = mutableSetOf(),
-        var timeTable: TimeTable = TimeTable()) {
+        var timeTable: TimeTable = TimeTable()): Subscribable<ReplicatorState> {
 
     private var observer: Observer<ReplicatorState> = object : Observer<ReplicatorState> {
-        override fun observe(observable: ReplicatorState) {
+        override suspend fun observe(observable: ReplicatorState) {}
+    }
+
+    override suspend fun subscribe(observer: Observer<ReplicatorState>): Subscription /*= synchronized(this)*/ {
+        this.observer = observer
+        return object : Subscription {
+            override suspend fun unsubscribe() {}
         }
     }
 
-    fun subscribe(observer: Observer<ReplicatorState>) = synchronized(this) {
-        this.observer = observer
-    }
-
-    fun addLocalEventLog(localNode: ReplicatorNode, localEventLog: LocalEventLog) {
+    suspend fun addLocalEventLog(localNode: ReplicatorNode, localEventLog: LocalEventLog) {
         val currentTime = getCurrentTimeInMillis()
 
         updateTimeOfNode(localNode, currentTime)
@@ -43,7 +47,7 @@ data class ReplicatorState constructor(
         observer.observe(this)
     }
 
-    fun updateFromMessage(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>, message: ReplicatorMessage) {
+    suspend fun updateFromMessage(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>, message: ReplicatorMessage) {
         logs.addAll(message.eventLogs)
         timeTable.merge(localNode.nodeId, message)
 
@@ -53,9 +57,8 @@ data class ReplicatorState constructor(
         observer.observe(this)
     }
 
-    fun getNodesWithMissingEventLogs(nodes: List<ReplicatorNode>): Map<ReplicatorNode, List<EventLog>> =
-            nodes.map { node ->
-                node.to(getMissingEventLogs(node)) }
+    fun getNodesWithMissingEventLogs(remoteNodes: List<ReplicatorNode>): Map<ReplicatorNode, List<EventLog>> =
+            remoteNodes.map { node -> node.to(getMissingEventLogs(node)) }
                     .filter { it.second.isNotEmpty() }
                     .toMap()
 

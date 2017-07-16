@@ -34,9 +34,10 @@ import org.libreplicator.gateway.api.model.AddPortMapping
 import org.libreplicator.gateway.api.model.DeletePortMapping
 import org.libreplicator.gateway.api.InternetGateway
 import java.net.InetAddress
+import javax.inject.Inject
 
-class DefaultInternetGateway : InternetGateway {
-    override fun addPortMapping(portMapping: AddPortMapping) {
+class DefaultInternetGateway @Inject constructor() : InternetGateway {
+    suspend override fun addPortMapping(portMapping: AddPortMapping) {
         val upnpService = UpnpServiceImpl()
 
         upnpService.registry.addListener(object : DefaultRegistryListener() {
@@ -77,6 +78,7 @@ class DefaultInternetGateway : InternetGateway {
                                         }
                                     }
                                     upnpService.controlPoint.execute(addPortMappingCallback)
+                                    upnpService.shutdown()
                                 }
                             }
                         }
@@ -94,10 +96,9 @@ class DefaultInternetGateway : InternetGateway {
         })
 
         upnpService.controlPoint.search(UDADeviceTypeHeader(UDADeviceType("InternetGatewayDevice")))
-        upnpService.shutdown()
     }
 
-    override fun deletePortMapping(portMapping: DeletePortMapping) {
+    suspend override fun deletePortMapping(portMapping: DeletePortMapping) {
         val upnpService = UpnpServiceImpl()
 
         upnpService.registry.addListener(object : DefaultRegistryListener() {
@@ -133,6 +134,7 @@ class DefaultInternetGateway : InternetGateway {
                                         }
                                     }
                                     upnpService.controlPoint.execute(addPortMappingCallback)
+                                    upnpService.shutdown()
                                 }
                             }
                         }
@@ -152,6 +154,5 @@ class DefaultInternetGateway : InternetGateway {
         })
 
         upnpService.controlPoint.search(UDADeviceTypeHeader(UDADeviceType("InternetGatewayDevice")))
-        upnpService.shutdown()
     }
 }

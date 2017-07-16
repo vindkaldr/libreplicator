@@ -18,5 +18,5 @@
 package org.libreplicator.api
 
 interface Subscription {
-    fun unsubscribe()
+    suspend fun unsubscribe()
 }

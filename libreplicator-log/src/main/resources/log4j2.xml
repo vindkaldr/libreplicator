@@ -26,5 +26,6 @@
         <Root level="error">
             <AppenderRef ref="Console"/>
         </Root>
+        <Logger name="org.libreplicator" level="error" />
     </Loggers>
 </Configuration>

@@ -23,7 +23,7 @@ import org.libreplicator.api.Subscription
 class SubscriptionMock : Subscription {
     private var subscribed = true
 
-    override fun unsubscribe() {
+    override suspend fun unsubscribe() {
         if (!subscribed) {
             Assert.fail("Unexpected call!")
         }

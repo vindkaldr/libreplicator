@@ -23,8 +23,10 @@ import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.client.api.ReplicatorClient
 import org.libreplicator.interactor.api.LogDispatcher
 import org.libreplicator.interactor.dispatcher.DefaultLogDispatcher
+import org.libreplicator.interactor.state.DefaultStateInteractor
 import org.libreplicator.interactor.router.DefaultMessageRouter
 import org.libreplicator.interactor.router.MessageRouter
+import org.libreplicator.interactor.state.StateInteractor
 import org.libreplicator.model.ReplicatorState
 import org.libreplicator.server.api.ReplicatorServer
 import javax.inject.Singleton
@@ -32,11 +34,16 @@ import javax.inject.Singleton
 @Module
 class LibReplicatorInteractorModule(
         private val localNode: ReplicatorNode,
-        private val remoteNodes: List<ReplicatorNode>) {
-
+        private val remoteNodes: List<ReplicatorNode>
+) {
     @Provides @Singleton
-    fun provideLogDispatcher(messageRouter: MessageRouter, replicatorState: ReplicatorState): LogDispatcher {
-        return DefaultLogDispatcher(messageRouter, replicatorState, localNode, remoteNodes)
+    fun provideStateInteractor(replicatorState: ReplicatorState): StateInteractor {
+        return DefaultStateInteractor(replicatorState, localNode, remoteNodes)
+    }
+
+    @Provides
+    fun provideLogDispatcher(messageRouter: MessageRouter, stateInteractor: StateInteractor): LogDispatcher {
+        return DefaultLogDispatcher(messageRouter, stateInteractor)
     }
 
     @Provides

@@ -28,11 +28,11 @@ class SubscribedLogDispatcherMock constructor(numberOfExpectedLocalEventLogs: In
     private val objectObserver: ObjectObserver<LocalEventLog> =
             ObjectObserver(numberOfExpectedObjects = numberOfExpectedLocalEventLogs)
 
-    override fun dispatch(localEventLog: LocalEventLog) {
+    override suspend fun dispatch(localEventLog: LocalEventLog) {
         objectObserver.observe(localEventLog)
     }
 
-    override fun subscribe(remoteEventLogObserver: Observer<RemoteEventLog>): Subscription {
+    override suspend fun subscribe(observer: Observer<RemoteEventLog>): Subscription {
         return SubscriptionDummy()
     }
 

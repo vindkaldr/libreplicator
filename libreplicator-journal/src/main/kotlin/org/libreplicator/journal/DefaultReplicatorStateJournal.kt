@@ -61,7 +61,7 @@ class DefaultReplicatorStateJournal @Inject constructor(
         }
     }
 
-    override fun observe(observable: ReplicatorState) {
+    override suspend fun observe(observable: ReplicatorState) {
         fileHandler.write(journalFile, cipher.encrypt(jsonMapper.write(observable)))
         fileHandler.move(journalFile, latestJournalFile)
     }

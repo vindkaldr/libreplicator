@@ -20,6 +20,6 @@ package org.libreplicator.boundary.testdouble
 import org.libreplicator.api.Subscription
 
 class SubscriptionDummy : Subscription {
-    override fun unsubscribe() {
+    override suspend fun unsubscribe() {
     }
 }

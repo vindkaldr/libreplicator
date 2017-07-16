@@ -25,7 +25,7 @@ class StateObserverMock constructor(numberOfExpectedStates: Int = 0): Observer<R
     private val objectObserver: ObjectObserver<ReplicatorState> =
             ObjectObserver(numberOfExpectedObjects = numberOfExpectedStates)
 
-    override fun observe(observable: ReplicatorState) {
+    override suspend fun observe(observable: ReplicatorState) {
         objectObserver.observe(observable)
     }
 

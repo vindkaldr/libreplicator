@@ -17,7 +17,7 @@
 
 package org.libreplicator.api
 
-interface Replicator {
-    fun replicate(localEventLog: LocalEventLog)
-    fun subscribe(remoteEventLogObserver: Observer<RemoteEventLog>): Subscription
+interface Replicator : Subscribable<RemoteEventLog> {
+    suspend fun replicate(localEventLog: LocalEventLog)
+    override suspend fun subscribe(observer: Observer<RemoteEventLog>): Subscription
 }

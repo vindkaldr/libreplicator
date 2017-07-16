@@ -27,11 +27,11 @@ import org.libreplicator.interactor.api.LogDispatcher
 class NotSubscribedLogDispatcherMock constructor(
         private val remoteEventLogObserver: Observer<RemoteEventLog>,
         private val subscription: Subscription) : LogDispatcher {
-    override fun dispatch(localEventLog: LocalEventLog) {
+    override suspend fun dispatch(localEventLog: LocalEventLog) {
     }
 
-    override fun subscribe(remoteEventLogObserver: Observer<RemoteEventLog>): Subscription {
-        if(this.remoteEventLogObserver != remoteEventLogObserver) {
+    override suspend fun subscribe(observer: Observer<RemoteEventLog>): Subscription {
+        if(this.remoteEventLogObserver != observer) {
             Assert.fail("Unexpected call!")
         }
         return subscription

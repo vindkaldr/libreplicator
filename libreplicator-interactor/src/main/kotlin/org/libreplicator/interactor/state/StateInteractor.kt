@@ -15,8 +15,14 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.api
+package org.libreplicator.interactor.state
 
-interface Observer<in T> {
-    suspend fun observe(observable: T)
+import org.libreplicator.api.LocalEventLog
+import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.model.EventLog
+import org.libreplicator.model.ReplicatorMessage
+
+interface StateInteractor {
+    suspend fun getNodesWithMissingLogs(localEventLog: LocalEventLog): Map<ReplicatorNode, ReplicatorMessage>
+    suspend fun getMissingLogs(message: ReplicatorMessage): List<EventLog>
 }

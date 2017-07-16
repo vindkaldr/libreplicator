@@ -26,11 +26,11 @@ import org.libreplicator.server.api.ReplicatorServer
 class ReplicatorServerMock constructor(private val subscription: Subscription) : ReplicatorServer {
     private var observedMessageObserver: Observer<ReplicatorMessage>? = null
 
-    override fun subscribe(messageObserver: Observer<ReplicatorMessage>): Subscription {
+    override suspend fun subscribe(observer: Observer<ReplicatorMessage>): Subscription {
         if (hasSubscription()) {
             Assert.fail("Unexpected call!")
         }
-        observedMessageObserver = messageObserver
+        observedMessageObserver = observer
         return subscription
     }
 

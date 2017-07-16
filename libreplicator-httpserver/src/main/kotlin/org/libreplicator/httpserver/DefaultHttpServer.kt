@@ -17,34 +17,53 @@
 
 package org.libreplicator.httpserver
 
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.newSingleThreadContext
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.handler.HandlerCollection
 import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHolder
 import org.libreplicator.httpserver.api.HttpServer
+import org.slf4j.LoggerFactory
 import javax.inject.Inject
 import javax.servlet.http.HttpServlet
 
 class DefaultHttpServer @Inject constructor() : HttpServer {
+    private companion object {
+        private val logger = LoggerFactory.getLogger(DefaultHttpServer::class.java)
+    }
+
+    private val coroutineContext = newSingleThreadContext("")
     private lateinit var server: Server
 
-    override fun startAndWaitUntilStarted(port: Int, path: String, httpServlet: HttpServlet) {
+    override suspend fun start(port: Int, path: String, httpServlet: HttpServlet) {
+        logger.trace("Starting http server..")
         server = Server(port)
 
         val publicContext = ServletContextHandler()
 
         val syncEndpointHolder = ServletHolder(httpServlet)
         publicContext.addServlet(syncEndpointHolder, path)
+        syncEndpointHolder.isAsyncSupported = true
 
         val handlerCollection = HandlerCollection()
         handlerCollection.addHandler(publicContext)
 
-        server.handler = handlerCollection
+        server.handler = publicContext
 
-        server.startAndWaitUntilStarted()
+        launch(coroutineContext) {
+            server.start()
+        }.join()
+        logger.trace("Started http server")
     }
 
-    override fun stopAndWaitUntilStopped() {
-        server.stopAndWaitUntilStopped()
+    override suspend fun stop() {
+        logger.trace("Stopping http server..")
+
+        launch(coroutineContext) {
+            server.stop()
+            server.join()
+        }.join()
+        logger.trace("Stopped http server")
     }
 }

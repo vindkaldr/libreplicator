@@ -17,6 +17,7 @@
 
 package org.libreplicator
 
+import kotlinx.coroutines.experimental.runBlocking
 import org.hamcrest.Matchers.containsInAnyOrder
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertThat
@@ -46,7 +47,7 @@ class ReplicatorCryptoIntegrationTest {
     private val localNode = localReplicatorFactory.createReplicatorNode(LOCAL_NODE_ID, NODE_HOST, LOCAL_NODE_PORT)
 
     @Test
-    fun replicator_shouldBeAbleToDecryptMessages_withSharedSecret() {
+    fun replicator_shouldBeAbleToDecryptMessages_withSharedSecret() = runBlocking {
         val remoteLibReplicatorFactory = LibReplicatorFactory(LibReplicatorSettings(
                 cryptoSettings = LibReplicatorCryptoSettings(isEncryptionEnabled = true, sharedSecret = SHARED_SECRET)))
         val remoteNode = remoteLibReplicatorFactory.createReplicatorNode(REMOTE_NODE_ID, NODE_HOST, REMOTE_NODE_PORT)
@@ -68,7 +69,7 @@ class ReplicatorCryptoIntegrationTest {
     }
 
     @Test
-    fun replicator_shouldNotBeAbleToDecryptMessages_withoutSharedSecret() {
+    fun replicator_shouldNotBeAbleToDecryptMessages_withoutSharedSecret() = runBlocking {
         val remoteLibReplicatorFactory = LibReplicatorFactory()
         val remoteNode = remoteLibReplicatorFactory.createReplicatorNode(REMOTE_NODE_ID, NODE_HOST, REMOTE_NODE_PORT)
 

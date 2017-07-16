@@ -22,6 +22,9 @@ subprojects {
     repositories {
         mavenCentral()
         maven {
+            url "http://jcenter.bintray.com"
+        }
+        maven {
             url "http://4thline.org/m2"
         }
     }
@@ -32,6 +35,13 @@ subprojects {
 
     dependencies {
         compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlinVersion
+        compile group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core', version: kotlinCoroutineVersion
+    }
+
+    kotlin {
+        experimental {
+            coroutines 'enable'
+        }
     }
 
     sourceSets {

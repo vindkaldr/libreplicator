@@ -20,6 +20,6 @@ package org.libreplicator.httpserver.api
 import javax.servlet.http.HttpServlet
 
 interface HttpServer {
-    fun startAndWaitUntilStarted(port: Int, path: String, httpServlet: HttpServlet)
-    fun stopAndWaitUntilStopped()
+    suspend fun start(port: Int, path: String, httpServlet: HttpServlet)
+    suspend fun stop()
 }

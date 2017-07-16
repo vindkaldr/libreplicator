@@ -20,50 +20,38 @@ package org.libreplicator.interactor.dispatcher
 import org.libreplicator.api.LocalEventLog
 import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteEventLog
-import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.api.Subscription
 import org.libreplicator.interactor.api.LogDispatcher
 import org.libreplicator.interactor.router.MessageRouter
+import org.libreplicator.interactor.state.StateInteractor
 import org.libreplicator.model.ReplicatorMessage
-import org.libreplicator.model.ReplicatorState
+import org.slf4j.LoggerFactory
 import javax.inject.Inject
 
 class DefaultLogDispatcher @Inject constructor(
         private val messageRouter: MessageRouter,
-        private val replicatorState: ReplicatorState,
-        private val localNode: ReplicatorNode,
-        private val remoteNodes: List<ReplicatorNode>) : LogDispatcher {
-
-    override fun dispatch(localEventLog: LocalEventLog) = synchronized(this) {
-        replicatorState.addLocalEventLog(localNode, localEventLog)
-        replicatorState.getNodesWithMissingEventLogs(remoteNodes)
-                .forEach { messageRouter.routeMessage(it.key, ReplicatorMessage(localNode.nodeId, it.value, replicatorState.timeTable)) }
+        private val stateInteractor: StateInteractor
+) : LogDispatcher {
+    private companion object {
+        private val logger = LoggerFactory.getLogger(DefaultLogDispatcher::class.java)
     }
 
-    override fun subscribe(remoteEventLogObserver: Observer<RemoteEventLog>): Subscription = synchronized(this) {
-        return messageRouter.subscribe(ReplicatorMessageObserver(remoteEventLogObserver))
+    override suspend fun dispatch(localEventLog: LocalEventLog) {
+        logger.trace("Dispatching event log..")
+        stateInteractor.getNodesWithMissingLogs(localEventLog).forEach {
+            messageRouter.routeMessage(it.key, it.value)
+        }
+    }
+
+    override suspend fun subscribe(observer: Observer<RemoteEventLog>): Subscription {
+        logger.trace("Subscribing to log dispatcher..")
+        return messageRouter.subscribe(object : Observer<ReplicatorMessage> {
+            override suspend fun observe(observable: ReplicatorMessage) {
+                logger.trace("Observed message")
+                stateInteractor.getMissingLogs(observable).forEach { observer.observe(it) }
+            }
+        })
     }
 
     override fun hasSubscription(): Boolean = messageRouter.hasSubscription()
-
-    inner class ReplicatorMessageObserver
-    constructor(private val remoteEventLogObserver: Observer<RemoteEventLog>) : Observer<ReplicatorMessage> {
-        override fun observe(observable: ReplicatorMessage) = synchronized(this@DefaultLogDispatcher) {
-            updateClientAndState(remoteEventLogObserver, observable)
-        }
-
-        private fun updateClientAndState(remoteEventLogObserver: Observer<RemoteEventLog>, message: ReplicatorMessage) {
-            updateClient(remoteEventLogObserver, message)
-            updateState(message)
-        }
-
-        private fun updateClient(remoteEventLogObserver: Observer<RemoteEventLog>, message: ReplicatorMessage) {
-            replicatorState.getMissingEventLogs(localNode, message.eventLogs)
-                    .forEach { remoteEventLogObserver.observe(it) }
-        }
-
-        private fun updateState(message: ReplicatorMessage) {
-            replicatorState.updateFromMessage(localNode, remoteNodes, message)
-        }
-    }
 }

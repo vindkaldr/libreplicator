@@ -21,6 +21,6 @@ import org.libreplicator.gateway.api.model.AddPortMapping
 import org.libreplicator.gateway.api.model.DeletePortMapping
 
 interface InternetGateway {
-    fun addPortMapping(portMapping: AddPortMapping)
-    fun deletePortMapping(portMapping: DeletePortMapping)
+    suspend fun addPortMapping(portMapping: AddPortMapping)
+    suspend fun deletePortMapping(portMapping: DeletePortMapping)
 }

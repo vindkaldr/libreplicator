@@ -21,6 +21,6 @@ import org.libreplicator.api.Observer
 import org.libreplicator.model.ReplicatorMessage
 
 class MessageObserverDummy : Observer<ReplicatorMessage> {
-    override fun observe(observable: ReplicatorMessage) {
+    override suspend fun observe(observable: ReplicatorMessage) {
     }
 }
