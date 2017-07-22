@@ -24,6 +24,9 @@ import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.api.Subscription
 import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.gateway.api.InternetGateway
+import org.libreplicator.gateway.api.model.AddPortMapping
+import org.libreplicator.gateway.api.model.DeletePortMapping
+import org.libreplicator.gateway.api.model.InternetProtocol
 import org.libreplicator.httpserver.api.HttpServer
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.model.ReplicatorMessage
@@ -52,11 +55,8 @@ class DefaultReplicatorServer @Inject constructor(
             throw AlreadySubscribedException()
         }
         httpServer.start(localNode.port, "/sync", ReplicatorSyncServlet(jsonMapper, cipher, observer))
+        internetGateway.addPortMapping(AddPortMapping(localNode.port, InternetProtocol.TCP, localNode.port, LIBREPLICATOR_DESCRIPTION))
         hasSubscription = true
-
-//        async(CommonPool) {
-//            internetGateway.addPortMapping(AddPortMapping(localNode.port, InternetProtocol.TCP, localNode.port, LIBREPLICATOR_DESCRIPTION))
-//        }.await()
 
         return object : Subscription {
             override suspend fun unsubscribe() {
@@ -65,10 +65,8 @@ class DefaultReplicatorServer @Inject constructor(
                     throw NotSubscribedException()
                 }
                 httpServer.stop()
+                internetGateway.deletePortMapping(DeletePortMapping(localNode.port, InternetProtocol.TCP))
                 hasSubscription = false
-//                async(CommonPool) {
-//                    internetGateway.deletePortMapping(DeletePortMapping(localNode.port, InternetProtocol.TCP))
-//                }
             }
         }
     }
