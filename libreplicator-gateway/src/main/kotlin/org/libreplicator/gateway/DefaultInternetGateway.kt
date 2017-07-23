@@ -41,15 +41,12 @@ class DefaultInternetGateway @Inject constructor() : InternetGateway {
         val existingPortMappingEntry = PortMappingEntry()
 
         if (isSpecificPortMappingExists(device, portMapping, existingPortMappingEntry)) {
-            logger.trace("Port mapping already exists!")
-            if (isPortMappingSetByOtherDevice(existingPortMappingEntry)) {
-                throw InternetGatewayException("Port mapping already exists by other device!")
-            }
+            checkPortMappingNotSetByOtherDevice(existingPortMappingEntry)
+            return
         }
-        else {
-            addPortMapping(device, portMapping)
-            logger.trace("Port mapping added")
-        }
+
+        addPortMapping(device, portMapping)
+        logger.trace("Port mapping added")
     }
 
     override fun deletePortMapping(portMapping: DeletePortMapping) {
@@ -60,14 +57,12 @@ class DefaultInternetGateway @Inject constructor() : InternetGateway {
 
         if (!isSpecificPortMappingExists(device, portMapping, existingPortMappingEntry)) {
             logger.trace("Port is not mapped!")
+            return
         }
-        else {
-            if (isPortMappingSetByOtherDevice(existingPortMappingEntry)) {
-                throw InternetGatewayException("Port mapping exists by other device!")
-            }
-            deletePortMapping(device, portMapping)
-            logger.trace("Port mapping deleted")
-        }
+
+        checkPortMappingNotSetByOtherDevice(existingPortMappingEntry)
+        deletePortMapping(device, portMapping)
+        logger.trace("Port mapping deleted")
     }
 
     private fun discoverGatewayDevice(): GatewayDevice? {
@@ -79,14 +74,21 @@ class DefaultInternetGateway @Inject constructor() : InternetGateway {
     private fun isSpecificPortMappingExists(device: GatewayDevice, portMapping: PortMapping, portMappingEntry: PortMappingEntry)
             = device.getSpecificPortMappingEntry(portMapping.externalPort, portMapping.protocol.toString(), portMappingEntry)
 
-    private fun isPortMappingSetByOtherDevice(portMappingEntry: PortMappingEntry)
-            = portMappingEntry.internalClient != getInternalIpAddress()
+    private fun checkPortMappingNotSetByOtherDevice(existingPortMappingEntry: PortMappingEntry) {
+        logger.trace("Port mapping exists!")
+        if (isPortMappingSetByOtherDevice(existingPortMappingEntry)) {
+            throw InternetGatewayException("Port mapping exists by other device!")
+        }
+    }
 
-    private fun getInternalIpAddress() = InetAddress.getLocalHost().hostAddress
+    private fun isPortMappingSetByOtherDevice(portMappingEntry: PortMappingEntry)
+            = portMappingEntry.internalClient != getOwnInternalIpAddress()
+
+    private fun getOwnInternalIpAddress() = InetAddress.getLocalHost().hostAddress
 
     private fun addPortMapping(device: GatewayDevice, portMapping: AddPortMapping) {
         val success = device.addPortMapping(
-                portMapping.externalPort, portMapping.internalPort, getInternalIpAddress(),
+                portMapping.externalPort, portMapping.internalPort, getOwnInternalIpAddress(),
                 portMapping.protocol.toString(), portMapping.description)
 
         if (!success) {
