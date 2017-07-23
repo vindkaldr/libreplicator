@@ -18,12 +18,12 @@
 package org.libreplicator.interactor.router.testdouble
 
 import org.junit.Assert
-import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.RemoteNode
 import org.libreplicator.client.api.ReplicatorClient
 import org.libreplicator.model.ReplicatorMessage
 
 class ReplicatorClientMock : ReplicatorClient {
-    private var observedRemoteNode: ReplicatorNode? = null
+    private var observedRemoteNode: RemoteNode? = null
     private var observedMessage: ReplicatorMessage? = null
 
     private var observedClose: Boolean = false
@@ -31,7 +31,7 @@ class ReplicatorClientMock : ReplicatorClient {
     override fun initialize() {
     }
 
-    override fun synchronizeWithNode(remoteNode: ReplicatorNode, message: ReplicatorMessage) {
+    override fun synchronizeWithNode(remoteNode: RemoteNode, message: ReplicatorMessage) {
         if (observedRemoteNode != null && observedMessage != null) {
             Assert.fail("Unexpected call!")
         }
@@ -46,7 +46,7 @@ class ReplicatorClientMock : ReplicatorClient {
         observedClose = true
     }
 
-    fun sentMessage(remoteNode: ReplicatorNode, message: ReplicatorMessage): Boolean {
+    fun sentMessage(remoteNode: RemoteNode, message: ReplicatorMessage): Boolean {
         return observedRemoteNode == remoteNode && observedMessage == message
     }
 

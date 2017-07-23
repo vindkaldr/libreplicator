@@ -17,8 +17,8 @@
 
 package org.libreplicator.server
 
+import org.libreplicator.api.LocalNode
 import org.libreplicator.api.Observer
-import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.api.Subscription
 import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.gateway.api.InternetGateway
@@ -41,7 +41,7 @@ class DefaultReplicatorServer @Inject constructor(
         private val httpServer: HttpServer,
         private val internetGateway: InternetGateway,
         private val nodeLocator: NodeLocator,
-        private val localNode: ReplicatorNode
+        private val localNode: LocalNode
 ) : ReplicatorServer {
     private companion object {
         private val logger = LoggerFactory.getLogger(DefaultReplicatorServer::class.java)

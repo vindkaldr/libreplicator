@@ -18,11 +18,11 @@
 package org.libreplicator.interactor.state
 
 import org.libreplicator.api.LocalEventLog
-import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.RemoteNode
 import org.libreplicator.model.EventLog
 import org.libreplicator.model.ReplicatorMessage
 
 interface StateInteractor {
-    suspend fun getNodesWithMissingLogs(localEventLog: LocalEventLog): Map<ReplicatorNode, ReplicatorMessage>
+    suspend fun getNodesWithMissingLogs(localEventLog: LocalEventLog): Map<RemoteNode, ReplicatorMessage>
     suspend fun getMissingLogs(message: ReplicatorMessage): List<EventLog>
 }

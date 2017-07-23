@@ -18,8 +18,10 @@
 package org.libreplicator.model
 
 import org.libreplicator.api.LocalEventLog
+import org.libreplicator.api.LocalNode
+import org.libreplicator.api.Node
 import org.libreplicator.api.Observer
-import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Subscribable
 import org.libreplicator.api.Subscription
 
@@ -31,14 +33,14 @@ data class ReplicatorState constructor(
         override suspend fun observe(observable: ReplicatorState) {}
     }
 
-    override suspend fun subscribe(observer: Observer<ReplicatorState>): Subscription /*= synchronized(this)*/ {
+    override suspend fun subscribe(observer: Observer<ReplicatorState>): Subscription {
         this.observer = observer
         return object : Subscription {
             override suspend fun unsubscribe() {}
         }
     }
 
-    suspend fun addLocalEventLog(localNode: ReplicatorNode, localEventLog: LocalEventLog) {
+    suspend fun addLocalEventLog(localNode: LocalNode, localEventLog: LocalEventLog) {
         val currentTime = getCurrentTimeInMillis()
 
         updateTimeOfNode(localNode, currentTime)
@@ -47,7 +49,7 @@ data class ReplicatorState constructor(
         observer.observe(this)
     }
 
-    suspend fun updateFromMessage(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>, message: ReplicatorMessage) {
+    suspend fun updateFromMessage(localNode: LocalNode, remoteNodes: List<RemoteNode>, message: ReplicatorMessage) {
         logs.addAll(message.eventLogs)
         timeTable.merge(localNode.nodeId, message)
 
@@ -57,13 +59,13 @@ data class ReplicatorState constructor(
         observer.observe(this)
     }
 
-    fun getNodesWithMissingEventLogs(remoteNodes: List<ReplicatorNode>): Map<ReplicatorNode, List<EventLog>> =
+    fun getNodesWithMissingEventLogs(remoteNodes: List<RemoteNode>): Map<RemoteNode, List<EventLog>> =
             remoteNodes.map { node -> node.to(getMissingEventLogs(node)) }
                     .filter { it.second.isNotEmpty() }
                     .toMap()
 
-    fun getMissingEventLogs(localNode: ReplicatorNode, eventLogs: List<EventLog> = logs.toList()): List<EventLog> =
-            eventLogs.filter { !hasEventLog(localNode, it) }
+    fun getMissingEventLogs(node: Node, eventLogs: List<EventLog> = logs.toList()): List<EventLog> =
+            eventLogs.filter { !hasEventLog(node, it) }
                     .sortedBy { it.time }
 
     private fun getCurrentTimeInMillis() : Long {
@@ -74,21 +76,21 @@ data class ReplicatorState constructor(
         return currentTime
     }
 
-    private fun updateTimeOfNode(replicatorNode: ReplicatorNode, time: Long) {
-        timeTable[replicatorNode.nodeId, replicatorNode.nodeId] = time
+    private fun updateTimeOfNode(localNode: LocalNode, time: Long) {
+        timeTable[localNode.nodeId, localNode.nodeId] = time
     }
 
     private fun addLogs(vararg eventLogs: EventLog) {
         logs.addAll(eventLogs)
     }
 
-    private fun getDistributedEventLogs(nodes: List<ReplicatorNode>): List<EventLog> =
+    private fun getDistributedEventLogs(nodes: List<RemoteNode>): List<EventLog> =
             logs.filter { log ->
                 nodes.all { node ->
                     hasEventLog(node, log)
                 }
             }
 
-    private fun hasEventLog(node: ReplicatorNode, eventLog: EventLog): Boolean =
+    private fun hasEventLog(node: Node, eventLog: EventLog): Boolean =
             eventLog.time <= timeTable[node.nodeId, eventLog.nodeId]
 }

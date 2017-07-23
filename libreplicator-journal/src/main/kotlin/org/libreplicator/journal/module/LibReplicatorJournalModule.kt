@@ -19,10 +19,9 @@ package org.libreplicator.journal.module
 
 import dagger.Module
 import dagger.Provides
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
-import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.LocalNode
+import org.libreplicator.api.RemoteNode
 import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.journal.DefaultReplicatorStateJournal
 import org.libreplicator.journal.file.DefaultFileHandler
@@ -34,8 +33,8 @@ import javax.inject.Singleton
 @Module
 class LibReplicatorJournalModule (
         private val journalSettings: LibReplicatorJournalSettings,
-        private val localNode: ReplicatorNode,
-        private val remoteNodes: List<ReplicatorNode>) {
+        private val localNode: LocalNode,
+        private val remoteNodes: List<RemoteNode>) {
 
     @Provides
     fun bindFileHandler(): FileHandler {

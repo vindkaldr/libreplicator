@@ -21,18 +21,18 @@ import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.libreplicator.api.RemoteNode
 import org.libreplicator.interactor.router.testdouble.MessageObserverDummy
 import org.libreplicator.interactor.router.testdouble.ReplicatorClientMock
 import org.libreplicator.interactor.router.testdouble.ReplicatorServerMock
 import org.libreplicator.interactor.router.testdouble.SubscriptionMock
-import org.libreplicator.model.EventNode
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.TimeTable
 
 class DefaultMessageRouterTest {
     private companion object {
         private val MESSAGE = ReplicatorMessage("nodeId", listOf(), TimeTable())
-        private val REMOTE_NODE = EventNode("remoteNode", "localhost", 12346)
+        private val REMOTE_NODE = RemoteNode("remoteNode", "localhost", 12346)
     }
 
     private lateinit var replicatorClientMock: ReplicatorClientMock

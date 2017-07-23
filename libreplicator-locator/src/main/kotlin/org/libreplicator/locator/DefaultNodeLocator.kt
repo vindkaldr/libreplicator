@@ -17,12 +17,13 @@
 
 package org.libreplicator.locator
 
-import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.LocalNode
+import org.libreplicator.api.RemoteNode
 import org.libreplicator.locator.api.NodeLocator
 import javax.inject.Inject
 
 class DefaultNodeLocator @Inject constructor(): NodeLocator {
-    override fun addNode(node: ReplicatorNode) {}
+    override fun addNode(localNode: LocalNode) {}
     override fun removeNode(nodeId: String) {}
-    override fun getNode(nodeId: String): ReplicatorNode? = null
+    override fun getNode(nodeId: String): RemoteNode? = null
 }

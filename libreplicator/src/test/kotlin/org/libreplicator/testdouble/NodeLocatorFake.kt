@@ -17,19 +17,20 @@
 
 package org.libreplicator.testdouble
 
-import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.LocalNode
+import org.libreplicator.api.RemoteNode
 import org.libreplicator.locator.api.NodeLocator
 
 class NodeLocatorFake : NodeLocator {
-    private val nodes = mutableMapOf<String, ReplicatorNode>()
+    private val nodes = mutableMapOf<String, RemoteNode>()
 
-    override fun addNode(node: ReplicatorNode) {
-        nodes.put(node.nodeId, node)
+    override fun addNode(localNode: LocalNode) {
+        nodes.put(localNode.nodeId, RemoteNode(localNode.nodeId, localNode.url, localNode.port))
     }
 
     override fun removeNode(nodeId: String) {
         nodes.remove(nodeId)
     }
 
-    override fun getNode(nodeId: String): ReplicatorNode? = nodes[nodeId]
+    override fun getNode(nodeId: String): RemoteNode? = nodes[nodeId]
 }

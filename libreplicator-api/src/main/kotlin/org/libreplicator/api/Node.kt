@@ -17,8 +17,6 @@
 
 package org.libreplicator.api
 
-interface ReplicatorNode {
+interface Node {
     val nodeId: String
-    val url: String
-    val port: Int
 }

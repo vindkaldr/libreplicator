@@ -17,7 +17,8 @@
 
 package org.libreplicator
 
-import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.LocalNode
+import org.libreplicator.api.RemoteNode
 import org.libreplicator.component.DaggerLibReplicatorComponent
 import org.libreplicator.component.LibReplicatorComponent
 import org.libreplicator.crypto.module.LibReplicatorCryptoModule
@@ -26,7 +27,7 @@ import org.libreplicator.journal.module.LibReplicatorJournalModule
 import org.libreplicator.server.module.LibReplicatorServerModule
 
 class LibReplicatorComponentBuilder {
-    fun build(settings: LibReplicatorSettings, localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>,
+    fun build(settings: LibReplicatorSettings, localNode: LocalNode, remoteNodes: List<RemoteNode>,
             block: DaggerLibReplicatorComponent.Builder.() -> Unit = {}): LibReplicatorComponent {
         return DaggerLibReplicatorComponent.builder()
                 .libReplicatorCryptoModule(LibReplicatorCryptoModule(settings.cryptoSettings))

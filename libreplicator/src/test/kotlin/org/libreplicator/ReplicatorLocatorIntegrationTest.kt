@@ -21,6 +21,8 @@ import kotlinx.coroutines.experimental.runBlocking
 import org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder
 import org.junit.Assert.assertThat
 import org.junit.Test
+import org.libreplicator.api.LocalNode
+import org.libreplicator.api.RemoteNode
 import org.libreplicator.testdouble.NodeLocatorFake
 import org.libreplicator.testdouble.RemoteEventLogObserverMock
 
@@ -33,15 +35,15 @@ class ReplicatorLocatorIntegrationTest {
     private val nodeLocatorFake = NodeLocatorFake()
 
     private val localReplicatorFactory = LibReplicatorTestFactory(nodeLocator = nodeLocatorFake)
-    private val localNode = localReplicatorFactory.createReplicatorNode("nodeId1", "localhost", 12345)
+    private val localNode = LocalNode("nodeId1", "localhost", 12345)
 
     private val remoteReplicatorFactory = LibReplicatorTestFactory(nodeLocator = nodeLocatorFake)
-    private val remoteNode = remoteReplicatorFactory.createReplicatorNode("nodeId2", "localhost", 12346)
+    private val remoteNode = LocalNode("nodeId2", "localhost", 12346)
 
     private val localReplicator = localReplicatorFactory.createReplicator(localNode = localNode,
-            remoteNodes = listOf(localReplicatorFactory.createReplicatorNode(remoteNode.nodeId, "", 0)))
+            remoteNodes = listOf(RemoteNode(remoteNode.nodeId)))
     private val remoteReplicator = remoteReplicatorFactory.createReplicator(localNode = remoteNode,
-            remoteNodes = listOf(remoteReplicatorFactory.createReplicatorNode(localNode.nodeId, "", 0)))
+            remoteNodes = listOf(RemoteNode(localNode.nodeId)))
 
     private val localLogObserver = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 1)
     private val remoteLogObserver = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 1)

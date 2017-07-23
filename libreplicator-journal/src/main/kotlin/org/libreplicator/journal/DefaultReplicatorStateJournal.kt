@@ -17,7 +17,8 @@
 
 package org.libreplicator.journal
 
-import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.LocalNode
+import org.libreplicator.api.RemoteNode
 import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.journal.api.ReplicatorStateJournal
 import org.libreplicator.journal.file.FileHandler
@@ -33,8 +34,8 @@ class DefaultReplicatorStateJournal @Inject constructor(
         private val jsonMapper: JsonMapper,
         private val cipher: Cipher,
         journalsDirectory: Path,
-        localNode: ReplicatorNode,
-        remoteNodes: List<ReplicatorNode>) : ReplicatorStateJournal {
+        localNode: LocalNode,
+        remoteNodes: List<RemoteNode>) : ReplicatorStateJournal {
 
     private companion object {
         private val JOURNAL_FILE_NAME = "libreplicator-journal"
@@ -66,6 +67,6 @@ class DefaultReplicatorStateJournal @Inject constructor(
         fileHandler.move(journalFile, latestJournalFile)
     }
 
-    private fun createJournalDirectoryName(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>): String =
+    private fun createJournalDirectoryName(localNode: LocalNode, remoteNodes: List<RemoteNode>): String =
             "${localNode.nodeId}:${remoteNodes.map { it.nodeId }.joinToString(":")}"
 }

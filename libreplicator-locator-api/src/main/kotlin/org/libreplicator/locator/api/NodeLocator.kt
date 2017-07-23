@@ -17,10 +17,11 @@
 
 package org.libreplicator.locator.api
 
-import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.LocalNode
+import org.libreplicator.api.RemoteNode
 
 interface NodeLocator {
-    fun addNode(node: ReplicatorNode)
+    fun addNode(localNode: LocalNode)
     fun removeNode(nodeId: String)
-    fun getNode(nodeId: String): ReplicatorNode?
+    fun getNode(nodeId: String): RemoteNode?
 }

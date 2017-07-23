@@ -19,13 +19,14 @@ package org.libreplicator.interactor.module
 
 import dagger.Module
 import dagger.Provides
-import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.LocalNode
+import org.libreplicator.api.RemoteNode
 import org.libreplicator.client.api.ReplicatorClient
 import org.libreplicator.interactor.api.LogDispatcher
 import org.libreplicator.interactor.dispatcher.DefaultLogDispatcher
-import org.libreplicator.interactor.state.DefaultStateInteractor
 import org.libreplicator.interactor.router.DefaultMessageRouter
 import org.libreplicator.interactor.router.MessageRouter
+import org.libreplicator.interactor.state.DefaultStateInteractor
 import org.libreplicator.interactor.state.StateInteractor
 import org.libreplicator.model.ReplicatorState
 import org.libreplicator.server.api.ReplicatorServer
@@ -33,8 +34,8 @@ import javax.inject.Singleton
 
 @Module
 class LibReplicatorInteractorModule(
-        private val localNode: ReplicatorNode,
-        private val remoteNodes: List<ReplicatorNode>
+        private val localNode: LocalNode,
+        private val remoteNodes: List<RemoteNode>
 ) {
     @Provides @Singleton
     fun provideStateInteractor(replicatorState: ReplicatorState): StateInteractor {

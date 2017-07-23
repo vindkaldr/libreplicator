@@ -17,7 +17,7 @@
 
 package org.libreplicator.client
 
-import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.RemoteNode
 import org.libreplicator.client.api.ReplicatorClient
 import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.httpclient.api.HttpClient
@@ -43,14 +43,14 @@ class DefaultReplicatorClient @Inject constructor(
         httpClient = httpClientProvider.get()
     }
 
-    override fun synchronizeWithNode(remoteNode: ReplicatorNode, message: ReplicatorMessage) {
+    override fun synchronizeWithNode(remoteNode: RemoteNode, message: ReplicatorMessage) {
         val node = resolveNode(remoteNode)
         if (node != null) {
             httpClient.post(node.url, node.port, SYNC_PATH, cipher.encrypt(jsonMapper.write(message)))
         }
     }
 
-    private fun resolveNode(remoteNode: ReplicatorNode): ReplicatorNode? {
+    private fun resolveNode(remoteNode: RemoteNode): RemoteNode? {
         if (remoteNode.url == "" || remoteNode.port == 0) {
             return nodeLocator.getNode(remoteNode.nodeId)
         }

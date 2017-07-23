@@ -22,16 +22,17 @@ import org.hamcrest.Matchers.equalTo
 import org.junit.Assert.assertThat
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.libreplicator.api.LocalNode
+import org.libreplicator.api.RemoteNode
 import org.libreplicator.crypto.api.Cipher
-import org.libreplicator.journal.testdouble.JournalHandlerMock
+import org.libreplicator.journal.testdouble.ErroneousJournalReaderMock
 import org.libreplicator.journal.testdouble.ExistingJournalReaderMock
 import org.libreplicator.journal.testdouble.JournalDirectoryCreatorMock
-import org.libreplicator.journal.testdouble.ErroneousJournalReaderMock
+import org.libreplicator.journal.testdouble.JournalHandlerMock
 import org.libreplicator.journal.testdouble.JsonMapperStub
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.model.EventLog
-import org.libreplicator.model.EventNode
 import org.libreplicator.model.ReplicatorState
 import java.nio.file.NoSuchFileException
 import java.nio.file.Paths
@@ -40,9 +41,9 @@ class DefaultReplicatorStateJournalTest {
     private companion object {
         private val JOURNALS_DIRECTORY = Paths.get(".")
 
-        private val LOCAL_NODE = EventNode("localNode", "", 0)
-        private val REMOTE_NODE_1 = EventNode("remoteNode1", "", 0)
-        private val REMOTE_NODE_2 = EventNode("remoteNode2", "", 0)
+        private val LOCAL_NODE = LocalNode("localNode", "", 0)
+        private val REMOTE_NODE_1 = RemoteNode("remoteNode1", "", 0)
+        private val REMOTE_NODE_2 = RemoteNode("remoteNode2", "", 0)
 
         private val JOURNAL_DIRECTORY_NAME = "${LOCAL_NODE.nodeId}:${REMOTE_NODE_1.nodeId}:${REMOTE_NODE_2.nodeId}"
         private val JOURNAL_DIRECTORY = JOURNALS_DIRECTORY.resolve(JOURNAL_DIRECTORY_NAME)

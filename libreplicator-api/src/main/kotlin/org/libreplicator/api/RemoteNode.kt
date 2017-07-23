@@ -15,13 +15,17 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.client.api
+package org.libreplicator.api
 
-import org.libreplicator.api.RemoteNode
-import org.libreplicator.model.ReplicatorMessage
-import java.io.Closeable
+import org.libreplicator.api.model.EventNode
 
-interface ReplicatorClient : Closeable {
-    fun initialize()
-    fun synchronizeWithNode(remoteNode: RemoteNode, message: ReplicatorMessage)
+interface RemoteNode : Node {
+    companion object {
+        operator fun invoke(nodeId: String, url: String = "", port: Int = 0): RemoteNode {
+            return EventNode(nodeId, url, port)
+        }
+    }
+
+    val url: String
+    val port: Int
 }

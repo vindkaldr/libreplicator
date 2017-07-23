@@ -21,7 +21,8 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Test
-import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.LocalNode
+import org.libreplicator.api.RemoteNode
 import org.libreplicator.testdouble.RemoteEventLogObserverDummy
 
 class ReplicatorConcurrentSmokeTest {
@@ -31,18 +32,32 @@ class ReplicatorConcurrentSmokeTest {
 
     private val libReplicatorFactory = LibReplicatorTestFactory()
 
-    private val node1 = libReplicatorFactory.createReplicatorNode("nodeId1", "localhost", 12345)
-    private val node2 = libReplicatorFactory.createReplicatorNode("nodeId2", "localhost", 12346)
-    private val node3 = libReplicatorFactory.createReplicatorNode("nodeId3", "localhost", 12347)
+    private val node1 = LocalNode("nodeId1", "localhost", 12345)
+    private val node2 = LocalNode("nodeId2", "localhost", 12346)
+    private val node3 = LocalNode("nodeId3", "localhost", 12347)
 
     @Test
     fun replicator_shouldHandleUnavailabilityOfNodes() = runBlocking {
-        listOf(launch(CommonPool) { testRunReplicator(node1, listOf(node2, node3)) },
-                launch(CommonPool) { testRunReplicator(node2, listOf(node1, node3)) },
-                launch(CommonPool) { testRunReplicator(node3, listOf(node1, node2)) }).forEach { it.join() }
+        listOf(
+                launch(CommonPool) {
+                    testRunReplicator(
+                            localNode = node1,
+                            remoteNodes = listOf(RemoteNode(node2.nodeId, node2.url, node2.port),
+                                    RemoteNode(node3.nodeId, node3.url, node3.port))) },
+                launch(CommonPool) {
+                    testRunReplicator(
+                            localNode = node2,
+                            remoteNodes = listOf(RemoteNode(node1.nodeId, node1.url, node1.port),
+                                    RemoteNode(node3.nodeId, node3.url, node3.port))) },
+                launch(CommonPool) {
+                    testRunReplicator(
+                            localNode = node3,
+                            remoteNodes = listOf(RemoteNode(node1.nodeId, node1.url, node1.port),
+                                    RemoteNode(node2.nodeId, node2.url, node2.port))) })
+                .forEach { it.join() }
     }
 
-    private suspend fun testRunReplicator(localNode: ReplicatorNode, remoteNodes: List<ReplicatorNode>) {
+    private suspend fun testRunReplicator(localNode: LocalNode, remoteNodes: List<RemoteNode>) {
         val replicator = libReplicatorFactory.createReplicator(localNode, remoteNodes)
 
         var subscription = replicator.subscribe(RemoteEventLogObserverDummy())

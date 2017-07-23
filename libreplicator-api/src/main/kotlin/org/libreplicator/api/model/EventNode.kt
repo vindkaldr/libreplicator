@@ -15,11 +15,13 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.model
+package org.libreplicator.api.model
 
-import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.LocalNode
+import org.libreplicator.api.RemoteNode
 
-data class EventNode(
+internal data class EventNode(
         override val nodeId: String,
         override val url: String = "",
-        override val port: Int = 0) : ReplicatorNode
+        override val port: Int = 0
+) : LocalNode, RemoteNode

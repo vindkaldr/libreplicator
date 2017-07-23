@@ -18,7 +18,7 @@
 package org.libreplicator.interactor.router
 
 import org.libreplicator.api.Observer
-import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Subscription
 import org.libreplicator.client.api.ReplicatorClient
 import org.libreplicator.model.ReplicatorMessage
@@ -34,7 +34,7 @@ class DefaultMessageRouter @Inject constructor(
         private val logger = LoggerFactory.getLogger(DefaultMessageRouter::class.java)
     }
 
-    override fun routeMessage(remoteNode: ReplicatorNode, message: ReplicatorMessage) {
+    override fun routeMessage(remoteNode: RemoteNode, message: ReplicatorMessage) {
         logger.trace("Routing message..")
         replicatorClient.synchronizeWithNode(remoteNode, message)
     }

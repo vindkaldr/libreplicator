@@ -15,12 +15,17 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.model.factory
+package org.libreplicator.api
 
-import org.libreplicator.api.ReplicatorNode
-import org.libreplicator.model.EventNode
+import org.libreplicator.api.model.EventNode
 
-class ReplicatorNodeFactory {
-    fun create(nodeId: String): ReplicatorNode = EventNode(nodeId)
-    fun create(nodeId: String, url: String, port: Int): ReplicatorNode = EventNode(nodeId, url, port)
+interface LocalNode : Node {
+    companion object {
+        operator fun invoke(nodeId: String, url: String, port: Int): LocalNode {
+            return EventNode(nodeId, url, port)
+        }
+    }
+
+    val url: String
+    val port: Int
 }
