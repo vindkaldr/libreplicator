@@ -36,7 +36,7 @@ class ReplicatorIntegrationTest {
         private val LOG_3_2 = "log32"
     }
 
-    private val libReplicatorFactory = LibReplicatorFactory()
+    private val libReplicatorFactory = LibReplicatorTestFactory()
 
     private val node1 = libReplicatorFactory.createReplicatorNode("nodeId1", "localhost", 12345)
     private val node2 = libReplicatorFactory.createReplicatorNode("nodeId2", "localhost", 12346)

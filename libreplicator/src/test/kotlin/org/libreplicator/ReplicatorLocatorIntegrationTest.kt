@@ -15,13 +15,13 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.locator
+package org.libreplicator
 
 import kotlinx.coroutines.experimental.runBlocking
 import org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder
 import org.junit.Assert.assertThat
 import org.junit.Test
-import org.libreplicator.locator.testdouble.NodeLocatorFake
+import org.libreplicator.testdouble.NodeLocatorFake
 import org.libreplicator.testdouble.RemoteEventLogObserverMock
 
 class ReplicatorLocatorIntegrationTest {
@@ -32,10 +32,10 @@ class ReplicatorLocatorIntegrationTest {
 
     private val nodeLocatorFake = NodeLocatorFake()
 
-    private val localReplicatorFactory = LibReplicatorFactory(nodeLocatorFake)
+    private val localReplicatorFactory = LibReplicatorTestFactory(nodeLocator = nodeLocatorFake)
     private val localNode = localReplicatorFactory.createReplicatorNode("nodeId1", "localhost", 12345)
 
-    private val remoteReplicatorFactory = LibReplicatorFactory(nodeLocatorFake)
+    private val remoteReplicatorFactory = LibReplicatorTestFactory(nodeLocator = nodeLocatorFake)
     private val remoteNode = remoteReplicatorFactory.createReplicatorNode("nodeId2", "localhost", 12346)
 
     private val localReplicator = localReplicatorFactory.createReplicator(localNode = localNode,

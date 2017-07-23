@@ -15,21 +15,13 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.locator.testdouble
+package org.libreplicator.testdouble
 
-import org.libreplicator.api.ReplicatorNode
-import org.libreplicator.locator.api.NodeLocator
+import org.libreplicator.gateway.api.InternetGateway
+import org.libreplicator.gateway.api.model.AddPortMapping
+import org.libreplicator.gateway.api.model.DeletePortMapping
 
-class NodeLocatorFake : NodeLocator {
-    private val nodes = mutableMapOf<String, ReplicatorNode>()
-
-    override fun addNode(node: ReplicatorNode) {
-        nodes.put(node.nodeId, node)
-    }
-
-    override fun removeNode(nodeId: String) {
-        nodes.remove(nodeId)
-    }
-
-    override fun getNode(nodeId: String): ReplicatorNode? = nodes[nodeId]
+class InternetGatewayDummy : InternetGateway {
+    override fun addPortMapping(portMapping: AddPortMapping) {}
+    override fun deletePortMapping(portMapping: DeletePortMapping) {}
 }

@@ -42,13 +42,13 @@ class ReplicatorCryptoIntegrationTest {
         private val SHARED_SECRET = "sharedSecret"
     }
 
-    private val localReplicatorFactory = LibReplicatorFactory(LibReplicatorSettings(
+    private val localReplicatorFactory = LibReplicatorTestFactory(LibReplicatorSettings(
             cryptoSettings = LibReplicatorCryptoSettings(isEncryptionEnabled = true, sharedSecret = SHARED_SECRET)))
     private val localNode = localReplicatorFactory.createReplicatorNode(LOCAL_NODE_ID, NODE_HOST, LOCAL_NODE_PORT)
 
     @Test
     fun replicator_shouldBeAbleToDecryptMessages_withSharedSecret() = runBlocking {
-        val remoteLibReplicatorFactory = LibReplicatorFactory(LibReplicatorSettings(
+        val remoteLibReplicatorFactory = LibReplicatorTestFactory(LibReplicatorSettings(
                 cryptoSettings = LibReplicatorCryptoSettings(isEncryptionEnabled = true, sharedSecret = SHARED_SECRET)))
         val remoteNode = remoteLibReplicatorFactory.createReplicatorNode(REMOTE_NODE_ID, NODE_HOST, REMOTE_NODE_PORT)
 
@@ -70,7 +70,7 @@ class ReplicatorCryptoIntegrationTest {
 
     @Test
     fun replicator_shouldNotBeAbleToDecryptMessages_withoutSharedSecret() = runBlocking {
-        val remoteLibReplicatorFactory = LibReplicatorFactory()
+        val remoteLibReplicatorFactory = LibReplicatorTestFactory()
         val remoteNode = remoteLibReplicatorFactory.createReplicatorNode(REMOTE_NODE_ID, NODE_HOST, REMOTE_NODE_PORT)
 
         val remoteReplicator = remoteLibReplicatorFactory.createReplicator(remoteNode, listOf(localNode))

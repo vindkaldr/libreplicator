@@ -29,14 +29,14 @@ class ReplicatorConcurrentSmokeTest {
         private val LOG = "log"
     }
 
-    private val libReplicatorFactory = LibReplicatorFactory()
+    private val libReplicatorFactory = LibReplicatorTestFactory()
 
     private val node1 = libReplicatorFactory.createReplicatorNode("nodeId1", "localhost", 12345)
     private val node2 = libReplicatorFactory.createReplicatorNode("nodeId2", "localhost", 12346)
     private val node3 = libReplicatorFactory.createReplicatorNode("nodeId3", "localhost", 12347)
 
     @Test
-    fun replicator_shouldHandleUnavailabilityOfNodes() = runBlocking<Unit> {
+    fun replicator_shouldHandleUnavailabilityOfNodes() = runBlocking {
         listOf(launch(CommonPool) { testRunReplicator(node1, listOf(node2, node3)) },
                 launch(CommonPool) { testRunReplicator(node2, listOf(node1, node3)) },
                 launch(CommonPool) { testRunReplicator(node3, listOf(node1, node2)) }).forEach { it.join() }

@@ -15,14 +15,21 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.gateway.module
+package org.libreplicator.testdouble
 
-import dagger.Module
-import dagger.Provides
-import org.libreplicator.gateway.DefaultInternetGateway
-import org.libreplicator.gateway.api.InternetGateway
+import org.libreplicator.api.ReplicatorNode
+import org.libreplicator.locator.api.NodeLocator
 
-@Module
-class LibReplicatorGatewayModule(private val internetGateway: InternetGateway = DefaultInternetGateway()) {
-    @Provides fun provideInternetGateway(): InternetGateway = internetGateway
+class NodeLocatorFake : NodeLocator {
+    private val nodes = mutableMapOf<String, ReplicatorNode>()
+
+    override fun addNode(node: ReplicatorNode) {
+        nodes.put(node.nodeId, node)
+    }
+
+    override fun removeNode(nodeId: String) {
+        nodes.remove(nodeId)
+    }
+
+    override fun getNode(nodeId: String): ReplicatorNode? = nodes[nodeId]
 }
