@@ -24,7 +24,5 @@ import org.libreplicator.locator.api.NodeLocator
 
 @Module
 class LibReplicatorLocatorModule(private val nodeLocator: NodeLocator = DefaultNodeLocator()) {
-    @Provides fun provideNodeLocator(): NodeLocator {
-        return nodeLocator
-    }
+    @Provides fun provideNodeLocator(): NodeLocator = nodeLocator
 }
