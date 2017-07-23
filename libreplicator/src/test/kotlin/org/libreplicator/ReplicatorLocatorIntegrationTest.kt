@@ -21,6 +21,7 @@ import kotlinx.coroutines.experimental.runBlocking
 import org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder
 import org.junit.Assert.assertThat
 import org.junit.Test
+import org.libreplicator.api.LocalLog
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.testdouble.NodeLocatorFake
@@ -53,8 +54,8 @@ class ReplicatorLocatorIntegrationTest {
         val localSubscription = localReplicator.subscribe(localLogObserver)
         val remoteSubscription = remoteReplicator.subscribe(remoteLogObserver)
 
-        localReplicator.replicate(localReplicatorFactory.createLocalEventLog(LOG_1))
-        remoteReplicator.replicate(localReplicatorFactory.createLocalEventLog(LOG_2))
+        localReplicator.replicate(LocalLog(LOG_1))
+        remoteReplicator.replicate(LocalLog(LOG_2))
 
         assertThat(localLogObserver.getObservedLogs(), containsInAnyOrder(LOG_2))
         assertThat(remoteLogObserver.getObservedLogs(), containsInAnyOrder(LOG_1))

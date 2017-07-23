@@ -22,6 +22,7 @@ import org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder
 import org.junit.After
 import org.junit.Assert.assertThat
 import org.junit.Test
+import org.libreplicator.api.LocalLog
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Replicator
@@ -77,8 +78,8 @@ class ReplicatorJournalIntegrationTest {
                 remoteNodes = listOf(RemoteNode(remoteNode.nodeId, remoteNode.url, remoteNode.port)))
         localReplicatorSubscription = localReplicator.subscribe(localEventLogObserverMock)
 
-        localReplicator.replicate(localReplicatorFactory.createLocalEventLog(FIRST_LOG))
-        localReplicator.replicate(localReplicatorFactory.createLocalEventLog(SECOND_LOG))
+        localReplicator.replicate(LocalLog(FIRST_LOG))
+        localReplicator.replicate(LocalLog(SECOND_LOG))
         localReplicatorSubscription.unsubscribe()
 
         remoteReplicatorSubscription = remoteReplicator.subscribe(remoteEventLogObserverMock)
@@ -86,7 +87,7 @@ class ReplicatorJournalIntegrationTest {
         localReplicator = localReplicatorFactory.createReplicator(localNode = localNode,
                 remoteNodes = listOf(RemoteNode(remoteNode.nodeId, remoteNode.url, remoteNode.port)))
         localReplicatorSubscription = localReplicator.subscribe(localEventLogObserverMock)
-        localReplicator.replicate(localReplicatorFactory.createLocalEventLog(THIRD_LOG))
+        localReplicator.replicate(LocalLog(THIRD_LOG))
 
         assertThat(remoteEventLogObserverMock.getObservedLogs(), containsInAnyOrder(FIRST_LOG, SECOND_LOG, THIRD_LOG))
     }

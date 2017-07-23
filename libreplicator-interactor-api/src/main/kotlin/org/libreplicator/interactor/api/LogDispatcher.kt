@@ -17,13 +17,13 @@
 
 package org.libreplicator.interactor.api
 
-import org.libreplicator.api.LocalEventLog
+import org.libreplicator.api.LocalLog
 import org.libreplicator.api.Observer
-import org.libreplicator.api.RemoteEventLog
+import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.Subscribable
 import org.libreplicator.api.Subscription
 
-interface LogDispatcher : Subscribable<RemoteEventLog> {
-    suspend fun dispatch(localEventLog: LocalEventLog)
-    override suspend fun subscribe(observer: Observer<RemoteEventLog>): Subscription
+interface LogDispatcher : Subscribable<RemoteLog> {
+    suspend fun dispatch(localLog: LocalLog)
+    override suspend fun subscribe(observer: Observer<RemoteLog>): Subscription
 }

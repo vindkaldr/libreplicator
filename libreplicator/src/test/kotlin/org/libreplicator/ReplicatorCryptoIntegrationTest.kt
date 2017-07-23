@@ -22,6 +22,7 @@ import org.hamcrest.Matchers.containsInAnyOrder
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertThat
 import org.junit.Test
+import org.libreplicator.api.LocalLog
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.crypto.module.LibReplicatorCryptoSettings
@@ -62,9 +63,9 @@ class ReplicatorCryptoIntegrationTest {
         val localReplicator = localReplicatorFactory.createReplicator(localNode = localNode,
                 remoteNodes = listOf(RemoteNode(remoteNode.nodeId, remoteNode.url, remoteNode.port)))
         val localSubscription = localReplicator.subscribe(RemoteEventLogObserverMock())
-        localReplicator.replicate(localReplicatorFactory.createLocalEventLog(FIRST_LOG))
-        localReplicator.replicate(localReplicatorFactory.createLocalEventLog(SECOND_LOG))
-        localReplicator.replicate(localReplicatorFactory.createLocalEventLog(THIRD_LOG))
+        localReplicator.replicate(LocalLog(FIRST_LOG))
+        localReplicator.replicate(LocalLog(SECOND_LOG))
+        localReplicator.replicate(LocalLog(THIRD_LOG))
 
         assertThat(remoteEventLogObserverMock.getObservedLogs(), containsInAnyOrder(FIRST_LOG, SECOND_LOG, THIRD_LOG))
 
@@ -85,9 +86,9 @@ class ReplicatorCryptoIntegrationTest {
         val localReplicator = localReplicatorFactory.createReplicator(localNode = localNode,
                 remoteNodes = listOf(RemoteNode(remoteNode.nodeId, remoteNode.url, remoteNode.port)))
         val localSubscription = localReplicator.subscribe(RemoteEventLogObserverMock())
-        localReplicator.replicate(localReplicatorFactory.createLocalEventLog(FIRST_LOG))
-        localReplicator.replicate(localReplicatorFactory.createLocalEventLog(SECOND_LOG))
-        localReplicator.replicate(localReplicatorFactory.createLocalEventLog(THIRD_LOG))
+        localReplicator.replicate(LocalLog(FIRST_LOG))
+        localReplicator.replicate(LocalLog(SECOND_LOG))
+        localReplicator.replicate(LocalLog(THIRD_LOG))
 
         assertFalse(remoteEventLogObserverMock.observedAnyLogs())
 

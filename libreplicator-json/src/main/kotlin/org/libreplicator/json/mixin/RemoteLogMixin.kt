@@ -15,10 +15,10 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.api
+package org.libreplicator.json.mixin
 
-interface RemoteEventLog {
-    val nodeId: String
-    val time: Long
-    val log: String
-}
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import org.libreplicator.api.model.EventLog
+
+@JsonDeserialize(`as` = EventLog::class)
+class RemoteLogMixin

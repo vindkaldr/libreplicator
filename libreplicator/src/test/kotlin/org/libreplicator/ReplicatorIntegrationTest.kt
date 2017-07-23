@@ -23,6 +23,7 @@ import org.junit.After
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.libreplicator.api.LocalLog
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Subscription
@@ -80,9 +81,9 @@ class ReplicatorIntegrationTest {
 
     @Test
     fun replicator_shouldReplicateLogsBetweenNodes() = runBlocking {
-        replicator1.replicate(libReplicatorFactory.createLocalEventLog(LOG_1_1))
-        replicator2.replicate(libReplicatorFactory.createLocalEventLog(LOG_2_1))
-        replicator3.replicate(libReplicatorFactory.createLocalEventLog(LOG_3_1))
+        replicator1.replicate(LocalLog(LOG_1_1))
+        replicator2.replicate(LocalLog(LOG_2_1))
+        replicator3.replicate(LocalLog(LOG_3_1))
 
         subscription1.unsubscribe()
         subscription1 = replicator1.subscribe(eventLogObserverMock1)
@@ -93,9 +94,9 @@ class ReplicatorIntegrationTest {
         subscription3.unsubscribe()
         subscription3 = replicator3.subscribe(eventLogObserverMock3)
 
-        replicator1.replicate(libReplicatorFactory.createLocalEventLog(LOG_1_2))
-        replicator2.replicate(libReplicatorFactory.createLocalEventLog(LOG_2_2))
-        replicator3.replicate(libReplicatorFactory.createLocalEventLog(LOG_3_2))
+        replicator1.replicate(LocalLog(LOG_1_2))
+        replicator2.replicate(LocalLog(LOG_2_2))
+        replicator3.replicate(LocalLog(LOG_3_2))
 
         assertThat(eventLogObserverMock1.getObservedLogs(), containsInAnyOrder(LOG_2_1, LOG_3_1, LOG_2_2, LOG_3_2))
         assertThat(eventLogObserverMock2.getObservedLogs(), containsInAnyOrder(LOG_1_1, LOG_3_1, LOG_1_2, LOG_3_2))

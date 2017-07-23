@@ -17,19 +17,13 @@
 
 package org.libreplicator
 
-import org.libreplicator.api.LocalEventLog
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Replicator
-import org.libreplicator.model.factory.LocalEventLogFactory
 
 class LibReplicatorFactory(private val settings: LibReplicatorSettings = LibReplicatorSettings()) {
     fun createReplicator(localNode: LocalNode, remoteNodes: List<RemoteNode>): Replicator {
         val component = LibReplicatorComponentBuilder().build(settings, localNode, remoteNodes)
         return component.getReplicator()
-    }
-
-    fun createLocalEventLog(log: String): LocalEventLog {
-        return LocalEventLogFactory().create(log)
     }
 }

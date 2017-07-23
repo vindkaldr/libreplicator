@@ -23,7 +23,9 @@ import org.hamcrest.CoreMatchers.not
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.libreplicator.api.LocalLog
 import org.libreplicator.api.LocalNode
+import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.model.testdouble.StateObserverMock
 
@@ -46,8 +48,8 @@ class ReplicatorStateTest {
         private val NODE_3_LOG_1 = "node3Log1"
         private val NODE_3_LOG_2 = "node3Log2"
 
-        val NODE_1_EVENT_LOG_1 = EventLog("", 0L, NODE_1_LOG_1)
-        val NODE_2_EVENT_LOG_1 = EventLog(REMOTE_NODE_2_ID, 1L, NODE_2_LOG_1)
+        val NODE_1_EVENT_LOG_1 = LocalLog(NODE_1_LOG_1)
+        val NODE_2_EVENT_LOG_1 = RemoteLog(REMOTE_NODE_2_ID, 1L, NODE_2_LOG_1)
         val NODE_2_REPLICATOR_MESSAGE = ReplicatorMessage(REMOTE_NODE_2_ID, listOf(NODE_2_EVENT_LOG_1),
                 TimeTable(mutableMapOf(REMOTE_NODE_2_ID to mutableMapOf(REMOTE_NODE_2_ID to 1L))))
     }
@@ -74,9 +76,9 @@ class ReplicatorStateTest {
         timeTable[REMOTE_NODE_3_ID, REMOTE_NODE_2_ID] = 0
         timeTable[REMOTE_NODE_3_ID, REMOTE_NODE_3_ID] = 2
 
-        val node1Log1 = EventLog(REMOTE_NODE_1_ID, 2, NODE_1_LOG_1)
-        val node1Log2 = EventLog(REMOTE_NODE_1_ID, 5, NODE_1_LOG_2)
-        val node3Log1 = EventLog(REMOTE_NODE_3_ID, 2, NODE_3_LOG_1)
+        val node1Log1 = RemoteLog(REMOTE_NODE_1_ID, 2, NODE_1_LOG_1)
+        val node1Log2 = RemoteLog(REMOTE_NODE_1_ID, 5, NODE_1_LOG_2)
+        val node3Log1 = RemoteLog(REMOTE_NODE_3_ID, 2, NODE_3_LOG_1)
 
         val state = ReplicatorState(mutableSetOf(node1Log1, node1Log2, node3Log1), timeTable)
         val actual = state.getNodesWithMissingEventLogs(listOf(REMOTE_NODE_1, REMOTE_NODE_2, REMOTE_NODE_3))
@@ -94,10 +96,10 @@ class ReplicatorStateTest {
         timeTable[NODE_1_ID, REMOTE_NODE_2_ID] = 4
         timeTable[NODE_1_ID, REMOTE_NODE_3_ID] = 2
 
-        val node2Log1 = EventLog(REMOTE_NODE_2_ID, 3, NODE_2_LOG_1)
-        val node2Log2 = EventLog(REMOTE_NODE_2_ID, 5, NODE_2_LOG_2)
-        val node3Log1 = EventLog(REMOTE_NODE_3_ID, 2, NODE_3_LOG_1)
-        val node3Log2 = EventLog(REMOTE_NODE_3_ID, 3, NODE_3_LOG_2)
+        val node2Log1 = RemoteLog(REMOTE_NODE_2_ID, 3, NODE_2_LOG_1)
+        val node2Log2 = RemoteLog(REMOTE_NODE_2_ID, 5, NODE_2_LOG_2)
+        val node3Log1 = RemoteLog(REMOTE_NODE_3_ID, 2, NODE_3_LOG_1)
+        val node3Log2 = RemoteLog(REMOTE_NODE_3_ID, 3, NODE_3_LOG_2)
 
         val state = ReplicatorState(mutableSetOf(node2Log1, node2Log2, node3Log1, node3Log2), timeTable)
         val actual = state.getMissingEventLogs(LOCAL_NODE)
@@ -119,7 +121,7 @@ class ReplicatorStateTest {
 
         val missingEventLog = missingEventLogsOfRemoteNode[0]
         assertThat(missingEventLog.nodeId, equalTo(LOCAL_NODE.nodeId))
-        assertThat(missingEventLog.time, not(equalTo(NODE_1_EVENT_LOG_1.time)))
+        assertThat(missingEventLog.time, not(equalTo(0L)))
         assertThat(missingEventLog.log, equalTo(NODE_1_EVENT_LOG_1.log))
     }
 

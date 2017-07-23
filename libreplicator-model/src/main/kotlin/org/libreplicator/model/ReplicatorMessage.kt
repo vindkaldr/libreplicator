@@ -17,4 +17,6 @@
 
 package org.libreplicator.model
 
-data class ReplicatorMessage(val nodeId: String, val eventLogs: List<EventLog>, val timeTable: TimeTable)
+import org.libreplicator.api.RemoteLog
+
+data class ReplicatorMessage(val nodeId: String, val eventLogs: List<RemoteLog>, val timeTable: TimeTable)

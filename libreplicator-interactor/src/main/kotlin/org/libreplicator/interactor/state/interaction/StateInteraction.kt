@@ -18,19 +18,19 @@
 package org.libreplicator.interactor.state.interaction
 
 import kotlinx.coroutines.experimental.channels.SendChannel
-import org.libreplicator.api.LocalEventLog
+import org.libreplicator.api.LocalLog
+import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.RemoteNode
-import org.libreplicator.model.EventLog
 import org.libreplicator.model.ReplicatorMessage
 
 sealed class StateInteraction {
     class ObserveLocalEvent(
-            val localEventLog: LocalEventLog,
-            val channel: SendChannel<Map<RemoteNode, List<EventLog>>>
+            val localLog: LocalLog,
+            val channel: SendChannel<Map<RemoteNode, List<RemoteLog>>>
     ) : StateInteraction()
 
     class ObserveRemoteMessage(
             val message: ReplicatorMessage,
-            val channel: SendChannel<List<EventLog>>
+            val channel: SendChannel<List<RemoteLog>>
     ) : StateInteraction()
 }

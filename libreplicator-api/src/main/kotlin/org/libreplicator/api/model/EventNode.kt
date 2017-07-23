@@ -20,7 +20,7 @@ package org.libreplicator.api.model
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
 
-internal data class EventNode(
+data class EventNode(
         override val nodeId: String,
         override val url: String = "",
         override val port: Int = 0

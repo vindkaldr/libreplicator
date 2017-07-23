@@ -17,9 +17,9 @@
 
 package org.libreplicator.interactor.dispatcher
 
-import org.libreplicator.api.LocalEventLog
+import org.libreplicator.api.LocalLog
 import org.libreplicator.api.Observer
-import org.libreplicator.api.RemoteEventLog
+import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.Subscription
 import org.libreplicator.interactor.api.LogDispatcher
 import org.libreplicator.interactor.router.MessageRouter
@@ -36,14 +36,14 @@ class DefaultLogDispatcher @Inject constructor(
         private val logger = LoggerFactory.getLogger(DefaultLogDispatcher::class.java)
     }
 
-    override suspend fun dispatch(localEventLog: LocalEventLog) {
+    override suspend fun dispatch(localLog: LocalLog) {
         logger.trace("Dispatching event log..")
-        stateInteractor.getNodesWithMissingLogs(localEventLog).forEach {
+        stateInteractor.getNodesWithMissingLogs(localLog).forEach {
             messageRouter.routeMessage(it.key, it.value)
         }
     }
 
-    override suspend fun subscribe(observer: Observer<RemoteEventLog>): Subscription {
+    override suspend fun subscribe(observer: Observer<RemoteLog>): Subscription {
         logger.trace("Subscribing to log dispatcher..")
         return messageRouter.subscribe(object : Observer<ReplicatorMessage> {
             override suspend fun observe(observable: ReplicatorMessage) {

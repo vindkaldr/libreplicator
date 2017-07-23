@@ -18,22 +18,22 @@
 package org.libreplicator.testdouble
 
 import org.libreplicator.api.Observer
-import org.libreplicator.api.RemoteEventLog
+import org.libreplicator.api.RemoteLog
 import org.libreplicator.common.test.ObjectObserver
 
-class RemoteEventLogObserverMock constructor(numberOfExpectedEventLogs: Int = 0) : Observer<RemoteEventLog> {
-    private val eventLogObserver: ObjectObserver<RemoteEventLog> =
+class RemoteEventLogObserverMock constructor(numberOfExpectedEventLogs: Int = 0) : Observer<RemoteLog> {
+    private val logObserver: ObjectObserver<RemoteLog> =
             ObjectObserver(numberOfExpectedObjects = numberOfExpectedEventLogs)
 
-    override suspend fun observe(observable: RemoteEventLog) {
-        eventLogObserver.observe(observable)
+    override suspend fun observe(observable: RemoteLog) {
+        logObserver.observe(observable)
     }
 
     fun getObservedLogs(): List<String> {
-        return eventLogObserver.getObservedObjects().map { it.log }
+        return logObserver.getObservedObjects().map { it.log }
     }
 
     fun observedAnyLogs(): Boolean {
-        return eventLogObserver.observedAnyObjects()
+        return logObserver.observedAnyObjects()
     }
 }

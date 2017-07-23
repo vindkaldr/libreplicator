@@ -21,6 +21,7 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Test
+import org.libreplicator.api.LocalLog
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.testdouble.RemoteEventLogObserverDummy
@@ -61,11 +62,11 @@ class ReplicatorConcurrentSmokeTest {
         val replicator = libReplicatorFactory.createReplicator(localNode, remoteNodes)
 
         var subscription = replicator.subscribe(RemoteEventLogObserverDummy())
-        replicator.replicate(libReplicatorFactory.createLocalEventLog(LOG))
+        replicator.replicate(LocalLog(LOG))
         subscription.unsubscribe()
 
         subscription = replicator.subscribe(RemoteEventLogObserverDummy())
-        replicator.replicate(libReplicatorFactory.createLocalEventLog(LOG))
+        replicator.replicate(LocalLog(LOG))
         subscription.unsubscribe()
     }
 }

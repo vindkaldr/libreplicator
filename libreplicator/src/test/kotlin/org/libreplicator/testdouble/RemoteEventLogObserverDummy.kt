@@ -18,8 +18,8 @@
 package org.libreplicator.testdouble
 
 import org.libreplicator.api.Observer
-import org.libreplicator.api.RemoteEventLog
+import org.libreplicator.api.RemoteLog
 
-class RemoteEventLogObserverDummy : Observer<RemoteEventLog> {
-    override suspend fun observe(observable: RemoteEventLog) {}
+class RemoteEventLogObserverDummy : Observer<RemoteLog> {
+    override suspend fun observe(observable: RemoteLog) {}
 }

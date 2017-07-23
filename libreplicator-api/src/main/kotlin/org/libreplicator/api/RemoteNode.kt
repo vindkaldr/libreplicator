@@ -21,7 +21,11 @@ import org.libreplicator.api.model.EventNode
 
 interface RemoteNode : Node {
     companion object {
-        operator fun invoke(nodeId: String, url: String = "", port: Int = 0): RemoteNode {
+        operator fun invoke(nodeId: String): RemoteNode {
+            return EventNode(nodeId = nodeId)
+        }
+
+        operator fun invoke(nodeId: String, url: String, port: Int): RemoteNode {
             return EventNode(nodeId, url, port)
         }
     }

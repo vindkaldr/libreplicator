@@ -15,12 +15,18 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.model
+package org.libreplicator.api
 
-import org.libreplicator.api.LocalEventLog
-import org.libreplicator.api.RemoteEventLog
+import org.libreplicator.api.model.EventLog
 
-data class EventLog(
-        override val nodeId: String,
-        override val time: Long,
-        override val log: String) : RemoteEventLog, LocalEventLog
+interface RemoteLog {
+    companion object {
+        operator fun invoke(nodeId: String, time: Long, log: String): RemoteLog {
+            return EventLog(nodeId, time, log)
+        }
+    }
+
+    val nodeId: String
+    val time: Long
+    val log: String
+}

@@ -15,11 +15,16 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.model.factory
+package org.libreplicator.api
 
-import org.libreplicator.api.LocalEventLog
-import org.libreplicator.model.EventLog
+import org.libreplicator.api.model.EventLog
 
-class LocalEventLogFactory {
-    fun create(log: String): LocalEventLog = EventLog("", 0L, log)
+interface LocalLog {
+    companion object {
+        operator fun invoke(log: String): LocalLog {
+            return EventLog(log = log)
+        }
+    }
+
+    val log: String
 }

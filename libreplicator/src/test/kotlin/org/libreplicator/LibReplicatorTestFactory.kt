@@ -17,14 +17,12 @@
 
 package org.libreplicator
 
-import org.libreplicator.api.LocalEventLog
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Replicator
 import org.libreplicator.gateway.module.LibReplicatorGatewayModule
 import org.libreplicator.locator.api.NodeLocator
 import org.libreplicator.locator.module.LibReplicatorLocatorModule
-import org.libreplicator.model.factory.LocalEventLogFactory
 import org.libreplicator.testdouble.InternetGatewayDummy
 import org.libreplicator.testdouble.NodeLocatorFake
 
@@ -38,9 +36,5 @@ class LibReplicatorTestFactory(
             libReplicatorLocatorModule(LibReplicatorLocatorModule(nodeLocator))
         }
         return component.getReplicator()
-    }
-
-    fun createLocalEventLog(log: String): LocalEventLog {
-        return LocalEventLogFactory().create(log)
     }
 }

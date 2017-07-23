@@ -23,6 +23,7 @@ import org.junit.Assert.assertThat
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.libreplicator.api.LocalNode
+import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.journal.testdouble.ErroneousJournalReaderMock
@@ -32,7 +33,6 @@ import org.libreplicator.journal.testdouble.JournalHandlerMock
 import org.libreplicator.journal.testdouble.JsonMapperStub
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonReadException
-import org.libreplicator.model.EventLog
 import org.libreplicator.model.ReplicatorState
 import java.nio.file.NoSuchFileException
 import java.nio.file.Paths
@@ -55,7 +55,7 @@ class DefaultReplicatorStateJournalTest {
         private val LATEST_JOURNAL_FILE = JOURNAL_DIRECTORY.resolve(LATEST_JOURNAL_FILE_NAME)
 
         private val SERIALIZED_REPLICATOR_STATE = "serializedReplicatorState"
-        private val REPLICATOR_STATE = ReplicatorState(mutableSetOf(EventLog(LOCAL_NODE.nodeId, 0, "")))
+        private val REPLICATOR_STATE = ReplicatorState(mutableSetOf(RemoteLog(LOCAL_NODE.nodeId, 0, "")))
     }
 
     private val jsonMapperStub: JsonMapper = JsonMapperStub(REPLICATOR_STATE, SERIALIZED_REPLICATOR_STATE)

@@ -20,11 +20,11 @@ package org.libreplicator.interactor.state
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.actor
-import org.libreplicator.api.LocalEventLog
+import org.libreplicator.api.LocalLog
 import org.libreplicator.api.LocalNode
+import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.interactor.state.interaction.StateInteraction
-import org.libreplicator.model.EventLog
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.ReplicatorState
 import javax.inject.Inject
@@ -38,7 +38,7 @@ class DefaultStateInteractor @Inject constructor(
         for (interaction in channel) {
             when (interaction) {
                 is StateInteraction.ObserveLocalEvent -> {
-                    replicatorState.addLocalEventLog(localNode, interaction.localEventLog)
+                    replicatorState.addLocalEventLog(localNode, interaction.localLog)
                     interaction.channel.send(replicatorState.getNodesWithMissingEventLogs(remoteNodes))
                 }
                 is StateInteraction.ObserveRemoteMessage -> {
@@ -50,17 +50,17 @@ class DefaultStateInteractor @Inject constructor(
         }
     }
 
-    override suspend fun getNodesWithMissingLogs(localEventLog: LocalEventLog): Map<RemoteNode, ReplicatorMessage> {
-        val channel = Channel<Map<RemoteNode, List<EventLog>>>()
+    override suspend fun getNodesWithMissingLogs(localLog: LocalLog): Map<RemoteNode, ReplicatorMessage> {
+        val channel = Channel<Map<RemoteNode, List<RemoteLog>>>()
 
-        val interaction = StateInteraction.ObserveLocalEvent(localEventLog, channel)
+        val interaction = StateInteraction.ObserveLocalEvent(localLog, channel)
         replicatorStateActor.send(interaction)
 
         return channel.receive().mapValues { ReplicatorMessage(localNode.nodeId, it.value, replicatorState.timeTable) }
     }
 
-    override suspend fun getMissingLogs(message: ReplicatorMessage): List<EventLog> {
-        val channel = Channel<List<EventLog>>()
+    override suspend fun getMissingLogs(message: ReplicatorMessage): List<RemoteLog> {
+        val channel = Channel<List<RemoteLog>>()
 
         val interaction = StateInteraction.ObserveRemoteMessage(message, channel)
         replicatorStateActor.send(interaction)
