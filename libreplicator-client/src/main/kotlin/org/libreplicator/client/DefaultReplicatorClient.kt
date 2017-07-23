@@ -19,9 +19,10 @@ package org.libreplicator.client
 
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.client.api.ReplicatorClient
-import org.libreplicator.httpclient.api.HttpClient
 import org.libreplicator.crypto.api.Cipher
+import org.libreplicator.httpclient.api.HttpClient
 import org.libreplicator.json.api.JsonMapper
+import org.libreplicator.locator.api.NodeLocator
 import org.libreplicator.model.ReplicatorMessage
 import javax.inject.Inject
 import javax.inject.Provider
@@ -29,6 +30,7 @@ import javax.inject.Provider
 class DefaultReplicatorClient @Inject constructor(
         private val jsonMapper: JsonMapper,
         private val cipher: Cipher,
+        private val nodeLocator: NodeLocator,
         private val httpClientProvider: Provider<HttpClient>) : ReplicatorClient {
 
     private companion object {
@@ -42,7 +44,17 @@ class DefaultReplicatorClient @Inject constructor(
     }
 
     override fun synchronizeWithNode(remoteNode: ReplicatorNode, message: ReplicatorMessage) {
-        httpClient.post(remoteNode.url, remoteNode.port, SYNC_PATH, cipher.encrypt(jsonMapper.write(message)))
+        val node = resolveNode(remoteNode)
+        if (node != null) {
+            httpClient.post(node.url, node.port, SYNC_PATH, cipher.encrypt(jsonMapper.write(message)))
+        }
+    }
+
+    private fun resolveNode(remoteNode: ReplicatorNode): ReplicatorNode? {
+        if (remoteNode.url == "" || remoteNode.port == 0) {
+            return nodeLocator.getNode(remoteNode.nodeId)
+        }
+        return remoteNode
     }
 
     override fun close() = httpClient.close()

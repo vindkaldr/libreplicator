@@ -16,12 +16,8 @@
  */
 
 dependencies {
-    compile project(':libreplicator-client-api')
-    compile project(':libreplicator-crypto-api')
-    compile project(':libreplicator-httpclient-api')
-    compile project(':libreplicator-json-api')
     compile project(':libreplicator-locator-api')
-    compile project(':libreplicator-log')
+    compile project(':libreplicator-model')
 
     compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion
     compile group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion

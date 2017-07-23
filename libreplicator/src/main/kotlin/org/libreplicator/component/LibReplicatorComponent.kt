@@ -28,6 +28,7 @@ import org.libreplicator.httpserver.module.LibReplicatorHttpServerModule
 import org.libreplicator.interactor.module.LibReplicatorInteractorModule
 import org.libreplicator.journal.module.LibReplicatorJournalModule
 import org.libreplicator.json.module.LibReplicatorJsonModule
+import org.libreplicator.locator.module.LibReplicatorLocatorModule
 import org.libreplicator.server.module.LibReplicatorServerModule
 import javax.inject.Singleton
 
@@ -42,6 +43,7 @@ import javax.inject.Singleton
         LibReplicatorInteractorModule::class,
         LibReplicatorJournalModule::class,
         LibReplicatorJsonModule::class,
+        LibReplicatorLocatorModule::class,
         LibReplicatorServerModule::class))
 interface LibReplicatorComponent {
     fun getReplicator(): Replicator

@@ -15,15 +15,12 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    compile project(':libreplicator-client-api')
-    compile project(':libreplicator-crypto-api')
-    compile project(':libreplicator-httpclient-api')
-    compile project(':libreplicator-json-api')
-    compile project(':libreplicator-locator-api')
-    compile project(':libreplicator-log')
+package org.libreplicator.locator.api
 
-    compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion
-    compile group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
-    kapt group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
+import org.libreplicator.api.ReplicatorNode
+
+interface NodeLocator {
+    fun addNode(node: ReplicatorNode)
+    fun removeNode(nodeId: String)
+    fun getNode(nodeId: String): ReplicatorNode?
 }

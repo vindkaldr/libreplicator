@@ -25,6 +25,7 @@ dependencies {
     compile project(':libreplicator-interactor')
     compile project(':libreplicator-journal')
     compile project(':libreplicator-json')
+    compile project(':libreplicator-locator')
     compile project(':libreplicator-model')
     compile project(':libreplicator-server')
 
