@@ -26,8 +26,8 @@ import org.libreplicator.interactor.module.LibReplicatorInteractorModule
 import org.libreplicator.journal.module.LibReplicatorJournalModule
 import org.libreplicator.server.module.LibReplicatorServerModule
 
-class LibReplicatorComponentBuilder {
-    fun build(settings: LibReplicatorSettings, localNode: LocalNode, remoteNodes: List<RemoteNode>,
+class LibReplicatorComponentBuilder(private val settings: LibReplicatorSettings) {
+    fun build(localNode: LocalNode, remoteNodes: List<RemoteNode>,
             block: DaggerLibReplicatorComponent.Builder.() -> Unit = {}): LibReplicatorComponent {
         return DaggerLibReplicatorComponent.builder()
                 .libReplicatorCryptoModule(LibReplicatorCryptoModule(settings.cryptoSettings))

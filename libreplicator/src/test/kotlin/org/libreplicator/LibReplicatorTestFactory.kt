@@ -31,10 +31,9 @@ class LibReplicatorTestFactory(
         private val nodeLocator: NodeLocator = NodeLocatorFake()
 ) {
     fun createReplicator(localNode: LocalNode, remoteNodes: List<RemoteNode>): Replicator {
-        val component = LibReplicatorComponentBuilder().build(settings, localNode, remoteNodes) {
+        return LibReplicatorComponentBuilder(settings).build(localNode, remoteNodes) {
             libReplicatorGatewayModule(LibReplicatorGatewayModule(InternetGatewayDummy()))
             libReplicatorLocatorModule(LibReplicatorLocatorModule(nodeLocator))
-        }
-        return component.getReplicator()
+        }.getReplicator()
     }
 }

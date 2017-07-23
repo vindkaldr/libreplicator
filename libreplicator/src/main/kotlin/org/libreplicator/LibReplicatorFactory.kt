@@ -23,7 +23,6 @@ import org.libreplicator.api.Replicator
 
 class LibReplicatorFactory(private val settings: LibReplicatorSettings = LibReplicatorSettings()) {
     fun createReplicator(localNode: LocalNode, remoteNodes: List<RemoteNode>): Replicator {
-        val component = LibReplicatorComponentBuilder().build(settings, localNode, remoteNodes)
-        return component.getReplicator()
+        return LibReplicatorComponentBuilder(settings).build(localNode, remoteNodes).getReplicator()
     }
 }
