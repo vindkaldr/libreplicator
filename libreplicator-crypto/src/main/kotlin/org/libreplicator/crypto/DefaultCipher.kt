@@ -43,7 +43,7 @@ class DefaultCipher(private val sharedSecret: String) : Cipher {
 
     override fun encrypt(content: String): String {
         val cipherParameters = getCipherParameters()
-        val cipher = getCipherForEncryption(cipherParameters)
+        val cipher = getCipher(ENCRYPTION, cipherParameters)
 
         return String(Hex.encode(cipherContent(cipher, content.toByteArray())))
     }
@@ -51,7 +51,7 @@ class DefaultCipher(private val sharedSecret: String) : Cipher {
     override fun decrypt(encryptedContent: String): String {
         try {
             val cipherParameters = getCipherParameters()
-            val cipher = getCipherForDecryption(cipherParameters)
+            val cipher = getCipher(DECRYPTION, cipherParameters)
 
             return String(cipherContent(cipher, Hex.decode(encryptedContent.toByteArray())))
         }
@@ -67,15 +67,9 @@ class DefaultCipher(private val sharedSecret: String) : Cipher {
         return parametersGenerator.generateDerivedParameters(KEY_SIZE, INITIALIZATION_VECTOR_SIZE)
     }
 
-    private fun getCipherForEncryption(cipherParameters: CipherParameters): BufferedBlockCipher {
+    private fun getCipher(isEncryption: Boolean, cipherParameters: CipherParameters): BufferedBlockCipher {
         val cipher = getCipher()
-        cipher.init(ENCRYPTION, cipherParameters)
-        return cipher
-    }
-
-    private fun getCipherForDecryption(cipherParameters: CipherParameters): BufferedBlockCipher {
-        val cipher = getCipher()
-        cipher.init(DECRYPTION, cipherParameters)
+        cipher.init(isEncryption, cipherParameters)
         return cipher
     }
 
