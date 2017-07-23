@@ -17,8 +17,6 @@
 
 package org.libreplicator.server
 
-import org.libreplicator.api.AlreadySubscribedException
-import org.libreplicator.api.NotSubscribedException
 import org.libreplicator.api.Observer
 import org.libreplicator.api.ReplicatorNode
 import org.libreplicator.api.Subscription
@@ -47,29 +45,19 @@ class DefaultReplicatorServer @Inject constructor(
         private val logger = LoggerFactory.getLogger(DefaultReplicatorServer::class.java)
     }
 
-    private var hasSubscription = false
-
     override suspend fun subscribe(observer: Observer<ReplicatorMessage>): Subscription {
         logger.trace("Subscribing to server..")
-        if (hasSubscription) {
-            throw AlreadySubscribedException()
-        }
+
         httpServer.start(localNode.port, "/sync", ReplicatorSyncServlet(jsonMapper, cipher, observer))
         internetGateway.addPortMapping(AddPortMapping(localNode.port, InternetProtocol.TCP, localNode.port, LIBREPLICATOR_DESCRIPTION))
-        hasSubscription = true
 
         return object : Subscription {
             override suspend fun unsubscribe() {
                 logger.trace("Unsubscribing from server..")
-                if (!hasSubscription) {
-                    throw NotSubscribedException()
-                }
+
                 httpServer.stop()
                 internetGateway.deletePortMapping(DeletePortMapping(localNode.port, InternetProtocol.TCP))
-                hasSubscription = false
             }
         }
     }
-
-    override fun hasSubscription(): Boolean = hasSubscription
 }

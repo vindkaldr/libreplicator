@@ -17,7 +17,6 @@
 
 package org.libreplicator.interactor.router.testdouble
 
-import org.junit.Assert
 import org.libreplicator.api.Observer
 import org.libreplicator.api.Subscription
 import org.libreplicator.model.ReplicatorMessage
@@ -27,14 +26,9 @@ class ReplicatorServerMock constructor(private val subscription: Subscription) :
     private var observedMessageObserver: Observer<ReplicatorMessage>? = null
 
     override suspend fun subscribe(observer: Observer<ReplicatorMessage>): Subscription {
-        if (hasSubscription()) {
-            Assert.fail("Unexpected call!")
-        }
         observedMessageObserver = observer
         return subscription
     }
-
-    override fun hasSubscription(): Boolean = observedMessageObserver != null
 
     fun hasBeenSubscribedTo(messageObserver: Observer<ReplicatorMessage>): Boolean {
         return observedMessageObserver == messageObserver

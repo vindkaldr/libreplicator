@@ -26,5 +26,4 @@ import org.libreplicator.api.Subscription
 interface LogDispatcher : Subscribable<RemoteEventLog> {
     suspend fun dispatch(localEventLog: LocalEventLog)
     override suspend fun subscribe(observer: Observer<RemoteEventLog>): Subscription
-    fun hasSubscription(): Boolean
 }

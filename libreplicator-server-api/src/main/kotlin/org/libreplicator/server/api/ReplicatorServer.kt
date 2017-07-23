@@ -7,5 +7,4 @@ import org.libreplicator.model.ReplicatorMessage
 
 interface ReplicatorServer : Subscribable<ReplicatorMessage> {
     override suspend fun subscribe(observer: Observer<ReplicatorMessage>): Subscription
-    fun hasSubscription(): Boolean
 }

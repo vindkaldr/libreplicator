@@ -26,5 +26,4 @@ import org.libreplicator.model.ReplicatorMessage
 interface MessageRouter : Subscribable<ReplicatorMessage> {
     fun routeMessage(remoteNode: ReplicatorNode, message: ReplicatorMessage)
     override suspend fun subscribe(observer: Observer<ReplicatorMessage>): Subscription
-    fun hasSubscription(): Boolean
 }

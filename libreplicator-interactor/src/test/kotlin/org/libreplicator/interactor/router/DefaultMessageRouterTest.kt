@@ -20,9 +20,7 @@ package org.libreplicator.interactor.router
 import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
-import org.libreplicator.api.NotSubscribedException
 import org.libreplicator.interactor.router.testdouble.MessageObserverDummy
 import org.libreplicator.interactor.router.testdouble.ReplicatorClientMock
 import org.libreplicator.interactor.router.testdouble.ReplicatorServerMock
@@ -54,12 +52,6 @@ class DefaultMessageRouterTest {
         replicatorServerMock = ReplicatorServerMock(subscriptionMock)
 
         messageRouter = DefaultMessageRouter(replicatorClientMock, replicatorServerMock)
-    }
-
-    @Ignore
-    @Test(expected = NotSubscribedException::class)
-    fun routeMessage_shouldThrowException_whenNotSubscribed() {
-        messageRouter.routeMessage(REMOTE_NODE, MESSAGE)
     }
 
     @Test

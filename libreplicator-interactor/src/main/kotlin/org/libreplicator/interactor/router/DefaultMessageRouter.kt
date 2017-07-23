@@ -36,28 +36,22 @@ class DefaultMessageRouter @Inject constructor(
 
     override fun routeMessage(remoteNode: ReplicatorNode, message: ReplicatorMessage) {
         logger.trace("Routing message..")
-//        if (!hasSubscription()) {
-//            throw NotSubscribedException()
-//        }
         replicatorClient.synchronizeWithNode(remoteNode, message)
     }
 
     override suspend fun subscribe(observer: Observer<ReplicatorMessage>): Subscription {
         logger.trace("Subscribing to message router..")
-//        if (hasSubscription()) {
-//            throw AlreadySubscribedException()
-//        }
+
         replicatorClient.initialize()
         val subscription = replicatorServer.subscribe(observer)
 
         return object : Subscription {
             override suspend fun unsubscribe() {
                 logger.trace("Unsubscribing from message router..")
+
                 replicatorClient.close()
                 subscription.unsubscribe()
             }
         }
     }
-
-    override fun hasSubscription(): Boolean = replicatorServer.hasSubscription()
 }

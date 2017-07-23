@@ -52,6 +52,4 @@ class DefaultLogDispatcher @Inject constructor(
             }
         })
     }
-
-    override fun hasSubscription(): Boolean = messageRouter.hasSubscription()
 }

@@ -33,17 +33,11 @@ class DefaultReplicator @Inject constructor(private val logDispatcher: LogDispat
 
     override suspend fun replicate(localEventLog: LocalEventLog) {
         logger.trace("Replicating event log..")
-//        if (!logDispatcher.hasSubscription()) {
-//            throw NotSubscribedException()
-//        }
         logDispatcher.dispatch(localEventLog)
     }
 
     override suspend fun subscribe(observer: Observer<RemoteEventLog>): Subscription {
         logger.trace("Subscribing to replicator..")
-//        if (logDispatcher.hasSubscription()) {
-//            throw AlreadySubscribedException()
-//        }
         return logDispatcher.subscribe(observer)
     }
 }
