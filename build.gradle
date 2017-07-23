@@ -24,9 +24,6 @@ subprojects {
         maven {
             url "http://jcenter.bintray.com"
         }
-        maven {
-            url "http://4thline.org/m2"
-        }
     }
 
     apply plugin: "kotlin"

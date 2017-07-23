@@ -17,4 +17,4 @@
 
 package org.libreplicator.gateway.api.model
 
-data class DeletePortMapping(val externalPort: Int, val protocol: InternetProtocol)
+data class DeletePortMapping(override val externalPort: Int, override val protocol: InternetProtocol) : PortMapping

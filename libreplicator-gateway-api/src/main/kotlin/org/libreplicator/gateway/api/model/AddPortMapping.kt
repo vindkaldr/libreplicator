@@ -18,7 +18,9 @@
 package org.libreplicator.gateway.api.model
 
 data class AddPortMapping(
-        val externalPort: Int,
-        val protocol: InternetProtocol,
+        override val externalPort: Int,
+        override val protocol: InternetProtocol,
         val internalPort: Int,
-        val description: String)
+        val description: String
+) : PortMapping
+

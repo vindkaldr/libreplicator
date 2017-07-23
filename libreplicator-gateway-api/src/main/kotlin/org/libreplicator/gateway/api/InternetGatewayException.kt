@@ -15,13 +15,6 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    compile project(':libreplicator-gateway-api')
-    compile project(':libreplicator-log')
+package org.libreplicator.gateway.api
 
-    compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion
-    compile group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
-    kapt group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
-
-    compile group: 'org.bitlet', name: 'weupnp', version: weupnpVersion
-}
+class InternetGatewayException(message: String) : Throwable(message)
