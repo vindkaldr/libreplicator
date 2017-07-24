@@ -81,11 +81,11 @@ class ReplicatorStateTest {
         val node3Log1 = RemoteLog(REMOTE_NODE_3_ID, 2, NODE_3_LOG_1)
 
         val state = ReplicatorState(mutableSetOf(node1Log1, node1Log2, node3Log1), timeTable)
-        val actual = state.getNodesWithMissingEventLogs(listOf(REMOTE_NODE_1, REMOTE_NODE_2, REMOTE_NODE_3))
+        val actual = state.getNodesWithMissingEventLogs(LOCAL_NODE, listOf(REMOTE_NODE_1, REMOTE_NODE_2, REMOTE_NODE_3))
 
-        val expected = mapOf(REMOTE_NODE_1 to listOf(node3Log1),
-                REMOTE_NODE_2 to listOf(node3Log1, node1Log2),
-                REMOTE_NODE_3 to listOf(node1Log1, node1Log2))
+        val expected = mapOf(REMOTE_NODE_1 to ReplicatorMessage(LOCAL_NODE.nodeId, listOf(node3Log1), timeTable),
+                REMOTE_NODE_2 to ReplicatorMessage(LOCAL_NODE.nodeId, listOf(node3Log1, node1Log2), timeTable),
+                REMOTE_NODE_3 to ReplicatorMessage(LOCAL_NODE.nodeId, listOf(node1Log1, node1Log2), timeTable))
 
         assertThat(actual, equalTo(expected))
     }
@@ -113,16 +113,16 @@ class ReplicatorStateTest {
     fun addLocalEventLog_createsAnOutgoingEventLog() = runBlocking {
         replicatorState.addLocalEventLog(LOCAL_NODE, NODE_1_EVENT_LOG_1)
 
-        val remoteNodesWithMissingEventLogs = replicatorState.getNodesWithMissingEventLogs(listOf(REMOTE_NODE_2))
-        assertThat(remoteNodesWithMissingEventLogs.size, equalTo(1))
+        val remoteNodesWithMessage = replicatorState.getNodesWithMissingEventLogs(LOCAL_NODE, listOf(REMOTE_NODE_2))
+        assertThat(remoteNodesWithMessage.size, equalTo(1))
 
-        val missingEventLogsOfRemoteNode = remoteNodesWithMissingEventLogs[REMOTE_NODE_2]
-        assertThat(missingEventLogsOfRemoteNode!!.size, equalTo(1))
+        val message = remoteNodesWithMessage[REMOTE_NODE_2]
+        assertThat(message?.eventLogs?.size, equalTo(1))
 
-        val missingEventLog = missingEventLogsOfRemoteNode[0]
-        assertThat(missingEventLog.nodeId, equalTo(LOCAL_NODE.nodeId))
-        assertThat(missingEventLog.time, not(equalTo(0L)))
-        assertThat(missingEventLog.log, equalTo(NODE_1_EVENT_LOG_1.log))
+        val missingEventLog = message?.eventLogs?.get(0)
+        assertThat(missingEventLog?.nodeId, equalTo(LOCAL_NODE.nodeId))
+        assertThat(missingEventLog?.time, not(equalTo(0L)))
+        assertThat(missingEventLog?.log, equalTo(NODE_1_EVENT_LOG_1.log))
     }
 
     @Test
@@ -138,9 +138,15 @@ class ReplicatorStateTest {
     fun updateFromMessage_administersOutgoingEventLog() = runBlocking {
         replicatorState.updateFromMessage(LOCAL_NODE, listOf(REMOTE_NODE_2, REMOTE_NODE_3), NODE_2_REPLICATOR_MESSAGE)
 
-        val missingEventLogs = replicatorState.getNodesWithMissingEventLogs(listOf(REMOTE_NODE_2, REMOTE_NODE_3))
-        assertThat(missingEventLogs.size, equalTo(1))
-        assertThat(missingEventLogs[REMOTE_NODE_3], equalTo(listOf(NODE_2_EVENT_LOG_1)))
+        val nodesWithMessages = replicatorState.getNodesWithMissingEventLogs(LOCAL_NODE, listOf(REMOTE_NODE_2, REMOTE_NODE_3))
+        assertThat(nodesWithMessages.size, equalTo(1))
+
+        val timeTable = TimeTable()
+        timeTable[LOCAL_NODE.nodeId, REMOTE_NODE_2.nodeId] = 1
+        timeTable[REMOTE_NODE_2.nodeId, REMOTE_NODE_2.nodeId] = 1
+
+        assertThat(nodesWithMessages[REMOTE_NODE_3],
+                equalTo(ReplicatorMessage(LOCAL_NODE.nodeId, listOf(NODE_2_EVENT_LOG_1), timeTable)))
     }
 
     @Test

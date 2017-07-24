@@ -25,7 +25,9 @@ import org.libreplicator.json.DefaultJsonMapper
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonMixin
 import org.libreplicator.json.mixin.RemoteLogMixin
+import org.libreplicator.json.mixin.ReplicatorStateMixin
 import org.libreplicator.json.mixin.TimeTableMixin
+import org.libreplicator.model.ReplicatorState
 import org.libreplicator.model.TimeTable
 
 @Module
@@ -43,5 +45,10 @@ class LibReplicatorJsonModule {
     @Provides @IntoSet
     fun provideRemoteLogMixin(): JsonMixin {
         return JsonMixin(RemoteLog::class, RemoteLogMixin::class)
+    }
+
+    @Provides @IntoSet
+    fun provideReplicatorStateMixin(): JsonMixin {
+        return JsonMixin(ReplicatorState::class, ReplicatorStateMixin::class)
     }
 }

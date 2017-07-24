@@ -20,23 +20,23 @@ package org.libreplicator.model
 import java.lang.Math.max
 
 data class TimeTable(private val table: MutableMap<String, MutableMap<String, Long>> = mutableMapOf()) {
-    operator fun get(sourceNodeId: String, targetNodeId: String): Long /*= synchronized(this)*/ {
+    operator fun get(sourceNodeId: String, targetNodeId: String): Long {
         return table.getOrElse(sourceNodeId, { mapOf<String, Long>() })
                 .getOrElse(targetNodeId, { 0 })
     }
 
-    operator fun set(sourceNodeId: String, targetNodeId: String, time: Long) /*= synchronized(this)*/ {
+    operator fun set(sourceNodeId: String, targetNodeId: String, time: Long) {
         if (time > 0) {
             table.getOrPut(sourceNodeId, { mutableMapOf() }).put(targetNodeId, time)
         }
     }
 
-    fun merge(sourceNodeId: String, message: ReplicatorMessage) /*= synchronized(this)*/ {
+    fun merge(sourceNodeId: String, message: ReplicatorMessage) {
         mergeRow(sourceNodeId, message)
         merge(message)
     }
 
-    private fun mergeRow(sourceNodeId: String, message: ReplicatorMessage) /*= synchronized(this)*/ {
+    private fun mergeRow(sourceNodeId: String, message: ReplicatorMessage) {
         val sourceRow = table.getOrPut(sourceNodeId, { mutableMapOf() })
         val targetRow = message.timeTable.table.getOrPut(message.nodeId, { mutableMapOf() })
 
@@ -46,7 +46,7 @@ data class TimeTable(private val table: MutableMap<String, MutableMap<String, Lo
         }
     }
 
-    private fun merge(message: ReplicatorMessage) /*= synchronized(this)*/ {
+    private fun merge(message: ReplicatorMessage) {
         val rowKeys2 = table.keys + message.timeTable.table.keys
         val columnKeys2 = (table.values.map { it.keys } + message.timeTable.table.values.map { it.keys }).flatten()
 

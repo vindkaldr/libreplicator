@@ -15,22 +15,14 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.interactor.state.interaction
+package org.libreplicator.json.mixin
 
-import kotlinx.coroutines.experimental.channels.SendChannel
-import org.libreplicator.api.LocalLog
+import com.fasterxml.jackson.annotation.JsonGetter
+import com.fasterxml.jackson.annotation.JsonIgnore
 import org.libreplicator.api.RemoteLog
-import org.libreplicator.api.RemoteNode
-import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.model.TimeTable
 
-sealed class StateInteraction {
-    class ObserveLocalEvent(
-            val localLog: LocalLog,
-            val channel: SendChannel<Map<RemoteNode, ReplicatorMessage>>
-    ) : StateInteraction()
-
-    class ObserveRemoteMessage(
-            val message: ReplicatorMessage,
-            val channel: SendChannel<List<RemoteLog>>
-    ) : StateInteraction()
-}
+class ReplicatorStateMixin(
+        @JsonIgnore @get:JsonGetter val logs: MutableSet<RemoteLog>,
+        @JsonIgnore @get:JsonGetter val timeTable: TimeTable
+)

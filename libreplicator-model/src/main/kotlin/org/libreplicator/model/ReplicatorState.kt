@@ -27,9 +27,9 @@ import org.libreplicator.api.Subscribable
 import org.libreplicator.api.Subscription
 
 data class ReplicatorState constructor(
-        var logs: MutableSet<RemoteLog> = mutableSetOf(),
-        var timeTable: TimeTable = TimeTable()): Subscribable<ReplicatorState> {
-
+        private var logs: MutableSet<RemoteLog> = mutableSetOf(),
+        private var timeTable: TimeTable = TimeTable()
+): Subscribable<ReplicatorState> {
     private var observer: Observer<ReplicatorState> = object : Observer<ReplicatorState> {
         override suspend fun observe(observable: ReplicatorState) {}
     }
@@ -60,10 +60,11 @@ data class ReplicatorState constructor(
         observer.observe(this)
     }
 
-    fun getNodesWithMissingEventLogs(remoteNodes: List<RemoteNode>): Map<RemoteNode, List<RemoteLog>> =
+    fun getNodesWithMissingEventLogs(localNode: LocalNode, remoteNodes: List<RemoteNode>): Map<RemoteNode, ReplicatorMessage> =
             remoteNodes.map { node -> node.to(getMissingEventLogs(node)) }
                     .filter { it.second.isNotEmpty() }
                     .toMap()
+                    .mapValues { ReplicatorMessage(localNode.nodeId, it.value, timeTable) }
 
     fun getMissingEventLogs(node: Node, eventLogs: List<RemoteLog> = logs.toList()): List<RemoteLog> =
             eventLogs.filter { !hasEventLog(node, it) }
@@ -94,4 +95,8 @@ data class ReplicatorState constructor(
 
     private fun hasEventLog(node: Node, eventLog: RemoteLog): Boolean =
             eventLog.time <= timeTable[node.nodeId, eventLog.nodeId]
+
+    // Do not change or call. These are here for serialization/deserialization purposes.
+    private fun getLogs() = logs
+    private fun getTimeTable() = timeTable
 }

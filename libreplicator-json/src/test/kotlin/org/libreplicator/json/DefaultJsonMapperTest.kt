@@ -25,6 +25,7 @@ import org.libreplicator.api.RemoteLog
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonMixin
 import org.libreplicator.json.mixin.RemoteLogMixin
+import org.libreplicator.json.mixin.ReplicatorStateMixin
 import org.libreplicator.json.mixin.TimeTableMixin
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.ReplicatorState
@@ -52,7 +53,8 @@ class DefaultJsonMapperTest {
     @Before
     fun setUp() {
         jsonMapper = DefaultJsonMapper(setOf(JsonMixin(TimeTable::class, TimeTableMixin::class),
-                JsonMixin(RemoteLog::class, RemoteLogMixin::class)))
+                JsonMixin(RemoteLog::class, RemoteLogMixin::class),
+                JsonMixin(ReplicatorState::class, ReplicatorStateMixin::class)))
     }
 
     @Test

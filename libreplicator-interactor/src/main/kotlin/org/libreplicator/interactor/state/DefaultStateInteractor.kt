@@ -39,7 +39,7 @@ class DefaultStateInteractor @Inject constructor(
             when (interaction) {
                 is StateInteraction.ObserveLocalEvent -> {
                     replicatorState.addLocalEventLog(localNode, interaction.localLog)
-                    interaction.channel.send(replicatorState.getNodesWithMissingEventLogs(remoteNodes))
+                    interaction.channel.send(replicatorState.getNodesWithMissingEventLogs(localNode, remoteNodes))
                 }
                 is StateInteraction.ObserveRemoteMessage -> {
                     val missingEventLogs = replicatorState.getMissingEventLogs(localNode, interaction.message.eventLogs)
@@ -51,12 +51,12 @@ class DefaultStateInteractor @Inject constructor(
     }
 
     override suspend fun getNodesWithMissingLogs(localLog: LocalLog): Map<RemoteNode, ReplicatorMessage> {
-        val channel = Channel<Map<RemoteNode, List<RemoteLog>>>()
+        val channel = Channel<Map<RemoteNode, ReplicatorMessage>>()
 
         val interaction = StateInteraction.ObserveLocalEvent(localLog, channel)
         replicatorStateActor.send(interaction)
 
-        return channel.receive().mapValues { ReplicatorMessage(localNode.nodeId, it.value, replicatorState.timeTable) }
+        return channel.receive()
     }
 
     override suspend fun getMissingLogs(message: ReplicatorMessage): List<RemoteLog> {
