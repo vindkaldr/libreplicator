@@ -55,7 +55,8 @@ class DefaultReplicatorStateJournalTest {
         private val LATEST_JOURNAL_FILE = JOURNAL_DIRECTORY.resolve(LATEST_JOURNAL_FILE_NAME)
 
         private val SERIALIZED_REPLICATOR_STATE = "serializedReplicatorState"
-        private val REPLICATOR_STATE = ReplicatorState(mutableSetOf(RemoteLog(LOCAL_NODE.nodeId, 0, "")))
+        private val REPLICATOR_STATE = ReplicatorState(LOCAL_NODE, listOf(REMOTE_NODE_1, REMOTE_NODE_2),
+                mutableSetOf(RemoteLog(LOCAL_NODE.nodeId, 0, "")))
     }
 
     private val jsonMapperStub: JsonMapper = JsonMapperStub(REPLICATOR_STATE, SERIALIZED_REPLICATOR_STATE)

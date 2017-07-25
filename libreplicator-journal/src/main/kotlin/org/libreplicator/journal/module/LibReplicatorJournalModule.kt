@@ -44,12 +44,12 @@ class LibReplicatorJournalModule (
     @Provides @Singleton
     fun provideReplicatorState(fileHandler: FileHandler, jsonMapper: JsonMapper, cipher: Cipher): ReplicatorState = runBlocking {
         if (!journalSettings.isJournalingEnabled) {
-            return@runBlocking ReplicatorState()
+            return@runBlocking ReplicatorState(localNode, remoteNodes)
         }
 
         val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandler, jsonMapper, cipher,
                 journalSettings.directoryOfJournals, localNode, remoteNodes)
-        val replicatorState = replicatorStateJournal.getReplicatorState()
+        val replicatorState = replicatorStateJournal.getReplicatorState().copy(localNode, remoteNodes)
 
         replicatorState.subscribe(replicatorStateJournal)
 

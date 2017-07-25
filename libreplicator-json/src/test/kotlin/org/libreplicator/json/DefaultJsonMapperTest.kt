@@ -41,7 +41,7 @@ class DefaultJsonMapperTest {
         private val REPLICATOR_MESSAGE = ReplicatorMessage("nodeId", listOf(), TimeTable())
         private val SERIALIZED_REPLICATOR_MESSAGE = "{\"nodeId\":\"nodeId\",\"eventLogs\":[],\"timeTable\":{}}"
 
-        private val REPLICATOR_STATE = ReplicatorState(mutableSetOf(), TimeTable())
+        private val REPLICATOR_STATE = ReplicatorState(null, null, mutableSetOf(), TimeTable())
         private val SERIALIZED_REPLICATOR_STATE = "{\"logs\":[],\"timeTable\":{}}"
 
         private val TIME_TABLE = TimeTable(mutableMapOf("nodeId1" to mutableMapOf("nodeId2" to 2L)))

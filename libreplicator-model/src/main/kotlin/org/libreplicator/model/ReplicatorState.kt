@@ -27,6 +27,8 @@ import org.libreplicator.api.Subscribable
 import org.libreplicator.api.Subscription
 
 data class ReplicatorState constructor(
+        private val localNode: LocalNode? = null,
+        private val remoteNodes: List<RemoteNode>? = null,
         private var logs: MutableSet<RemoteLog> = mutableSetOf(),
         private var timeTable: TimeTable = TimeTable()
 ): Subscribable<ReplicatorState> {
