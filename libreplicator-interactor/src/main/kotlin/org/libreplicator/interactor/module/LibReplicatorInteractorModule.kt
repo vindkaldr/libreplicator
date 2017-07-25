@@ -17,38 +17,19 @@
 
 package org.libreplicator.interactor.module
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
-import org.libreplicator.api.LocalNode
-import org.libreplicator.api.RemoteNode
-import org.libreplicator.client.api.ReplicatorClient
 import org.libreplicator.interactor.api.LogDispatcher
 import org.libreplicator.interactor.dispatcher.DefaultLogDispatcher
 import org.libreplicator.interactor.router.DefaultMessageRouter
 import org.libreplicator.interactor.router.MessageRouter
 import org.libreplicator.interactor.state.DefaultStateInteractor
 import org.libreplicator.interactor.state.StateInteractor
-import org.libreplicator.model.ReplicatorState
-import org.libreplicator.server.api.ReplicatorServer
 import javax.inject.Singleton
 
 @Module
-class LibReplicatorInteractorModule(
-        private val localNode: LocalNode,
-        private val remoteNodes: List<RemoteNode>
-) {
-    @Provides @Singleton
-    fun provideStateInteractor(replicatorState: ReplicatorState): StateInteractor {
-        return DefaultStateInteractor(replicatorState, localNode, remoteNodes)
-    }
-
-    @Provides
-    fun provideLogDispatcher(messageRouter: MessageRouter, stateInteractor: StateInteractor): LogDispatcher {
-        return DefaultLogDispatcher(messageRouter, stateInteractor)
-    }
-
-    @Provides
-    fun provideMessageRouter(replicatorClient: ReplicatorClient, replicatorServer: ReplicatorServer): MessageRouter {
-        return DefaultMessageRouter(replicatorClient, replicatorServer)
-    }
+interface LibReplicatorInteractorModule {
+    @Binds @Singleton fun bindStateInteractor(defaultStateInteractor: DefaultStateInteractor): StateInteractor
+    @Binds fun bindLogDispatcher(defaultLogDispatcher: DefaultLogDispatcher): LogDispatcher
+    @Binds fun bindMessageRouter(defaultMessageRouter: DefaultMessageRouter): MessageRouter
 }

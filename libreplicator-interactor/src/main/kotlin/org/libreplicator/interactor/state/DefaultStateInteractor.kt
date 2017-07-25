@@ -21,7 +21,6 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.actor
 import org.libreplicator.api.LocalLog
-import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.interactor.state.interaction.StateInteraction
@@ -30,20 +29,18 @@ import org.libreplicator.model.ReplicatorState
 import javax.inject.Inject
 
 class DefaultStateInteractor @Inject constructor(
-        private val replicatorState: ReplicatorState,
-        private val localNode: LocalNode,
-        private val remoteNodes: List<RemoteNode>
+        private val replicatorState: ReplicatorState
 ) : StateInteractor {
     private val replicatorStateActor = actor<StateInteraction>(CommonPool) {
         for (interaction in channel) {
             when (interaction) {
                 is StateInteraction.ObserveLocalEvent -> {
-                    replicatorState.addLocalEventLog(localNode, interaction.localLog)
-                    interaction.channel.send(replicatorState.getNodesWithMissingEventLogs(localNode, remoteNodes))
+                    replicatorState.addLocalEventLog(interaction.localLog)
+                    interaction.channel.send(replicatorState.getNodesWithMissingEventLogs())
                 }
                 is StateInteraction.ObserveRemoteMessage -> {
-                    val missingEventLogs = replicatorState.getMissingEventLogs(localNode, interaction.message.eventLogs)
-                    replicatorState.updateFromMessage(localNode, remoteNodes, interaction.message)
+                    val missingEventLogs = replicatorState.getMissingEventLogs(eventLogs = interaction.message.eventLogs)
+                    replicatorState.updateFromMessage(interaction.message)
                     interaction.channel.send(missingEventLogs)
                 }
             }

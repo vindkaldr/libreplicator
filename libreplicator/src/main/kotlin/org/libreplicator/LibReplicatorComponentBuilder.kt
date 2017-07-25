@@ -22,7 +22,6 @@ import org.libreplicator.api.RemoteNode
 import org.libreplicator.component.DaggerLibReplicatorComponent
 import org.libreplicator.component.LibReplicatorComponent
 import org.libreplicator.crypto.module.LibReplicatorCryptoModule
-import org.libreplicator.interactor.module.LibReplicatorInteractorModule
 import org.libreplicator.journal.module.LibReplicatorJournalModule
 import org.libreplicator.server.module.LibReplicatorServerModule
 
@@ -31,7 +30,6 @@ class LibReplicatorComponentBuilder(private val settings: LibReplicatorSettings)
             block: DaggerLibReplicatorComponent.Builder.() -> Unit = {}): LibReplicatorComponent {
         return DaggerLibReplicatorComponent.builder()
                 .libReplicatorCryptoModule(LibReplicatorCryptoModule(settings.cryptoSettings))
-                .libReplicatorInteractorModule(LibReplicatorInteractorModule(localNode, remoteNodes))
                 .libReplicatorJournalModule(LibReplicatorJournalModule(settings.journalSettings, localNode, remoteNodes))
                 .libReplicatorServerModule(LibReplicatorServerModule(localNode))
                 .apply(block)

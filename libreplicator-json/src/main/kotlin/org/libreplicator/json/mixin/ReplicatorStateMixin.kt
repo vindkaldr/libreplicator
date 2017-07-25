@@ -23,6 +23,8 @@ import org.libreplicator.api.RemoteLog
 import org.libreplicator.model.TimeTable
 
 class ReplicatorStateMixin(
-        @JsonIgnore @get:JsonGetter val logs: MutableSet<RemoteLog>,
-        @JsonIgnore @get:JsonGetter val timeTable: TimeTable
-)
+        @get:JsonGetter var logs: MutableSet<RemoteLog>,
+        @get:JsonGetter var timeTable: TimeTable
+) {
+    @JsonIgnore fun getNodesWithMissingEventLogs() {}
+}

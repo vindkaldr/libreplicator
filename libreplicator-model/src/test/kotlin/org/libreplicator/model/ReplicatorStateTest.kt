@@ -86,7 +86,7 @@ class ReplicatorStateTest {
 
         val state = ReplicatorState(LOCAL_NODE, listOf(REMOTE_NODE_1, REMOTE_NODE_2, REMOTE_NODE_3),
                 mutableSetOf(node1Log1, node1Log2, node3Log1), timeTable)
-        val actual = state.getNodesWithMissingEventLogs(LOCAL_NODE, listOf(REMOTE_NODE_1, REMOTE_NODE_2, REMOTE_NODE_3))
+        val actual = state.getNodesWithMissingEventLogs()
 
         val expected = mapOf(REMOTE_NODE_1 to ReplicatorMessage(LOCAL_NODE.nodeId, listOf(node3Log1), timeTable),
                 REMOTE_NODE_2 to ReplicatorMessage(LOCAL_NODE.nodeId, listOf(node3Log1, node1Log2), timeTable),
@@ -117,9 +117,9 @@ class ReplicatorStateTest {
 
     @Test
     fun addLocalEventLog_createsAnOutgoingEventLog() = runBlocking {
-        replicatorStateWithRemoteNode2.addLocalEventLog(LOCAL_NODE, NODE_1_EVENT_LOG_1)
+        replicatorStateWithRemoteNode2.addLocalEventLog(NODE_1_EVENT_LOG_1)
 
-        val remoteNodesWithMessage = replicatorStateWithRemoteNode2.getNodesWithMissingEventLogs(LOCAL_NODE, listOf(REMOTE_NODE_2))
+        val remoteNodesWithMessage = replicatorStateWithRemoteNode2.getNodesWithMissingEventLogs()
         assertThat(remoteNodesWithMessage.size, equalTo(1))
 
         val message = remoteNodesWithMessage[REMOTE_NODE_2]
@@ -135,16 +135,16 @@ class ReplicatorStateTest {
     fun addLocalEventLog_notifiesReplicatorStateObserver() = runBlocking {
         replicatorStateWithRemoteNode1And2And3.subscribe(stateObserverMock)
 
-        replicatorStateWithRemoteNode1And2And3.addLocalEventLog(LOCAL_NODE, NODE_1_EVENT_LOG_1)
+        replicatorStateWithRemoteNode1And2And3.addLocalEventLog(NODE_1_EVENT_LOG_1)
 
         assertThat(stateObserverMock.getObservedStates(), equalTo(listOf(replicatorStateWithRemoteNode1And2And3)))
     }
 
     @Test
     fun updateFromMessage_administersOutgoingEventLog() = runBlocking {
-        replicatorStateWithRemoteNode2And3.updateFromMessage(LOCAL_NODE, listOf(REMOTE_NODE_2, REMOTE_NODE_3), NODE_2_REPLICATOR_MESSAGE)
+        replicatorStateWithRemoteNode2And3.updateFromMessage(NODE_2_REPLICATOR_MESSAGE)
 
-        val nodesWithMessages = replicatorStateWithRemoteNode2And3.getNodesWithMissingEventLogs(LOCAL_NODE, listOf(REMOTE_NODE_2, REMOTE_NODE_3))
+        val nodesWithMessages = replicatorStateWithRemoteNode2And3.getNodesWithMissingEventLogs()
         assertThat(nodesWithMessages.size, equalTo(1))
 
         val timeTable = TimeTable()
@@ -159,7 +159,7 @@ class ReplicatorStateTest {
     fun updateFromMessage_notifiesReplicatorStateObserver() = runBlocking {
         replicatorStateWithRemoteNode2.subscribe(stateObserverMock)
 
-        replicatorStateWithRemoteNode2.updateFromMessage(LOCAL_NODE, listOf(REMOTE_NODE_2), NODE_2_REPLICATOR_MESSAGE)
+        replicatorStateWithRemoteNode2.updateFromMessage(NODE_2_REPLICATOR_MESSAGE)
 
         assertThat(stateObserverMock.getObservedStates(), equalTo(listOf(replicatorStateWithRemoteNode2)))
     }

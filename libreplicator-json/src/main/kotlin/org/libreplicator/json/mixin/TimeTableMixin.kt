@@ -18,6 +18,5 @@
 package org.libreplicator.json.mixin
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
-import com.fasterxml.jackson.annotation.JsonIgnore
 
-class TimeTableMixin(@JsonIgnore @get:JsonAnyGetter val table: Map<String, Map<String, Long>> = mapOf())
+class TimeTableMixin(@get:JsonAnyGetter val table: Map<String, Map<String, Long>>)

@@ -21,7 +21,9 @@ import org.hamcrest.CoreMatchers.equalTo
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteLog
+import org.libreplicator.api.RemoteNode
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonMixin
 import org.libreplicator.json.mixin.RemoteLogMixin
@@ -33,16 +35,15 @@ import org.libreplicator.model.TimeTable
 
 class DefaultJsonMapperTest {
     private companion object {
-        private val EMPTY_JSON_OBJECT = "{}"
-
         private val REMOTE_LOG = RemoteLog("nodeId", 5L, "log")
         private val SERIALIZED_REMOTE_LOG = "{\"nodeId\":\"nodeId\",\"time\":5,\"log\":\"log\"}"
 
         private val REPLICATOR_MESSAGE = ReplicatorMessage("nodeId", listOf(), TimeTable())
         private val SERIALIZED_REPLICATOR_MESSAGE = "{\"nodeId\":\"nodeId\",\"eventLogs\":[],\"timeTable\":{}}"
 
-        private val REPLICATOR_STATE = ReplicatorState(null, null, mutableSetOf(), TimeTable())
+        private val REPLICATOR_STATE = ReplicatorState(LocalNode("", "", 0), listOf(RemoteNode("")), mutableSetOf(), TimeTable())
         private val SERIALIZED_REPLICATOR_STATE = "{\"logs\":[],\"timeTable\":{}}"
+        private val DESERIALIZED_REPLICATOR_STATE = ReplicatorState(null, null, mutableSetOf(), TimeTable())
 
         private val TIME_TABLE = TimeTable(mutableMapOf("nodeId1" to mutableMapOf("nodeId2" to 2L)))
         private val SERIALIZED_TIME_TABLE = "{\"nodeId1\":{\"nodeId2\":2}}"
@@ -83,13 +84,8 @@ class DefaultJsonMapperTest {
     }
 
     @Test
-    fun read_shouldDeserializeEmptyReplicatorState() {
-        assertThat(jsonMapper.read(EMPTY_JSON_OBJECT, ReplicatorState::class), equalTo(REPLICATOR_STATE))
-    }
-
-    @Test
     fun read_shouldDeserializeReplicatorState() {
-        assertThat(jsonMapper.read(SERIALIZED_REPLICATOR_STATE, ReplicatorState::class), equalTo(REPLICATOR_STATE))
+        assertThat(jsonMapper.read(SERIALIZED_REPLICATOR_STATE, ReplicatorState::class), equalTo(DESERIALIZED_REPLICATOR_STATE))
     }
 
     @Test
