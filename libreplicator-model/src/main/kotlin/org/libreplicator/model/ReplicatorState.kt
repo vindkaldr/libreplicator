@@ -25,6 +25,9 @@ import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Subscribable
 import org.libreplicator.api.Subscription
+import org.libreplicator.model.time.TimeProviderInteractor
+import org.libreplicator.model.time.epoch.EpochTimeProvider
+import org.libreplicator.model.time.unique.UniqueTimeProvider
 
 data class ReplicatorState constructor(
         private val localNode: LocalNode? = null,
@@ -32,6 +35,8 @@ data class ReplicatorState constructor(
         private var logs: MutableSet<RemoteLog> = mutableSetOf(),
         private var timeTable: TimeTable = TimeTable()
 ): Subscribable<ReplicatorState> {
+    private val timeProvider = TimeProviderInteractor(UniqueTimeProvider(EpochTimeProvider()))
+
     private var observer: Observer<ReplicatorState> = object : Observer<ReplicatorState> {
         override suspend fun observe(observable: ReplicatorState) {}
     }
@@ -44,7 +49,7 @@ data class ReplicatorState constructor(
     }
 
     suspend fun addLocalEventLog(localLog: LocalLog) {
-        val currentTime = getCurrentTimeInMillis()
+        val currentTime = timeProvider.getTime()
 
         updateTimeOfNode(currentTime)
         addLogs(RemoteLog(localNode!!.nodeId, currentTime, localLog.log))
@@ -71,14 +76,6 @@ data class ReplicatorState constructor(
     fun getMissingEventLogs(node: Node = localNode!!, eventLogs: List<RemoteLog> = logs.toList()): List<RemoteLog> =
             eventLogs.filter { !hasEventLog(node, it) }
                     .sortedBy { it.time }
-
-    private fun getCurrentTimeInMillis() : Long {
-        fun throttle() = Thread.sleep(1)
-
-        val currentTime = System.currentTimeMillis()
-        throttle()
-        return currentTime
-    }
 
     private fun updateTimeOfNode(time: Long) {
         timeTable[localNode!!.nodeId, localNode.nodeId] = time
