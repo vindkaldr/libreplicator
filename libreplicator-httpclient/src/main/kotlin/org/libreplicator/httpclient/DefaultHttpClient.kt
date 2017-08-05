@@ -43,9 +43,9 @@ class DefaultHttpClient @Inject constructor() : HttpClient {
                     .build())
             .build()
 
-    override fun post(hostname: String, port: Int, path: String, content: String) {
+    override fun post(uri: URI, content: String) {
         try {
-            httpClient.execute(createHttpPostRequest(toUri(hostname, port, path), content))
+            httpClient.execute(createHttpPostRequest(uri, content))
             logger.trace("Connected to remote node")
         }
         catch (e: HttpHostConnectException) {
@@ -59,7 +59,7 @@ class DefaultHttpClient @Inject constructor() : HttpClient {
         }
     }
 
-    private fun toUri(hostname: String, port: Int, path: String): URI {
+    override fun createUri(hostname: String, port: Int, path: String): URI {
         return URIBuilder()
                 .setScheme(HTTP_SCHEME)
                 .setHost(hostname)

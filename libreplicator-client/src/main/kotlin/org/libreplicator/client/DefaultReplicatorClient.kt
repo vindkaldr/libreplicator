@@ -46,7 +46,8 @@ class DefaultReplicatorClient @Inject constructor(
     override fun synchronizeWithNode(remoteNode: RemoteNode, message: ReplicatorMessage) {
         val node = resolveNode(remoteNode)
         if (node != null) {
-            httpClient.post(node.hostname, node.port, SYNC_PATH, cipher.encrypt(jsonMapper.write(message)))
+            val uri = httpClient.createUri(node.hostname, node.port, SYNC_PATH)
+            httpClient.post(uri, cipher.encrypt(jsonMapper.write(message)))
         }
     }
 

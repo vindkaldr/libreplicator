@@ -18,7 +18,9 @@
 package org.libreplicator.httpclient.api
 
 import java.io.Closeable
+import java.net.URI
 
 interface HttpClient : Closeable {
-    fun post(hostname: String, port: Int, path: String, content: String)
+    fun post(uri: URI, content: String)
+    fun createUri(hostname: String, port: Int, path: String): URI
 }
