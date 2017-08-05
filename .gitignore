@@ -1,5 +1,7 @@
-**/.idea
-
+# Gradle
 **/.gradle
+
+# IntelliJ IDEA
+**/.idea
 **/build
 **/out
