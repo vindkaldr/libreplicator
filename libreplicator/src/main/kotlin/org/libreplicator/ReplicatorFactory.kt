@@ -20,20 +20,18 @@ package org.libreplicator
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Replicator
-import org.libreplicator.gateway.module.LibReplicatorGatewayModule
-import org.libreplicator.locator.api.NodeLocator
-import org.libreplicator.locator.module.LibReplicatorLocatorModule
-import org.libreplicator.testdouble.InternetGatewayDummy
-import org.libreplicator.testdouble.NodeLocatorFake
+import org.libreplicator.component.DaggerProductionComponent
+import org.libreplicator.crypto.module.CryptoModule
+import org.libreplicator.journal.module.JournalModule
+import org.libreplicator.server.module.ServerModule
 
-class LibReplicatorTestFactory(
-        private val settings: LibReplicatorSettings = LibReplicatorSettings(),
-        private val nodeLocator: NodeLocator = NodeLocatorFake()
-) {
-    fun createReplicator(localNode: LocalNode, remoteNodes: List<RemoteNode>): Replicator {
-        return LibReplicatorComponentBuilder(settings).build(localNode, remoteNodes) {
-            libReplicatorGatewayModule(LibReplicatorGatewayModule(InternetGatewayDummy()))
-            libReplicatorLocatorModule(LibReplicatorLocatorModule(nodeLocator))
-        }.getReplicator()
+class ReplicatorFactory(private val settings: ReplicatorSettings = ReplicatorSettings()) {
+    fun create(localNode: LocalNode, remoteNodes: List<RemoteNode>): Replicator {
+        return DaggerProductionComponent.builder()
+                .cryptoModule(CryptoModule(settings.cryptoSettings))
+                .journalModule(JournalModule(settings.journalSettings, localNode, remoteNodes))
+                .serverModule(ServerModule(localNode))
+                .build()
+                .getReplicator()
     }
 }

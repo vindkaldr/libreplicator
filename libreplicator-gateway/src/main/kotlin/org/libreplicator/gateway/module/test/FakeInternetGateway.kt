@@ -15,13 +15,13 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.api.model
+package org.libreplicator.gateway.module.test
 
-import org.libreplicator.api.LocalNode
-import org.libreplicator.api.RemoteNode
+import org.libreplicator.gateway.api.InternetGateway
+import org.libreplicator.gateway.api.model.AddPortMapping
+import org.libreplicator.gateway.api.model.DeletePortMapping
 
-data class EventNode(
-        override val nodeId: String,
-        override val hostname: String = "",
-        override val port: Int = 0
-) : LocalNode, RemoteNode
+class FakeInternetGateway : InternetGateway {
+    override fun addPortMapping(portMapping: AddPortMapping) {}
+    override fun deletePortMapping(portMapping: DeletePortMapping) {}
+}

@@ -15,8 +15,14 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.api
+package org.libreplicator.boundary.module
 
-interface Subscribable<out T> {
-    suspend fun subscribe(observer: Observer<T>): Subscription
+import dagger.Binds
+import dagger.Module
+import org.libreplicator.api.Replicator
+import org.libreplicator.boundary.DefaultReplicator
+
+@Module
+interface BoundaryModule {
+    @Binds fun bindReplicator(defaultReplicator: DefaultReplicator): Replicator
 }

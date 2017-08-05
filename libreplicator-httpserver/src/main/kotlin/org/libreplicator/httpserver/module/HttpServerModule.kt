@@ -15,14 +15,14 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.gateway.module
+package org.libreplicator.httpserver.module
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
-import org.libreplicator.gateway.DefaultInternetGateway
-import org.libreplicator.gateway.api.InternetGateway
+import org.libreplicator.httpserver.DefaultHttpServer
+import org.libreplicator.httpserver.api.HttpServer
 
 @Module
-class LibReplicatorGatewayModule(private val internetGateway: InternetGateway = DefaultInternetGateway()) {
-    @Provides fun provideInternetGateway(): InternetGateway = internetGateway
+interface HttpServerModule {
+    @Binds fun bindHttpServer(defaultHttpServer: DefaultHttpServer): HttpServer
 }

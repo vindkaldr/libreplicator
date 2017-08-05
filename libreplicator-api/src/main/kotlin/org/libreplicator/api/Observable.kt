@@ -15,13 +15,8 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.testdouble
+package org.libreplicator.api
 
-import org.libreplicator.gateway.api.InternetGateway
-import org.libreplicator.gateway.api.model.AddPortMapping
-import org.libreplicator.gateway.api.model.DeletePortMapping
-
-class InternetGatewayDummy : InternetGateway {
-    override fun addPortMapping(portMapping: AddPortMapping) {}
-    override fun deletePortMapping(portMapping: DeletePortMapping) {}
+interface Observable<out T> {
+    suspend fun subscribe(observer: Observer<T>): Subscription
 }

@@ -15,14 +15,25 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.httpserver.module
+package org.libreplicator.server.module
 
-import dagger.Binds
 import dagger.Module
-import org.libreplicator.httpserver.DefaultHttpServer
+import dagger.Provides
+import org.libreplicator.api.LocalNode
+import org.libreplicator.crypto.api.Cipher
+import org.libreplicator.gateway.api.InternetGateway
 import org.libreplicator.httpserver.api.HttpServer
+import org.libreplicator.json.api.JsonMapper
+import org.libreplicator.locator.api.NodeLocator
+import org.libreplicator.server.DefaultReplicatorServer
+import org.libreplicator.server.api.ReplicatorServer
+import javax.inject.Singleton
 
 @Module
-interface LibReplicatorHttpServerModule {
-    @Binds fun bindHttpServer(defaultHttpServer: DefaultHttpServer): HttpServer
+class ServerModule constructor(private val localNode: LocalNode) {
+    @Provides @Singleton
+    fun provideReplicatorServer(jsonMapper: JsonMapper, cipher: Cipher, httpServer: HttpServer,
+            internetGateway: InternetGateway, nodeLocator: NodeLocator): ReplicatorServer {
+        return DefaultReplicatorServer(jsonMapper, cipher, httpServer, internetGateway, nodeLocator, localNode)
+    }
 }

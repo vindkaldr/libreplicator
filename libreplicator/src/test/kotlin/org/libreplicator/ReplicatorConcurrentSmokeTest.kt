@@ -31,7 +31,7 @@ class ReplicatorConcurrentSmokeTest {
         private val LOG = "log"
     }
 
-    private val libReplicatorFactory = LibReplicatorTestFactory()
+    private val replicatorFactory = ReplicatorTestFactory()
 
     private val node1 = LocalNode("nodeId1", "localhost", 12345)
     private val node2 = LocalNode("nodeId2", "localhost", 12346)
@@ -43,23 +43,23 @@ class ReplicatorConcurrentSmokeTest {
                 launch(CommonPool) {
                     testRunReplicator(
                             localNode = node1,
-                            remoteNodes = listOf(RemoteNode(node2.nodeId, node2.url, node2.port),
-                                    RemoteNode(node3.nodeId, node3.url, node3.port))) },
+                            remoteNodes = listOf(RemoteNode(node2.nodeId, node2.hostname, node2.port),
+                                    RemoteNode(node3.nodeId, node3.hostname, node3.port))) },
                 launch(CommonPool) {
                     testRunReplicator(
                             localNode = node2,
-                            remoteNodes = listOf(RemoteNode(node1.nodeId, node1.url, node1.port),
-                                    RemoteNode(node3.nodeId, node3.url, node3.port))) },
+                            remoteNodes = listOf(RemoteNode(node1.nodeId, node1.hostname, node1.port),
+                                    RemoteNode(node3.nodeId, node3.hostname, node3.port))) },
                 launch(CommonPool) {
                     testRunReplicator(
                             localNode = node3,
-                            remoteNodes = listOf(RemoteNode(node1.nodeId, node1.url, node1.port),
-                                    RemoteNode(node2.nodeId, node2.url, node2.port))) })
+                            remoteNodes = listOf(RemoteNode(node1.nodeId, node1.hostname, node1.port),
+                                    RemoteNode(node2.nodeId, node2.hostname, node2.port))) })
                 .forEach { it.join() }
     }
 
     private suspend fun testRunReplicator(localNode: LocalNode, remoteNodes: List<RemoteNode>) {
-        val replicator = libReplicatorFactory.createReplicator(localNode, remoteNodes)
+        val replicator = replicatorFactory.create(localNode, remoteNodes)
 
         var subscription = replicator.subscribe(RemoteEventLogObserverDummy())
         replicator.replicate(LocalLog(LOG))

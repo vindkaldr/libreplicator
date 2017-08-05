@@ -15,14 +15,6 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator
+package org.libreplicator.crypto.module
 
-import org.libreplicator.api.LocalNode
-import org.libreplicator.api.RemoteNode
-import org.libreplicator.api.Replicator
-
-class LibReplicatorFactory(private val settings: LibReplicatorSettings = LibReplicatorSettings()) {
-    fun createReplicator(localNode: LocalNode, remoteNodes: List<RemoteNode>): Replicator {
-        return LibReplicatorComponentBuilder(settings).build(localNode, remoteNodes).getReplicator()
-    }
-}
+class ReplicatorCryptoSettings(val isEncryptionEnabled: Boolean = false, val sharedSecret: String = "")

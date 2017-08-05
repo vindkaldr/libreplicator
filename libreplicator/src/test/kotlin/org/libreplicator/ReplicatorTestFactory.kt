@@ -15,22 +15,23 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.testdouble
+package org.libreplicator
 
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
-import org.libreplicator.locator.api.NodeLocator
+import org.libreplicator.api.Replicator
+import org.libreplicator.component.DaggerTestComponent
+import org.libreplicator.crypto.module.CryptoModule
+import org.libreplicator.journal.module.JournalModule
+import org.libreplicator.server.module.ServerModule
 
-class NodeLocatorFake : NodeLocator {
-    private val nodes = mutableMapOf<String, RemoteNode>()
-
-    override fun addNode(localNode: LocalNode) {
-        nodes.put(localNode.nodeId, RemoteNode(localNode.nodeId, localNode.url, localNode.port))
+class ReplicatorTestFactory(private val settings: ReplicatorSettings = ReplicatorSettings()) {
+    fun create(localNode: LocalNode, remoteNodes: List<RemoteNode>): Replicator {
+        return DaggerTestComponent.builder()
+                .cryptoModule(CryptoModule(settings.cryptoSettings))
+                .journalModule(JournalModule(settings.journalSettings, localNode, remoteNodes))
+                .serverModule(ServerModule(localNode))
+                .build()
+                .getReplicator()
     }
-
-    override fun removeNode(nodeId: String) {
-        nodes.remove(nodeId)
-    }
-
-    override fun getNode(nodeId: String): RemoteNode? = nodes[nodeId]
 }

@@ -15,18 +15,14 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.journal.module
+package org.libreplicator.httpclient.module
 
-import java.nio.file.Path
-import java.nio.file.Paths
+import dagger.Binds
+import dagger.Module
+import org.libreplicator.httpclient.DefaultHttpClient
+import org.libreplicator.httpclient.api.HttpClient
 
-class LibReplicatorJournalSettings(
-        val isJournalingEnabled: Boolean = false,
-        val directoryOfJournals: Path = LibReplicatorJournalSettings.getDefaultJournalsDirectorySetting()) {
-
-    private companion object {
-        fun getDefaultJournalsDirectorySetting(): Path {
-            return Paths.get(System.getProperty("java.io.tmpdir")).resolve("libreplicator-journals")
-        }
-    }
+@Module
+interface HttpClientModule {
+    @Binds fun bindHttpClient(defaultHttpClient: DefaultHttpClient): HttpClient
 }

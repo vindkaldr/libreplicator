@@ -31,8 +31,8 @@ import org.libreplicator.model.ReplicatorState
 import javax.inject.Singleton
 
 @Module
-class LibReplicatorJournalModule (
-        private val journalSettings: LibReplicatorJournalSettings,
+class JournalModule(
+        private val journalSettings: ReplicatorJournalSettings,
         private val localNode: LocalNode,
         private val remoteNodes: List<RemoteNode>) {
 

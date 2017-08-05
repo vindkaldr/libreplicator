@@ -21,11 +21,11 @@ import org.libreplicator.api.model.EventNode
 
 interface LocalNode : Node {
     companion object {
-        operator fun invoke(nodeId: String, url: String, port: Int): LocalNode {
-            return EventNode(nodeId, url, port)
+        operator fun invoke(nodeId: String, hostname: String, port: Int): LocalNode {
+            return EventNode(nodeId, hostname, port)
         }
     }
 
-    val url: String
+    val hostname: String
     val port: Int
 }

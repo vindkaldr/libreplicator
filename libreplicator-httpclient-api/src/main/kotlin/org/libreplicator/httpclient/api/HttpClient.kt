@@ -20,5 +20,5 @@ package org.libreplicator.httpclient.api
 import java.io.Closeable
 
 interface HttpClient : Closeable {
-    fun post(url: String, port: Int, path: String, content: String)
+    fun post(hostname: String, port: Int, path: String, content: String)
 }

@@ -24,7 +24,6 @@ import org.junit.Test
 import org.libreplicator.api.LocalLog
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
-import org.libreplicator.testdouble.NodeLocatorFake
 import org.libreplicator.testdouble.RemoteEventLogObserverMock
 
 class ReplicatorLocatorIntegrationTest {
@@ -33,17 +32,15 @@ class ReplicatorLocatorIntegrationTest {
         private val LOG_2 = "log2"
     }
 
-    private val nodeLocatorFake = NodeLocatorFake()
-
-    private val localReplicatorFactory = LibReplicatorTestFactory(nodeLocator = nodeLocatorFake)
+    private val localReplicatorFactory = ReplicatorTestFactory()
     private val localNode = LocalNode("nodeId1", "localhost", 12345)
 
-    private val remoteReplicatorFactory = LibReplicatorTestFactory(nodeLocator = nodeLocatorFake)
+    private val remoteReplicatorFactory = ReplicatorTestFactory()
     private val remoteNode = LocalNode("nodeId2", "localhost", 12346)
 
-    private val localReplicator = localReplicatorFactory.createReplicator(localNode = localNode,
+    private val localReplicator = localReplicatorFactory.create(localNode = localNode,
             remoteNodes = listOf(RemoteNode(remoteNode.nodeId)))
-    private val remoteReplicator = remoteReplicatorFactory.createReplicator(localNode = remoteNode,
+    private val remoteReplicator = remoteReplicatorFactory.create(localNode = remoteNode,
             remoteNodes = listOf(RemoteNode(localNode.nodeId)))
 
     private val localLogObserver = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 1)

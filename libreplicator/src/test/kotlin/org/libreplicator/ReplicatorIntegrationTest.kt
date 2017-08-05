@@ -39,23 +39,23 @@ class ReplicatorIntegrationTest {
         private val LOG_3_2 = "log32"
     }
 
-    private val libReplicatorFactory = LibReplicatorTestFactory()
+    private val replicatorFactory = ReplicatorTestFactory()
 
     private val node1 = LocalNode("nodeId1", "localhost", 12345)
     private val node2 = LocalNode("nodeId2", "localhost", 12346)
     private val node3 = LocalNode("nodeId3", "localhost", 12347)
 
-    private val replicator1 = libReplicatorFactory.createReplicator(localNode = node1,
-            remoteNodes = listOf(RemoteNode(node2.nodeId, node2.url, node2.port),
-                    RemoteNode(node3.nodeId, node3.url, node3.port)))
+    private val replicator1 = replicatorFactory.create(localNode = node1,
+            remoteNodes = listOf(RemoteNode(node2.nodeId, node2.hostname, node2.port),
+                    RemoteNode(node3.nodeId, node3.hostname, node3.port)))
 
-    private val replicator2 = libReplicatorFactory.createReplicator(localNode = node2,
-            remoteNodes = listOf(RemoteNode(node1.nodeId, node1.url, node1.port),
-                    RemoteNode(node3.nodeId, node3.url, node3.port)))
+    private val replicator2 = replicatorFactory.create(localNode = node2,
+            remoteNodes = listOf(RemoteNode(node1.nodeId, node1.hostname, node1.port),
+                    RemoteNode(node3.nodeId, node3.hostname, node3.port)))
 
-    private val replicator3 = libReplicatorFactory.createReplicator(localNode = node3,
-            remoteNodes = listOf(RemoteNode(node1.nodeId, node1.url, node1.port),
-                    RemoteNode(node2.nodeId, node2.url, node2.port)))
+    private val replicator3 = replicatorFactory.create(localNode = node3,
+            remoteNodes = listOf(RemoteNode(node1.nodeId, node1.hostname, node1.port),
+                    RemoteNode(node2.nodeId, node2.hostname, node2.port)))
 
     private val eventLogObserverMock1 = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 4)
     private val eventLogObserverMock2 = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 4)

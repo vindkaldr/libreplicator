@@ -23,7 +23,7 @@ import org.libreplicator.api.Node
 import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.RemoteNode
-import org.libreplicator.api.Subscribable
+import org.libreplicator.api.Observable
 import org.libreplicator.api.Subscription
 import org.libreplicator.model.time.TimeProviderInteractor
 import org.libreplicator.model.time.epoch.EpochTimeProvider
@@ -34,7 +34,7 @@ data class ReplicatorState constructor(
         private val remoteNodes: List<RemoteNode>? = null,
         private var logs: MutableSet<RemoteLog> = mutableSetOf(),
         private var timeTable: TimeTable = TimeTable()
-): Subscribable<ReplicatorState> {
+): Observable<ReplicatorState> {
     private val timeProvider = TimeProviderInteractor(UniqueTimeProvider(EpochTimeProvider()))
 
     private var observer: Observer<ReplicatorState> = object : Observer<ReplicatorState> {

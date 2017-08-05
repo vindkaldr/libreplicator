@@ -15,14 +15,16 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.httpclient.module
+package org.libreplicator.gateway.module.test
 
-import dagger.Binds
 import dagger.Module
-import org.libreplicator.httpclient.DefaultHttpClient
-import org.libreplicator.httpclient.api.HttpClient
+import dagger.Provides
+import org.libreplicator.gateway.api.InternetGateway
 
 @Module
-interface LibReplicatorHttpClientModule {
-    @Binds fun bindHttpClient(defaultHttpClient: DefaultHttpClient): HttpClient
+class FakeGatewayModule {
+    @Provides
+    fun providesInternetGateway(): InternetGateway {
+        return FakeInternetGateway()
+    }
 }

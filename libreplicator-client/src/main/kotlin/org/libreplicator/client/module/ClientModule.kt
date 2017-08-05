@@ -15,13 +15,15 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.api.model
+package org.libreplicator.client.module
 
-import org.libreplicator.api.LocalNode
-import org.libreplicator.api.RemoteNode
+import dagger.Binds
+import dagger.Module
+import org.libreplicator.client.DefaultReplicatorClient
+import org.libreplicator.client.api.ReplicatorClient
+import javax.inject.Singleton
 
-data class EventNode(
-        override val nodeId: String,
-        override val hostname: String = "",
-        override val port: Int = 0
-) : LocalNode, RemoteNode
+@Module
+interface ClientModule {
+    @Binds @Singleton fun bindReplicatorClient(defaultReplicatorClient: DefaultReplicatorClient): ReplicatorClient
+}

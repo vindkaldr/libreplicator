@@ -34,6 +34,7 @@ dependencies {
     compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion
     compile group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
     kapt group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
+    kaptTest group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
 
     testCompile group: 'junit', name: 'junit', version: junitVersion
     testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrestVersion

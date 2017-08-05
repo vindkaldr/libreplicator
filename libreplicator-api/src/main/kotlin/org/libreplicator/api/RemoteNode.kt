@@ -25,11 +25,11 @@ interface RemoteNode : Node {
             return EventNode(nodeId = nodeId)
         }
 
-        operator fun invoke(nodeId: String, url: String, port: Int): RemoteNode {
-            return EventNode(nodeId, url, port)
+        operator fun invoke(nodeId: String, hostname: String, port: Int): RemoteNode {
+            return EventNode(nodeId, hostname, port)
         }
     }
 
-    val url: String
+    val hostname: String
     val port: Int
 }

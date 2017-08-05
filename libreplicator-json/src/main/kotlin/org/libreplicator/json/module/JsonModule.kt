@@ -31,7 +31,7 @@ import org.libreplicator.model.ReplicatorState
 import org.libreplicator.model.TimeTable
 
 @Module
-class LibReplicatorJsonModule {
+class JsonModule {
     @Provides
     fun provideJsonMapper(jsonMixins: Set<JsonMixin>): JsonMapper {
         return DefaultJsonMapper(jsonMixins)

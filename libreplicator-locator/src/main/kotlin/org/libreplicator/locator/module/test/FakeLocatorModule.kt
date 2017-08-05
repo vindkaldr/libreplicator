@@ -15,22 +15,20 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.crypto.module
+package org.libreplicator.locator.module.test
 
 import dagger.Module
 import dagger.Provides
-import org.libreplicator.crypto.DefaultCipher
-import org.libreplicator.crypto.api.Cipher
+import org.libreplicator.locator.api.NodeLocator
 
 @Module
-class LibReplicatorCryptoModule(private val cryptoSettings: LibReplicatorCryptoSettings) {
-    @Provides fun provideCipher(): Cipher {
-        if (cryptoSettings.isEncryptionEnabled && cryptoSettings.sharedSecret.isNotBlank()) {
-            return DefaultCipher(cryptoSettings.sharedSecret)
-        }
-        return object : Cipher {
-            override fun encrypt(content: String): String = content
-            override fun decrypt(encryptedContent: String): String = encryptedContent
-        }
+class FakeLocatorModule {
+    private companion object {
+        private val fakeNodeLocator = FakeNodeLocator()
+    }
+
+    @Provides
+    fun provideNodeLocator(): NodeLocator {
+        return fakeNodeLocator
     }
 }

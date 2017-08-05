@@ -15,14 +15,11 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.locator.module
+package org.libreplicator
 
-import dagger.Module
-import dagger.Provides
-import org.libreplicator.locator.DefaultNodeLocator
-import org.libreplicator.locator.api.NodeLocator
+import org.libreplicator.crypto.module.ReplicatorCryptoSettings
+import org.libreplicator.journal.module.ReplicatorJournalSettings
 
-@Module
-class LibReplicatorLocatorModule(private val nodeLocator: NodeLocator = DefaultNodeLocator()) {
-    @Provides fun provideNodeLocator(): NodeLocator = nodeLocator
-}
+class ReplicatorSettings(
+        val cryptoSettings: ReplicatorCryptoSettings = ReplicatorCryptoSettings(),
+        val journalSettings: ReplicatorJournalSettings = ReplicatorJournalSettings())
