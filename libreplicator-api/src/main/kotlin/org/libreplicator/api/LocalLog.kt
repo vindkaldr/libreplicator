@@ -17,14 +17,4 @@
 
 package org.libreplicator.api
 
-import org.libreplicator.api.model.EventLog
-
-interface LocalLog {
-    companion object {
-        operator fun invoke(log: String): LocalLog {
-            return EventLog(log = log)
-        }
-    }
-
-    val log: String
-}
+data class LocalLog(val log: String)

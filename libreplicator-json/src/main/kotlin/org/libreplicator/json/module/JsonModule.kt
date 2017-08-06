@@ -20,11 +20,9 @@ package org.libreplicator.json.module
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoSet
-import org.libreplicator.api.RemoteLog
 import org.libreplicator.json.DefaultJsonMapper
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonMixin
-import org.libreplicator.json.mixin.RemoteLogMixin
 import org.libreplicator.json.mixin.ReplicatorStateMixin
 import org.libreplicator.json.mixin.TimeTableMixin
 import org.libreplicator.model.ReplicatorState
@@ -40,11 +38,6 @@ class JsonModule {
     @Provides @IntoSet
     fun provideTimeTableMixin(): JsonMixin {
         return JsonMixin(TimeTable::class, TimeTableMixin::class)
-    }
-
-    @Provides @IntoSet
-    fun provideRemoteLogMixin(): JsonMixin {
-        return JsonMixin(RemoteLog::class, RemoteLogMixin::class)
     }
 
     @Provides @IntoSet

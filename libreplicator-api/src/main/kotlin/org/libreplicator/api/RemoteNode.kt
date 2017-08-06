@@ -17,19 +17,6 @@
 
 package org.libreplicator.api
 
-import org.libreplicator.api.model.EventNode
-
-interface RemoteNode : Node {
-    companion object {
-        operator fun invoke(nodeId: String): RemoteNode {
-            return EventNode(nodeId = nodeId)
-        }
-
-        operator fun invoke(nodeId: String, hostname: String, port: Int): RemoteNode {
-            return EventNode(nodeId, hostname, port)
-        }
-    }
-
-    val hostname: String
-    val port: Int
+data class RemoteNode(override val nodeId: String, val hostname: String, val port: Int) : Node {
+    constructor(nodeId: String) : this(nodeId, "", 0)
 }

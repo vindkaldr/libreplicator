@@ -17,16 +17,4 @@
 
 package org.libreplicator.api
 
-import org.libreplicator.api.model.EventLog
-
-interface RemoteLog {
-    companion object {
-        operator fun invoke(nodeId: String, time: Long, log: String): RemoteLog {
-            return EventLog(nodeId, time, log)
-        }
-    }
-
-    val nodeId: String
-    val time: Long
-    val log: String
-}
+data class RemoteLog(val nodeId: String, val time: Long, val log: String)
