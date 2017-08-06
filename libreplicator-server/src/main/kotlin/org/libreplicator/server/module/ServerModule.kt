@@ -20,10 +20,8 @@ package org.libreplicator.server.module
 import dagger.Module
 import dagger.Provides
 import org.libreplicator.api.LocalNode
-import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.gateway.api.InternetGateway
 import org.libreplicator.httpserver.api.HttpServer
-import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.locator.api.NodeLocator
 import org.libreplicator.server.DefaultReplicatorServer
 import org.libreplicator.server.api.ReplicatorServer
@@ -32,8 +30,7 @@ import javax.inject.Singleton
 @Module
 class ServerModule constructor(private val localNode: LocalNode) {
     @Provides @Singleton
-    fun provideReplicatorServer(jsonMapper: JsonMapper, cipher: Cipher, httpServer: HttpServer,
-            internetGateway: InternetGateway, nodeLocator: NodeLocator): ReplicatorServer {
-        return DefaultReplicatorServer(jsonMapper, cipher, httpServer, internetGateway, nodeLocator, localNode)
+    fun provideReplicatorServer(server: HttpServer, gateway: InternetGateway, locator: NodeLocator): ReplicatorServer {
+        return DefaultReplicatorServer(server, gateway, locator, localNode)
     }
 }

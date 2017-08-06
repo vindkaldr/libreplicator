@@ -19,17 +19,12 @@ package org.libreplicator.client
 
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.client.api.ReplicatorClient
-import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.httpclient.api.HttpClient
-import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.locator.api.NodeLocator
-import org.libreplicator.model.ReplicatorMessage
 import javax.inject.Inject
 import javax.inject.Provider
 
 class DefaultReplicatorClient @Inject constructor(
-        private val jsonMapper: JsonMapper,
-        private val cipher: Cipher,
         private val nodeLocator: NodeLocator,
         private val httpClientProvider: Provider<HttpClient>) : ReplicatorClient {
 
@@ -43,11 +38,11 @@ class DefaultReplicatorClient @Inject constructor(
         httpClient = httpClientProvider.get()
     }
 
-    override fun synchronizeWithNode(remoteNode: RemoteNode, message: ReplicatorMessage) {
+    override fun synchronizeWithNode(remoteNode: RemoteNode, message: String) {
         val node = resolveNode(remoteNode)
         if (node != null) {
             val uri = httpClient.createUri(node.hostname, node.port, SYNC_PATH)
-            httpClient.post(uri, cipher.encrypt(jsonMapper.write(message)))
+            httpClient.post(uri, message)
         }
     }
 

@@ -21,12 +21,18 @@ import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Subscription
 import org.libreplicator.client.api.ReplicatorClient
+import org.libreplicator.crypto.api.Cipher
+import org.libreplicator.crypto.api.CipherException
+import org.libreplicator.json.api.JsonMapper
+import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.server.api.ReplicatorServer
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
 
 class DefaultMessageRouter @Inject constructor(
+        private val jsonMapper: JsonMapper,
+        private val cipher: Cipher,
         private val replicatorClient: ReplicatorClient,
         private val replicatorServer: ReplicatorServer
 ) : MessageRouter {
@@ -36,14 +42,26 @@ class DefaultMessageRouter @Inject constructor(
 
     override fun routeMessage(remoteNode: RemoteNode, message: ReplicatorMessage) {
         logger.trace("Routing message..")
-        replicatorClient.synchronizeWithNode(remoteNode, message)
+        replicatorClient.synchronizeWithNode(remoteNode, cipher.encrypt(jsonMapper.write(message)))
     }
 
     override suspend fun subscribe(observer: Observer<ReplicatorMessage>): Subscription {
         logger.trace("Subscribing to message router..")
 
         replicatorClient.initialize()
-        val subscription = replicatorServer.subscribe(observer)
+        val subscription = replicatorServer.subscribe(object : Observer<String> {
+            suspend override fun observe(observable: String) {
+                try {
+                    observer.observe(jsonMapper.read(cipher.decrypt(observable), ReplicatorMessage::class))
+                }
+                catch (e: CipherException) {
+                    logger.warn("Failed to deserialize corrupt message!")
+                }
+                catch (e: JsonReadException) {
+                    logger.warn("Failed to deserialize invalid message!")
+                }
+            }
+        })
 
         return object : Subscription {
             override suspend fun unsubscribe() {

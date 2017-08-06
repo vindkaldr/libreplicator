@@ -15,12 +15,25 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.client.api
+package org.libreplicator.interactor.router.testdouble
 
-import org.libreplicator.api.RemoteNode
-import java.io.Closeable
+import org.junit.Assert.fail
+import org.libreplicator.api.Observer
+import org.libreplicator.api.Subscription
+import org.libreplicator.server.api.ReplicatorServer
 
-interface ReplicatorClient : Closeable {
-    fun initialize()
-    fun synchronizeWithNode(remoteNode: RemoteNode, message: String)
+class ReplicatorServerStub constructor(private val subscription: Subscription) : ReplicatorServer {
+    var observedObserver: Observer<String>? = null
+
+    override suspend fun subscribe(observer: Observer<String>): Subscription {
+        if (observedObserver != null) {
+            fail("Unexpected call!")
+        }
+        observedObserver = observer
+        return subscription
+    }
+
+    fun hasBeenSubscribedTo(): Boolean {
+        return observedObserver != null
+    }
 }

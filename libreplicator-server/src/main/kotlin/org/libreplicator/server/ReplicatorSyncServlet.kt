@@ -19,31 +19,13 @@ package org.libreplicator.server
 
 import kotlinx.coroutines.experimental.runBlocking
 import org.libreplicator.api.Observer
-import org.libreplicator.crypto.api.Cipher
-import org.libreplicator.json.api.JsonMapper
-import org.libreplicator.json.api.JsonReadException
-import org.libreplicator.model.ReplicatorMessage
-import org.slf4j.LoggerFactory
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class ReplicatorSyncServlet(
-        private val jsonMapper: JsonMapper,
-        private val cipher: Cipher,
-        private val messageObserver: Observer<ReplicatorMessage>) : HttpServlet() {
-
-    private companion object {
-        private val logger = LoggerFactory.getLogger(ReplicatorSyncServlet::class.java)
-    }
-
+class ReplicatorSyncServlet(private val messageObserver: Observer<String>) : HttpServlet() {
     override fun doPost(req: HttpServletRequest?, resp: HttpServletResponse?) = runBlocking {
-        try {
-            val requestBody = req?.reader?.readText() ?: ""
-            messageObserver.observe(jsonMapper.read(cipher.decrypt(requestBody), ReplicatorMessage::class))
-        }
-        catch (e: JsonReadException) {
-            logger.warn("Failed to deserialize message!")
-        }
+        val requestBody = req?.reader?.readText() ?: ""
+        messageObserver.observe(requestBody)
     }
 }

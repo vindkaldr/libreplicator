@@ -17,23 +17,28 @@
 
 package org.libreplicator.interactor.router.testdouble
 
-import org.junit.Assert
+import org.junit.Assert.fail
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.client.api.ReplicatorClient
-import org.libreplicator.model.ReplicatorMessage
 
-class ReplicatorClientMock : ReplicatorClient {
+class ReplicatorClientStub : ReplicatorClient {
+    private var observedInitialize: Boolean = false
+
     private var observedRemoteNode: RemoteNode? = null
-    private var observedMessage: ReplicatorMessage? = null
+    private var observedMessage: String? = null
 
     private var observedClose: Boolean = false
 
     override fun initialize() {
+        if (observedInitialize) {
+            fail("Unexpected call!")
+        }
+        observedInitialize = true
     }
 
-    override fun synchronizeWithNode(remoteNode: RemoteNode, message: ReplicatorMessage) {
+    override fun synchronizeWithNode(remoteNode: RemoteNode, message: String) {
         if (observedRemoteNode != null && observedMessage != null) {
-            Assert.fail("Unexpected call!")
+            fail("Unexpected call!")
         }
         observedRemoteNode = remoteNode
         observedMessage = message
@@ -41,12 +46,16 @@ class ReplicatorClientMock : ReplicatorClient {
 
     override fun close() {
         if (observedClose) {
-            Assert.fail("Unexpected call!")
+            fail("Unexpected call!")
         }
         observedClose = true
     }
 
-    fun sentMessage(remoteNode: RemoteNode, message: ReplicatorMessage): Boolean {
+    fun wasInitialized(): Boolean {
+        return observedInitialize
+    }
+
+    fun sentMessage(remoteNode: RemoteNode, message: String): Boolean {
         return observedRemoteNode == remoteNode && observedMessage == message
     }
 

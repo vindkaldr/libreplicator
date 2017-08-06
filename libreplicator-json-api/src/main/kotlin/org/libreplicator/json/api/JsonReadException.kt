@@ -17,4 +17,6 @@
 
 package org.libreplicator.json.api
 
-class JsonReadException(throwable: Throwable) : Throwable(throwable)
+class JsonReadException(throwable: Throwable?) : Throwable(throwable) {
+    constructor() : this(null)
+}

@@ -17,11 +17,10 @@
 
 package org.libreplicator.server.api
 
-import org.libreplicator.api.Observer
 import org.libreplicator.api.Observable
+import org.libreplicator.api.Observer
 import org.libreplicator.api.Subscription
-import org.libreplicator.model.ReplicatorMessage
 
-interface ReplicatorServer : Observable<ReplicatorMessage> {
-    override suspend fun subscribe(observer: Observer<ReplicatorMessage>): Subscription
+interface ReplicatorServer : Observable<String> {
+    override suspend fun subscribe(observer: Observer<String>): Subscription
 }

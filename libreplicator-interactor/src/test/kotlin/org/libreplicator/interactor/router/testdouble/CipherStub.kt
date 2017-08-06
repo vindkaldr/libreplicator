@@ -17,20 +17,21 @@
 
 package org.libreplicator.interactor.router.testdouble
 
-import org.libreplicator.api.Observer
-import org.libreplicator.api.Subscription
-import org.libreplicator.model.ReplicatorMessage
-import org.libreplicator.server.api.ReplicatorServer
+import org.junit.Assert.fail
+import org.libreplicator.crypto.api.Cipher
 
-class ReplicatorServerMock constructor(private val subscription: Subscription) : ReplicatorServer {
-    private var observedMessageObserver: Observer<ReplicatorMessage>? = null
-
-    override suspend fun subscribe(observer: Observer<ReplicatorMessage>): Subscription {
-        observedMessageObserver = observer
-        return subscription
+class CipherStub(private val contentToEncrypt: String, private val contentToDecrypt: String) : Cipher {
+    override fun encrypt(content: String): String {
+        if (content != contentToEncrypt) {
+            fail("Unexpected call!")
+        }
+        return contentToDecrypt
     }
 
-    fun hasBeenSubscribedTo(messageObserver: Observer<ReplicatorMessage>): Boolean {
-        return observedMessageObserver == messageObserver
+    override fun decrypt(encryptedContent: String): String {
+        if (encryptedContent != contentToDecrypt) {
+            fail("Unexpected call!")
+        }
+        return contentToEncrypt
     }
 }

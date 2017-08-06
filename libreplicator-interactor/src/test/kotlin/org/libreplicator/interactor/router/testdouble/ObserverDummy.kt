@@ -15,12 +15,12 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.client.api
+package org.libreplicator.interactor.router.testdouble
 
-import org.libreplicator.api.RemoteNode
-import java.io.Closeable
+import org.libreplicator.api.Observer
+import org.libreplicator.model.ReplicatorMessage
 
-interface ReplicatorClient : Closeable {
-    fun initialize()
-    fun synchronizeWithNode(remoteNode: RemoteNode, message: String)
+class ObserverDummy : Observer<ReplicatorMessage> {
+    override suspend fun observe(observable: ReplicatorMessage) {
+    }
 }

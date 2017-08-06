@@ -15,12 +15,17 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.client.api
+package org.libreplicator.interactor.router.testdouble
 
-import org.libreplicator.api.RemoteNode
-import java.io.Closeable
+import org.libreplicator.crypto.api.Cipher
+import org.libreplicator.crypto.api.CipherException
 
-interface ReplicatorClient : Closeable {
-    fun initialize()
-    fun synchronizeWithNode(remoteNode: RemoteNode, message: String)
+class CorruptedCipherStub : Cipher {
+    override fun encrypt(content: String): String {
+        throw CipherException()
+    }
+
+    override fun decrypt(encryptedContent: String): String {
+        throw CipherException()
+    }
 }

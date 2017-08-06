@@ -15,12 +15,19 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.client.api
+package org.libreplicator.interactor.router.testdouble
 
-import org.libreplicator.api.RemoteNode
-import java.io.Closeable
+import org.libreplicator.json.api.JsonMapper
+import org.libreplicator.json.api.JsonReadException
+import org.libreplicator.json.api.JsonWriteException
+import kotlin.reflect.KClass
 
-interface ReplicatorClient : Closeable {
-    fun initialize()
-    fun synchronizeWithNode(remoteNode: RemoteNode, message: String)
+class InvalidJsonMapperStub : JsonMapper {
+    override fun write(any: Any): String {
+        throw JsonWriteException()
+    }
+
+    override fun <T : Any> read(string: String, kotlinType: KClass<T>): T {
+        throw JsonReadException()
+    }
 }

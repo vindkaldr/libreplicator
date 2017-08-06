@@ -20,15 +20,12 @@ package org.libreplicator.server
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.Observer
 import org.libreplicator.api.Subscription
-import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.gateway.api.InternetGateway
 import org.libreplicator.gateway.api.model.AddPortMapping
 import org.libreplicator.gateway.api.model.DeletePortMapping
 import org.libreplicator.gateway.api.model.InternetProtocol
 import org.libreplicator.httpserver.api.HttpServer
-import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.locator.api.NodeLocator
-import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.server.api.ReplicatorServer
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
@@ -36,8 +33,6 @@ import javax.inject.Inject
 const val LIBREPLICATOR_DESCRIPTION = "libreplicator"
 
 class DefaultReplicatorServer @Inject constructor(
-        private val jsonMapper: JsonMapper,
-        private val cipher: Cipher,
         private val httpServer: HttpServer,
         private val internetGateway: InternetGateway,
         private val nodeLocator: NodeLocator,
@@ -47,10 +42,10 @@ class DefaultReplicatorServer @Inject constructor(
         private val logger = LoggerFactory.getLogger(DefaultReplicatorServer::class.java)
     }
 
-    override suspend fun subscribe(observer: Observer<ReplicatorMessage>): Subscription {
+    override suspend fun subscribe(observer: Observer<String>): Subscription {
         logger.trace("Subscribing to server..")
 
-        httpServer.start(localNode.port, "/sync", ReplicatorSyncServlet(jsonMapper, cipher, observer))
+        httpServer.start(localNode.port, "/sync", ReplicatorSyncServlet(observer))
         internetGateway.addPortMapping(AddPortMapping(localNode.port, InternetProtocol.TCP, localNode.port, LIBREPLICATOR_DESCRIPTION))
         nodeLocator.addNode(localNode)
 

@@ -17,10 +17,17 @@
 
 package org.libreplicator.interactor.router.testdouble
 
+import org.junit.Assert.fail
 import org.libreplicator.api.Observer
 import org.libreplicator.model.ReplicatorMessage
 
-class MessageObserverDummy : Observer<ReplicatorMessage> {
+class ObserverStub : Observer<ReplicatorMessage> {
+    var observedMessage: ReplicatorMessage? = null
+
     override suspend fun observe(observable: ReplicatorMessage) {
+        if (observedMessage != null) {
+            fail("Unexpected call!")
+        }
+        observedMessage = observable
     }
 }

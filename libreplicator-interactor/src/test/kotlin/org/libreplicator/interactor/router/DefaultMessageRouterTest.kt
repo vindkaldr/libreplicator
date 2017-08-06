@@ -18,69 +18,111 @@
 package org.libreplicator.interactor.router
 
 import kotlinx.coroutines.experimental.runBlocking
+import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.nullValue
+import org.junit.Assert.assertThat
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.libreplicator.api.RemoteNode
-import org.libreplicator.interactor.router.testdouble.MessageObserverDummy
-import org.libreplicator.interactor.router.testdouble.ReplicatorClientMock
-import org.libreplicator.interactor.router.testdouble.ReplicatorServerMock
-import org.libreplicator.interactor.router.testdouble.SubscriptionMock
+import org.libreplicator.interactor.router.testdouble.CipherStub
+import org.libreplicator.interactor.router.testdouble.CorruptedCipherStub
+import org.libreplicator.interactor.router.testdouble.InvalidJsonMapperStub
+import org.libreplicator.interactor.router.testdouble.JsonMapperStub
+import org.libreplicator.interactor.router.testdouble.ObserverDummy
+import org.libreplicator.interactor.router.testdouble.ObserverStub
+import org.libreplicator.interactor.router.testdouble.ReplicatorClientStub
+import org.libreplicator.interactor.router.testdouble.ReplicatorServerStub
+import org.libreplicator.interactor.router.testdouble.SubscriptionStub
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.TimeTable
 
 class DefaultMessageRouterTest {
     private companion object {
         private val MESSAGE = ReplicatorMessage("nodeId", listOf(), TimeTable())
+        private val SERIALIZED_MESSAGE = "serializedMessage"
+        private val ENCRYPTED_SERIALIZED_MESSAGE = "encryptedSerializedMessage"
         private val REMOTE_NODE = RemoteNode("remoteNode", "localhost", 12346)
     }
 
-    private lateinit var replicatorClientMock: ReplicatorClientMock
+    private lateinit var jsonMapperStub: JsonMapperStub
+    private lateinit var cipherStub: CipherStub
+    private lateinit var replicatorClientStub: ReplicatorClientStub
+    private lateinit var subscriptionStub: SubscriptionStub
+    private lateinit var replicatorServerStub: ReplicatorServerStub
 
-    private lateinit var messageObserverDummy: MessageObserverDummy
-    private lateinit var subscriptionMock: SubscriptionMock
-    private lateinit var replicatorServerMock: ReplicatorServerMock
+    private lateinit var observerDummy: ObserverDummy
+    private lateinit var observerStub: ObserverStub
 
     private lateinit var messageRouter: MessageRouter
 
     @Before
     fun setUp() {
-        replicatorClientMock = ReplicatorClientMock()
+        jsonMapperStub = JsonMapperStub(objectToWrite = MESSAGE, stringToRead = SERIALIZED_MESSAGE)
+        cipherStub = CipherStub(contentToEncrypt = SERIALIZED_MESSAGE, contentToDecrypt = ENCRYPTED_SERIALIZED_MESSAGE)
+        replicatorClientStub = ReplicatorClientStub()
+        subscriptionStub = SubscriptionStub()
+        replicatorServerStub = ReplicatorServerStub(subscriptionStub)
 
-        messageObserverDummy = MessageObserverDummy()
-        subscriptionMock = SubscriptionMock()
-        replicatorServerMock = ReplicatorServerMock(subscriptionMock)
+        observerDummy = ObserverDummy()
+        observerStub = ObserverStub()
 
-        messageRouter = DefaultMessageRouter(replicatorClientMock, replicatorServerMock)
+        messageRouter = DefaultMessageRouter(jsonMapperStub, cipherStub, replicatorClientStub, replicatorServerStub)
     }
 
     @Test
-    fun routeMessage_shouldPassRemoteNodeAndMessage_toReplicatorClient() = runBlocking {
-        messageRouter.subscribe(messageObserverDummy)
+    fun subscribe_shouldInitializeClient() = runBlocking {
+        messageRouter.subscribe(observerDummy)
+        assertTrue(replicatorClientStub.wasInitialized())
+    }
 
+    @Test
+    fun unsubscribe_shouldCloseClient() = runBlocking {
+        messageRouter.subscribe(observerDummy).unsubscribe()
+        assertTrue(replicatorClientStub.wasClosed())
+    }
+
+    @Test
+    fun routeMessage_shouldSerializeAndEncryptAndRouteMessageToClient() = runBlocking {
         messageRouter.routeMessage(REMOTE_NODE, MESSAGE)
-
-        assertTrue(replicatorClientMock.sentMessage(REMOTE_NODE, MESSAGE))
+        assertTrue(replicatorClientStub.sentMessage(REMOTE_NODE, ENCRYPTED_SERIALIZED_MESSAGE))
     }
 
     @Test
-    fun unsubscribe_shouldCloseReplicatorClient() = runBlocking {
-        messageRouter.subscribe(messageObserverDummy).unsubscribe()
-
-        assertTrue(replicatorClientMock.wasClosed())
+    fun subscribe_shouldSubscribeToServer() = runBlocking {
+        messageRouter.subscribe(observerDummy)
+        assertTrue(replicatorServerStub.hasBeenSubscribedTo())
     }
 
     @Test
-    fun subscribe_shouldSubscribe_toReplicatorServer() = runBlocking {
-        messageRouter.subscribe(messageObserverDummy)
-
-        assertTrue(replicatorServerMock.hasBeenSubscribedTo(messageObserverDummy))
+    fun unsubscribe_shouldUnsubscribeFromServer() = runBlocking {
+        messageRouter.subscribe(observerDummy).unsubscribe()
+        assertTrue(subscriptionStub.hasBeenUnsubscribedFrom())
     }
 
     @Test
-    fun unsubscribe_shouldUnsubscribe_fromReplicatorServer() = runBlocking {
-        messageRouter.subscribe(messageObserverDummy).unsubscribe()
+    fun router_shouldNotifyObserver_aboutReceivedMessage() = runBlocking {
+        messageRouter.subscribe(observerStub)
+        replicatorServerStub.observedObserver?.observe(ENCRYPTED_SERIALIZED_MESSAGE)
 
-        assertTrue(subscriptionMock.hasBeenUnsubscribedFrom())
+        assertThat(observerStub.observedMessage, equalTo(MESSAGE))
+    }
+
+    @Test
+    fun router_shouldNotNotifyObserver_aboutCorruptedMessage() = runBlocking {
+        messageRouter = DefaultMessageRouter(jsonMapperStub, CorruptedCipherStub(), replicatorClientStub, replicatorServerStub)
+        messageRouter.subscribe(observerStub)
+        replicatorServerStub.observedObserver?.observe(ENCRYPTED_SERIALIZED_MESSAGE)
+
+        assertThat(observerStub.observedMessage, nullValue())
+    }
+
+    @Test
+    fun router_shouldNotNotifyObserver_aboutInvalidMessage() = runBlocking {
+        messageRouter = DefaultMessageRouter(InvalidJsonMapperStub(), cipherStub, replicatorClientStub, replicatorServerStub)
+        messageRouter.subscribe(observerStub)
+        replicatorServerStub.observedObserver?.observe(ENCRYPTED_SERIALIZED_MESSAGE)
+
+        assertThat(observerStub.observedMessage, nullValue())
     }
 }
