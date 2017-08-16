@@ -16,5 +16,5 @@
  */
 
 dependencies {
-    compile group: 'javax.servlet', name: 'javax.servlet-api', version: javaServletApiVersion
+    compile project(':libreplicator-api')
 }

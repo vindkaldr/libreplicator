@@ -17,9 +17,9 @@
 
 package org.libreplicator.httpserver.api
 
-import javax.servlet.http.HttpServlet
+import org.libreplicator.api.Observer
 
 interface HttpServer {
-    suspend fun start(port: Int, path: String, httpServlet: HttpServlet)
+    suspend fun start(port: Int, path: String, messageObserver: Observer<String>)
     suspend fun stop()
 }

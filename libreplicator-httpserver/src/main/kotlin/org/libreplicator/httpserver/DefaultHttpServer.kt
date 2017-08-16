@@ -19,14 +19,22 @@ package org.libreplicator.httpserver
 
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.newSingleThreadContext
-import org.eclipse.jetty.server.Server
-import org.eclipse.jetty.server.handler.HandlerCollection
-import org.eclipse.jetty.servlet.ServletContextHandler
-import org.eclipse.jetty.servlet.ServletHolder
+import kotlinx.coroutines.experimental.runBlocking
+import org.http4k.core.Method
+import org.http4k.core.Request
+import org.http4k.core.Response
+import org.http4k.core.Status
+import org.http4k.routing.bind
+import org.http4k.routing.routes
+import org.http4k.server.Http4kServer
+import org.http4k.server.Jetty
+import org.http4k.server.asServer
+import org.libreplicator.api.Observer
 import org.libreplicator.httpserver.api.HttpServer
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
-import javax.servlet.http.HttpServlet
+
+typealias HttpHandler = (Request) -> Response
 
 class DefaultHttpServer @Inject constructor() : HttpServer {
     private companion object {
@@ -34,36 +42,24 @@ class DefaultHttpServer @Inject constructor() : HttpServer {
     }
 
     private val coroutineContext = newSingleThreadContext("")
-    private lateinit var server: Server
+    private lateinit var server: Http4kServer
 
-    override suspend fun start(port: Int, path: String, httpServlet: HttpServlet) {
-        logger.trace("Starting http server..")
-        server = Server(port)
-
-        val publicContext = ServletContextHandler()
-
-        val syncEndpointHolder = ServletHolder(httpServlet)
-        publicContext.addServlet(syncEndpointHolder, path)
-        syncEndpointHolder.isAsyncSupported = true
-
-        val handlerCollection = HandlerCollection()
-        handlerCollection.addHandler(publicContext)
-
-        server.handler = publicContext
-
+    override suspend fun start(port: Int, path: String, messageObserver: Observer<String>) {
         launch(coroutineContext) {
-            server.start()
+            server = routes(path bind Method.POST to { request: Request -> runBlocking {
+                val message = request.body.payload.array().toString(Charsets.UTF_8)
+                messageObserver.observe(message)
+                Response(Status.OK)
+            }}).asServer(Jetty(port)).start()
         }.join()
         logger.trace("Started http server")
     }
 
     override suspend fun stop() {
-        logger.trace("Stopping http server..")
-
         launch(coroutineContext) {
+            logger.trace("Stopping http server..")
             server.stop()
-            server.join()
+            logger.trace("Stopped http server")
         }.join()
-        logger.trace("Stopped http server")
     }
 }

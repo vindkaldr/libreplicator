@@ -45,7 +45,7 @@ class DefaultReplicatorServer @Inject constructor(
     override suspend fun subscribe(observer: Observer<String>): Subscription {
         logger.trace("Subscribing to server..")
 
-        httpServer.start(localNode.port, "/sync", ReplicatorSyncServlet(observer))
+        httpServer.start(localNode.port, "/sync", observer)
         internetGateway.addPortMapping(AddPortMapping(localNode.port, InternetProtocol.TCP, localNode.port, LIBREPLICATOR_DESCRIPTION))
         nodeLocator.addNode(localNode)
 
