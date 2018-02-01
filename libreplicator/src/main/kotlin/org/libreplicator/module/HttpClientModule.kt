@@ -15,13 +15,14 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.gateway.module.test
+package org.libreplicator.module
 
-import org.libreplicator.gateway.api.InternetGateway
-import org.libreplicator.gateway.api.model.AddPortMapping
-import org.libreplicator.gateway.api.model.DeletePortMapping
+import dagger.Binds
+import dagger.Module
+import org.libreplicator.httpclient.DefaultHttpClient
+import org.libreplicator.httpclient.api.HttpClient
 
-class FakeInternetGateway : InternetGateway {
-    override fun addPortMapping(portMapping: AddPortMapping) {}
-    override fun deletePortMapping(portMapping: DeletePortMapping) {}
+@Module
+interface HttpClientModule {
+    @Binds fun bindHttpClient(defaultHttpClient: DefaultHttpClient): HttpClient
 }

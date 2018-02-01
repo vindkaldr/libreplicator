@@ -21,7 +21,5 @@ dependencies {
     compile project(':libreplicator-locator-api')
     compile project(':libreplicator-log')
 
-    compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion
-    compile group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
-    kapt group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
+    compile group: 'javax.inject', name: 'javax.inject', version: javaxInjectVersion
 }

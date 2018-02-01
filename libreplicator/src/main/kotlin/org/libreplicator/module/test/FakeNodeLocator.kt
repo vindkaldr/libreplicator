@@ -15,14 +15,22 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.httpclient.module
+package org.libreplicator.module.test
 
-import dagger.Binds
-import dagger.Module
-import org.libreplicator.httpclient.DefaultHttpClient
-import org.libreplicator.httpclient.api.HttpClient
+import org.libreplicator.api.LocalNode
+import org.libreplicator.api.RemoteNode
+import org.libreplicator.locator.api.NodeLocator
 
-@Module
-interface HttpClientModule {
-    @Binds fun bindHttpClient(defaultHttpClient: DefaultHttpClient): HttpClient
+class FakeNodeLocator : NodeLocator {
+    private val nodes = mutableMapOf<String, RemoteNode>()
+
+    override fun addNode(localNode: LocalNode) {
+        nodes.put(localNode.nodeId, RemoteNode(localNode.nodeId, localNode.hostname, localNode.port))
+    }
+
+    override fun removeNode(nodeId: String) {
+        nodes.remove(nodeId)
+    }
+
+    override fun getNode(nodeId: String): RemoteNode? = nodes[nodeId]
 }

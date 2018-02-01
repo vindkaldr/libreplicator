@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.journal.module
+package org.libreplicator.module
 
 import dagger.Module
 import dagger.Provides
@@ -28,13 +28,14 @@ import org.libreplicator.journal.file.DefaultFileHandler
 import org.libreplicator.journal.file.FileHandler
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.model.ReplicatorState
+import org.libreplicator.module.setting.ReplicatorJournalSettings
 import javax.inject.Singleton
 
 @Module
 class JournalModule(
-        private val journalSettings: ReplicatorJournalSettings,
-        private val localNode: LocalNode,
-        private val remoteNodes: List<RemoteNode>) {
+    private val journalSettings: ReplicatorJournalSettings,
+    private val localNode: LocalNode,
+    private val remoteNodes: List<RemoteNode>) {
 
     @Provides
     fun bindFileHandler(): FileHandler {

@@ -15,15 +15,16 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.client.module
+package org.libreplicator.module.test
 
-import dagger.Binds
 import dagger.Module
-import org.libreplicator.client.DefaultReplicatorClient
-import org.libreplicator.client.api.ReplicatorClient
-import javax.inject.Singleton
+import dagger.Provides
+import org.libreplicator.gateway.api.InternetGateway
 
 @Module
-interface ClientModule {
-    @Binds @Singleton fun bindReplicatorClient(defaultReplicatorClient: DefaultReplicatorClient): ReplicatorClient
+class FakeGatewayModule {
+    @Provides
+    fun providesInternetGateway(): InternetGateway {
+        return FakeInternetGateway()
+    }
 }

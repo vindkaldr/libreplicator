@@ -15,14 +15,19 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.boundary.module
+package org.libreplicator.module.setting
 
-import dagger.Binds
-import dagger.Module
-import org.libreplicator.api.Replicator
-import org.libreplicator.boundary.DefaultReplicator
+import java.nio.file.Path
+import java.nio.file.Paths
 
-@Module
-interface BoundaryModule {
-    @Binds fun bindReplicator(defaultReplicator: DefaultReplicator): Replicator
+class ReplicatorJournalSettings(
+        val isJournalingEnabled: Boolean = false,
+        val directoryOfJournals: Path = getDefaultJournalsDirectorySetting()
+) {
+
+    private companion object {
+        fun getDefaultJournalsDirectorySetting(): Path {
+            return Paths.get(System.getProperty("java.io.tmpdir")).resolve("libreplicator-journals")
+        }
+    }
 }

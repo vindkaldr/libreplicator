@@ -17,9 +17,10 @@
 
 package org.libreplicator
 
-import org.libreplicator.crypto.module.ReplicatorCryptoSettings
-import org.libreplicator.journal.module.ReplicatorJournalSettings
+import org.libreplicator.module.setting.ReplicatorCryptoSettings
+import org.libreplicator.module.setting.ReplicatorJournalSettings
 
 class ReplicatorSettings(
-        val cryptoSettings: ReplicatorCryptoSettings = ReplicatorCryptoSettings(),
-        val journalSettings: ReplicatorJournalSettings = ReplicatorJournalSettings())
+    val cryptoSettings: ReplicatorCryptoSettings = ReplicatorCryptoSettings(),
+    val journalSettings: ReplicatorJournalSettings = ReplicatorJournalSettings()
+)

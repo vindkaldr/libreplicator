@@ -15,17 +15,13 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    compile project(':libreplicator-json-api')
-    compile project(':libreplicator-model')
+package org.libreplicator.module.test
 
-    compile group: 'javax.inject', name: 'javax.inject', version: javaxInjectVersion
+import org.libreplicator.gateway.api.InternetGateway
+import org.libreplicator.gateway.api.model.AddPortMapping
+import org.libreplicator.gateway.api.model.DeletePortMapping
 
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: jacksonVersion
-    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: jacksonVersion
-
-    testCompile group: 'junit', name: 'junit', version: junitVersion
-    testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrestVersion
+class FakeInternetGateway : InternetGateway {
+    override fun addPortMapping(portMapping: AddPortMapping) {}
+    override fun deletePortMapping(portMapping: DeletePortMapping) {}
 }

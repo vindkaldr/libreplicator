@@ -15,14 +15,24 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.httpserver.module
+package org.libreplicator.module
 
-import dagger.Binds
 import dagger.Module
-import org.libreplicator.httpserver.DefaultHttpServer
-import org.libreplicator.httpserver.api.HttpServer
+import dagger.Provides
+import org.libreplicator.crypto.DefaultCipher
+import org.libreplicator.crypto.api.Cipher
+import org.libreplicator.module.setting.ReplicatorCryptoSettings
 
 @Module
-interface HttpServerModule {
-    @Binds fun bindHttpServer(defaultHttpServer: DefaultHttpServer): HttpServer
+class CryptoModule(private val cryptoSettings: ReplicatorCryptoSettings) {
+    @Provides
+    fun provideCipher(): Cipher {
+        if (cryptoSettings.isEncryptionEnabled && cryptoSettings.sharedSecret.isNotBlank()) {
+            return DefaultCipher(cryptoSettings.sharedSecret)
+        }
+        return object : Cipher {
+            override fun encrypt(content: String): String = content
+            override fun decrypt(encryptedContent: String): String = encryptedContent
+        }
+    }
 }

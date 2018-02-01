@@ -18,10 +18,6 @@
 dependencies {
     compile project(':libreplicator-crypto-api')
 
-    compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion
-    compile group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
-    kapt group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
-
     compile group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: bouncyCastleVersion
 
     testCompile group: 'junit', name: 'junit', version: junitVersion

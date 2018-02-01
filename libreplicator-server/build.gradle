@@ -23,9 +23,7 @@ dependencies {
     compile project(':libreplicator-model')
     compile project(':libreplicator-server-api')
 
-    testCompile project(':libreplicator-common-test')
+    compile group: 'javax.inject', name: 'javax.inject', version: javaxInjectVersion
 
-    compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion
-    compile group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
-    kapt group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
+    testCompile project(':libreplicator-common-test')
 }

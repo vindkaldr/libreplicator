@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.locator.module.test
+package org.libreplicator.module.test
 
 import dagger.Module
 import dagger.Provides

@@ -15,14 +15,6 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.locator.module
+package org.libreplicator.module.setting
 
-import dagger.Binds
-import dagger.Module
-import org.libreplicator.locator.DefaultNodeLocator
-import org.libreplicator.locator.api.NodeLocator
-
-@Module
-interface LocatorModule {
-    @Binds fun provideNodeLocator(defaultNodeLocator: DefaultNodeLocator): NodeLocator
-}
+class ReplicatorCryptoSettings(val isEncryptionEnabled: Boolean = false, val sharedSecret: String = "")

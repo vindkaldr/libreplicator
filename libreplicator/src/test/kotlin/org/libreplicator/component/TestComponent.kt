@@ -18,17 +18,17 @@
 package org.libreplicator.component
 
 import dagger.Component
-import org.libreplicator.boundary.module.BoundaryModule
-import org.libreplicator.client.module.ClientModule
-import org.libreplicator.crypto.module.CryptoModule
-import org.libreplicator.gateway.module.test.FakeGatewayModule
-import org.libreplicator.httpclient.module.HttpClientModule
-import org.libreplicator.httpserver.module.HttpServerModule
-import org.libreplicator.interactor.module.InteractorModule
-import org.libreplicator.journal.module.JournalModule
-import org.libreplicator.json.module.JsonModule
-import org.libreplicator.locator.module.test.FakeLocatorModule
-import org.libreplicator.server.module.ServerModule
+import org.libreplicator.module.BoundaryModule
+import org.libreplicator.module.ClientModule
+import org.libreplicator.module.CryptoModule
+import org.libreplicator.module.HttpClientModule
+import org.libreplicator.module.HttpServerModule
+import org.libreplicator.module.InteractorModule
+import org.libreplicator.module.JournalModule
+import org.libreplicator.module.JsonModule
+import org.libreplicator.module.ServerModule
+import org.libreplicator.module.test.FakeGatewayModule
+import org.libreplicator.module.test.FakeLocatorModule
 import javax.inject.Singleton
 
 @Singleton

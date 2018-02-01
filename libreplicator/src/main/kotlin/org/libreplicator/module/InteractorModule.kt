@@ -15,22 +15,21 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.server.module
+package org.libreplicator.module
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
-import org.libreplicator.api.LocalNode
-import org.libreplicator.gateway.api.InternetGateway
-import org.libreplicator.httpserver.api.HttpServer
-import org.libreplicator.locator.api.NodeLocator
-import org.libreplicator.server.DefaultReplicatorServer
-import org.libreplicator.server.api.ReplicatorServer
+import org.libreplicator.interactor.api.LogDispatcher
+import org.libreplicator.interactor.dispatcher.DefaultLogDispatcher
+import org.libreplicator.interactor.router.DefaultMessageRouter
+import org.libreplicator.interactor.router.MessageRouter
+import org.libreplicator.interactor.state.DefaultStateInteractor
+import org.libreplicator.interactor.state.StateInteractor
 import javax.inject.Singleton
 
 @Module
-class ServerModule constructor(private val localNode: LocalNode) {
-    @Provides @Singleton
-    fun provideReplicatorServer(server: HttpServer, gateway: InternetGateway, locator: NodeLocator): ReplicatorServer {
-        return DefaultReplicatorServer(server, gateway, locator, localNode)
-    }
+interface InteractorModule {
+    @Binds @Singleton fun bindStateInteractor(defaultStateInteractor: DefaultStateInteractor): StateInteractor
+    @Binds fun bindLogDispatcher(defaultLogDispatcher: DefaultLogDispatcher): LogDispatcher
+    @Binds fun bindMessageRouter(defaultMessageRouter: DefaultMessageRouter): MessageRouter
 }

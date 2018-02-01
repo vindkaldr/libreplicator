@@ -21,9 +21,9 @@ import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Replicator
 import org.libreplicator.component.DaggerTestComponent
-import org.libreplicator.crypto.module.CryptoModule
-import org.libreplicator.journal.module.JournalModule
-import org.libreplicator.server.module.ServerModule
+import org.libreplicator.module.CryptoModule
+import org.libreplicator.module.JournalModule
+import org.libreplicator.module.ServerModule
 
 class ReplicatorTestFactory(private val settings: ReplicatorSettings = ReplicatorSettings()) {
     fun create(localNode: LocalNode, remoteNodes: List<RemoteNode>): Replicator {

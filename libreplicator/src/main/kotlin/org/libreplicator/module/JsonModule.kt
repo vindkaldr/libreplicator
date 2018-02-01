@@ -15,16 +15,33 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.gateway.module.test
+package org.libreplicator.module
 
 import dagger.Module
 import dagger.Provides
-import org.libreplicator.gateway.api.InternetGateway
+import dagger.multibindings.IntoSet
+import org.libreplicator.json.DefaultJsonMapper
+import org.libreplicator.json.api.JsonMapper
+import org.libreplicator.json.api.JsonMixin
+import org.libreplicator.json.mixin.ReplicatorStateMixin
+import org.libreplicator.json.mixin.TimeTableMixin
+import org.libreplicator.model.ReplicatorState
+import org.libreplicator.model.TimeTable
 
 @Module
-class FakeGatewayModule {
+class JsonModule {
     @Provides
-    fun providesInternetGateway(): InternetGateway {
-        return FakeInternetGateway()
+    fun provideJsonMapper(jsonMixins: Set<JsonMixin>): JsonMapper {
+        return DefaultJsonMapper(jsonMixins)
+    }
+
+    @Provides @IntoSet
+    fun provideTimeTableMixin(): JsonMixin {
+        return JsonMixin(TimeTable::class, TimeTableMixin::class)
+    }
+
+    @Provides @IntoSet
+    fun provideReplicatorStateMixin(): JsonMixin {
+        return JsonMixin(ReplicatorState::class, ReplicatorStateMixin::class)
     }
 }

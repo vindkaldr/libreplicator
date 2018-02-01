@@ -25,7 +25,7 @@ import org.junit.Test
 import org.libreplicator.api.LocalLog
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
-import org.libreplicator.crypto.module.ReplicatorCryptoSettings
+import org.libreplicator.module.setting.ReplicatorCryptoSettings
 import org.libreplicator.testdouble.RemoteEventLogObserverMock
 
 class ReplicatorCryptoIntegrationTest {
@@ -46,13 +46,21 @@ class ReplicatorCryptoIntegrationTest {
     }
 
     private val localReplicatorFactory = ReplicatorTestFactory(ReplicatorSettings(
-            cryptoSettings = ReplicatorCryptoSettings(isEncryptionEnabled = true, sharedSecret = SHARED_SECRET)))
+            cryptoSettings = ReplicatorCryptoSettings(
+                isEncryptionEnabled = true,
+                sharedSecret = SHARED_SECRET
+            )
+    ))
     private val localNode = LocalNode(LOCAL_NODE_ID, NODE_HOST, LOCAL_NODE_PORT)
 
     @Test
     fun replicator_shouldBeAbleToDecryptMessages_withSharedSecret() = runBlocking {
         val remoteReplicatorFactory = ReplicatorTestFactory(ReplicatorSettings(
-                cryptoSettings = ReplicatorCryptoSettings(isEncryptionEnabled = true, sharedSecret = SHARED_SECRET)))
+                cryptoSettings = ReplicatorCryptoSettings(
+                    isEncryptionEnabled = true,
+                    sharedSecret = SHARED_SECRET
+                )
+        ))
         val remoteNode = LocalNode(REMOTE_NODE_ID, NODE_HOST, REMOTE_NODE_PORT)
 
         val remoteReplicator = remoteReplicatorFactory.create(localNode = remoteNode,
