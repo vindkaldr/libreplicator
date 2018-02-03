@@ -32,7 +32,7 @@ class TimeProviderInteractor(private val timeProvider: TimeProvider) : TimeProvi
         }
     }
 
-    suspend override fun getTime(): Long {
+    override suspend fun getTime(): Long {
         val channel = Channel<Long>()
         actor.send(TimeProviderInteraction.GetTime(channel))
         return channel.receive()

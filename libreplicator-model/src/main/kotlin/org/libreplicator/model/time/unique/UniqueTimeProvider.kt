@@ -22,7 +22,7 @@ import org.libreplicator.model.time.TimeProvider
 class UniqueTimeProvider(private val timeProvider: TimeProvider) : TimeProvider {
     private var lastReturnedTime = 0L
 
-    suspend override fun getTime(): Long {
+    override suspend fun getTime(): Long {
         var time = timeProvider.getTime()
         while (time <= lastReturnedTime) {
             time++

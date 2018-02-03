@@ -25,5 +25,5 @@ class MockTimeProvider private constructor(val times: List<Long>) : TimeProvider
     constructor(timesToReturn: LongArray) : this(timesToReturn.toList())
     constructor(lastTimeToReturn: Long) : this(LongRange(1, lastTimeToReturn).toList())
 
-    suspend override fun getTime() = timesIterator.next()
+    override suspend fun getTime() = timesIterator.next()
 }

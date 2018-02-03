@@ -50,7 +50,7 @@ class DefaultMessageRouter @Inject constructor(
 
         replicatorClient.initialize()
         val subscription = replicatorServer.subscribe(object : Observer<String> {
-            suspend override fun observe(observable: String) {
+            override suspend fun observe(observable: String) {
                 try {
                     observer.observe(jsonMapper.read(cipher.decrypt(observable), ReplicatorMessage::class))
                 }

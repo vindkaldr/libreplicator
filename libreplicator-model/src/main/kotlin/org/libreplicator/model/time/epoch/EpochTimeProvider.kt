@@ -20,5 +20,5 @@ package org.libreplicator.model.time.epoch
 import org.libreplicator.model.time.TimeProvider
 
 class EpochTimeProvider : TimeProvider {
-    suspend override fun getTime() = System.currentTimeMillis()
+    override suspend fun getTime() = System.currentTimeMillis()
 }

@@ -20,5 +20,5 @@ package org.libreplicator.model.time.testdouble
 import org.libreplicator.model.time.TimeProvider
 
 class DummyTimeProvider(private val timeToReturn: Long) : TimeProvider {
-    suspend override fun getTime() = timeToReturn
+    override suspend fun getTime() = timeToReturn
 }
