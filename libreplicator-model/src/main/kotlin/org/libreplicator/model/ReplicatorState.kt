@@ -20,10 +20,10 @@ package org.libreplicator.model
 import org.libreplicator.api.LocalLog
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.Node
+import org.libreplicator.api.Observable
 import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.RemoteNode
-import org.libreplicator.api.Observable
 import org.libreplicator.api.Subscription
 import org.libreplicator.model.time.TimeProviderInteractor
 import org.libreplicator.model.time.epoch.EpochTimeProvider
@@ -68,7 +68,7 @@ data class ReplicatorState constructor(
     }
 
     fun getNodesWithMissingEventLogs(): Map<RemoteNode, ReplicatorMessage> =
-            remoteNodes!!.map { node -> node.to(getMissingEventLogs(node)) }
+            remoteNodes!!.map { node -> node to getMissingEventLogs(node) }
                     .filter { it.second.isNotEmpty() }
                     .toMap()
                     .mapValues { ReplicatorMessage(localNode!!.nodeId, it.value, timeTable) }
