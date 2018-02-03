@@ -27,7 +27,7 @@ data class TimeTable(private val table: MutableMap<String, MutableMap<String, Lo
 
     operator fun set(sourceNodeId: String, targetNodeId: String, time: Long) {
         if (time > 0) {
-            table.getOrPut(sourceNodeId, { mutableMapOf() }).put(targetNodeId, time)
+            table.getOrPut(sourceNodeId, { mutableMapOf() })[targetNodeId] = time
         }
     }
 
@@ -42,7 +42,7 @@ data class TimeTable(private val table: MutableMap<String, MutableMap<String, Lo
 
         sourceRow.keys + targetRow.keys.forEach {
             val maxValue = max(sourceRow.getOrElse(it, { 0 }), targetRow.getOrElse(it, { 0 }))
-            sourceRow.put(it, maxValue)
+            sourceRow[it] = maxValue
         }
     }
 

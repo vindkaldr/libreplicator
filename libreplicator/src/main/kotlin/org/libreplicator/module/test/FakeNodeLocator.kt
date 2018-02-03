@@ -25,7 +25,7 @@ class FakeNodeLocator : NodeLocator {
     private val nodes = mutableMapOf<String, RemoteNode>()
 
     override fun addNode(localNode: LocalNode) {
-        nodes.put(localNode.nodeId, RemoteNode(localNode.nodeId, localNode.hostname, localNode.port))
+        nodes[localNode.nodeId] = RemoteNode(localNode.nodeId, localNode.hostname, localNode.port)
     }
 
     override fun removeNode(nodeId: String) {
