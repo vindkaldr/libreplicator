@@ -27,7 +27,6 @@ subprojects {
     }
 
     apply plugin: "kotlin"
-    apply plugin: 'kotlin-kapt'
     apply plugin: 'maven-publish'
 
     dependencies {
@@ -39,11 +38,6 @@ subprojects {
         experimental {
             coroutines 'enable'
         }
-    }
-
-    sourceSets {
-        main.java.srcDirs += 'build/generated/source/kapt/main'
-        test.java.srcDirs += 'build/generated/source/kapt/test'
     }
 
     task sourceJar(type: Jar) {

@@ -15,6 +15,13 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+apply plugin: 'kotlin-kapt'
+
+sourceSets {
+    main.java.srcDirs += 'build/generated/source/kapt/main'
+    test.java.srcDirs += 'build/generated/source/kapt/test'
+}
+
 dependencies {
     compile project(':libreplicator-boundary')
     compile project(':libreplicator-client')
