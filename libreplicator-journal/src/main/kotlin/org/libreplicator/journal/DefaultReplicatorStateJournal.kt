@@ -68,5 +68,5 @@ class DefaultReplicatorStateJournal @Inject constructor(
     }
 
     private fun createJournalDirectoryName(localNode: LocalNode, remoteNodes: List<RemoteNode>): String =
-            "${localNode.nodeId}:${remoteNodes.map { it.nodeId }.joinToString(":")}"
+            "${localNode.nodeId}:${remoteNodes.joinToString(":") { it.nodeId }}"
 }
