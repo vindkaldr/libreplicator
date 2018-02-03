@@ -34,8 +34,6 @@ import org.libreplicator.httpserver.api.HttpServer
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
 
-typealias HttpHandler = (Request) -> Response
-
 class DefaultHttpServer @Inject constructor() : HttpServer {
     private companion object {
         private val logger = LoggerFactory.getLogger(DefaultHttpServer::class.java)
