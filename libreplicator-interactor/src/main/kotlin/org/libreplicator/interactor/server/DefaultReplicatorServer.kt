@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.server
+package org.libreplicator.interactor.server
 
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.Observer
@@ -27,7 +27,6 @@ import org.libreplicator.gateway.api.model.InternetProtocol
 import org.libreplicator.httpserver.api.HttpServer
 import org.libreplicator.locator.api.NodeLocator
 import org.libreplicator.log.api.trace
-import org.libreplicator.server.api.ReplicatorServer
 import javax.inject.Inject
 
 const val LIBREPLICATOR_DESCRIPTION = "libreplicator"
@@ -42,7 +41,9 @@ class DefaultReplicatorServer @Inject constructor(
         trace("Subscribing to server..")
 
         httpServer.start(localNode.port, "/sync", observer)
-        internetGateway.addPortMapping(AddPortMapping(localNode.port, InternetProtocol.TCP, localNode.port, LIBREPLICATOR_DESCRIPTION))
+        internetGateway.addPortMapping(AddPortMapping(localNode.port, InternetProtocol.TCP, localNode.port,
+            LIBREPLICATOR_DESCRIPTION
+        ))
         nodeLocator.addNode(localNode)
 
         return object : Subscription {

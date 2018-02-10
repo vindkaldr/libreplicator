@@ -27,7 +27,7 @@ import org.libreplicator.module.HttpServerModule
 import org.libreplicator.module.JsonModule
 import org.libreplicator.module.LocatorModule
 import org.libreplicator.module.ServerModule
-import org.libreplicator.server.api.ReplicatorServer
+import org.libreplicator.interactor.server.ReplicatorServer
 import javax.inject.Singleton
 
 @Singleton

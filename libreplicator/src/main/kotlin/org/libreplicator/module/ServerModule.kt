@@ -23,8 +23,8 @@ import org.libreplicator.api.LocalNode
 import org.libreplicator.gateway.api.InternetGateway
 import org.libreplicator.httpserver.api.HttpServer
 import org.libreplicator.locator.api.NodeLocator
-import org.libreplicator.server.DefaultReplicatorServer
-import org.libreplicator.server.api.ReplicatorServer
+import org.libreplicator.interactor.server.DefaultReplicatorServer
+import org.libreplicator.interactor.server.ReplicatorServer
 import javax.inject.Singleton
 
 @Module

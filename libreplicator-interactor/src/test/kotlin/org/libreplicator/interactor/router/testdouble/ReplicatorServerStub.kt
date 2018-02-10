@@ -20,9 +20,10 @@ package org.libreplicator.interactor.router.testdouble
 import org.junit.Assert.fail
 import org.libreplicator.api.Observer
 import org.libreplicator.api.Subscription
-import org.libreplicator.server.api.ReplicatorServer
+import org.libreplicator.interactor.server.ReplicatorServer
 
-class ReplicatorServerStub constructor(private val subscription: Subscription) : ReplicatorServer {
+class ReplicatorServerStub constructor(private val subscription: Subscription) :
+    ReplicatorServer {
     var observedObserver: Observer<String>? = null
 
     override suspend fun subscribe(observer: Observer<String>): Subscription {

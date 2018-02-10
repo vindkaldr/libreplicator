@@ -28,7 +28,7 @@ import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.log.api.trace
 import org.libreplicator.log.api.warn
 import org.libreplicator.model.ReplicatorMessage
-import org.libreplicator.server.api.ReplicatorServer
+import org.libreplicator.interactor.server.ReplicatorServer
 import javax.inject.Inject
 
 class DefaultMessageRouter @Inject constructor(

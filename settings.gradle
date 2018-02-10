@@ -37,6 +37,4 @@ include ':libreplicator-locator'
 include ':libreplicator-locator-api'
 include ':libreplicator-log-api'
 include ':libreplicator-model'
-include ':libreplicator-server'
-include ':libreplicator-server-api'
 

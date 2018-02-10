@@ -15,7 +15,12 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    compile project(':libreplicator-api')
-    compile project(':libreplicator-model')
+package org.libreplicator.interactor.server
+
+import org.libreplicator.api.Observable
+import org.libreplicator.api.Observer
+import org.libreplicator.api.Subscription
+
+interface ReplicatorServer : Observable<String> {
+    override suspend fun subscribe(observer: Observer<String>): Subscription
 }

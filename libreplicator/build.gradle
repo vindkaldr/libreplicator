@@ -34,7 +34,6 @@ dependencies {
     compile project(':libreplicator-locator')
     compile project(':libreplicator-log-api')
     compile project(':libreplicator-model')
-    compile project(':libreplicator-server')
 
     testCompile project(':libreplicator-common-test')
 
