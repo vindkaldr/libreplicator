@@ -15,19 +15,21 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator
+package org.libreplicator.integration
 
 import kotlinx.coroutines.experimental.runBlocking
 import org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder
 import org.junit.After
 import org.junit.Assert.assertThat
 import org.junit.Test
+import org.libreplicator.ReplicatorSettings
+import org.libreplicator.ReplicatorTestFactory
 import org.libreplicator.api.LocalLog
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Replicator
 import org.libreplicator.api.Subscription
-import org.libreplicator.module.setting.ReplicatorJournalSettings
+import org.libreplicator.module.replicator.setting.ReplicatorJournalSettings
 import org.libreplicator.testdouble.RemoteEventLogObserverMock
 import java.nio.file.Files
 
@@ -49,22 +51,22 @@ class ReplicatorJournalIntegrationTest {
     }
 
     private val localLibReplicatorSettings = ReplicatorSettings(
-            journalSettings = ReplicatorJournalSettings(
-                isJournalingEnabled = true,
-                directoryOfJournals = DIRECTORY_OF_JOURNALS
-            )
+        journalSettings = ReplicatorJournalSettings(
+            isJournalingEnabled = true,
+            directoryOfJournals = DIRECTORY_OF_JOURNALS
+        )
     )
 
-    private val localReplicatorFactory = ReplicatorTestFactory(localLibReplicatorSettings)
-    private val localEventLogObserverMock = RemoteEventLogObserverMock()
     private val localNode = LocalNode(LOCAL_NODE_ID, NODE_HOST, LOCAL_NODE_PORT)
+    private val localReplicatorFactory = ReplicatorTestFactory(localNode)
+    private val localEventLogObserverMock = RemoteEventLogObserverMock()
     private lateinit var localReplicator: Replicator
     private lateinit var localReplicatorSubscription: Subscription
 
-    private val remoteReplicatorFactory = ReplicatorTestFactory()
-    private val remoteEventLogObserverMock = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 3)
     private val remoteNode = LocalNode(REMOTE_NODE_ID, NODE_HOST, REMOTE_NODE_PORT)
-    private val remoteReplicator = remoteReplicatorFactory.create(localNode = remoteNode,
+    private val remoteReplicatorFactory = ReplicatorTestFactory(remoteNode)
+    private val remoteEventLogObserverMock = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 3)
+    private val remoteReplicator = remoteReplicatorFactory.create(
             remoteNodes = listOf(RemoteNode(localNode.nodeId, localNode.hostname, localNode.port)))
     private lateinit var remoteReplicatorSubscription: Subscription
 
@@ -78,8 +80,9 @@ class ReplicatorJournalIntegrationTest {
 
     @Test
     fun replicator_shouldKeepState_whenJournalingEnabled() = runBlocking {
-        localReplicator = localReplicatorFactory.create(localNode = localNode,
-                remoteNodes = listOf(RemoteNode(remoteNode.nodeId, remoteNode.hostname, remoteNode.port)))
+        localReplicator = localReplicatorFactory.create(
+                remoteNodes = listOf(RemoteNode(remoteNode.nodeId, remoteNode.hostname, remoteNode.port)),
+                settings = localLibReplicatorSettings)
         localReplicatorSubscription = localReplicator.subscribe(localEventLogObserverMock)
 
         localReplicator.replicate(LocalLog(FIRST_LOG))
@@ -88,8 +91,9 @@ class ReplicatorJournalIntegrationTest {
 
         remoteReplicatorSubscription = remoteReplicator.subscribe(remoteEventLogObserverMock)
 
-        localReplicator = localReplicatorFactory.create(localNode = localNode,
-                remoteNodes = listOf(RemoteNode(remoteNode.nodeId, remoteNode.hostname, remoteNode.port)))
+        localReplicator = localReplicatorFactory.create(
+                remoteNodes = listOf(RemoteNode(remoteNode.nodeId, remoteNode.hostname, remoteNode.port)),
+                settings = localLibReplicatorSettings)
         localReplicatorSubscription = localReplicator.subscribe(localEventLogObserverMock)
         localReplicator.replicate(LocalLog(THIRD_LOG))
 

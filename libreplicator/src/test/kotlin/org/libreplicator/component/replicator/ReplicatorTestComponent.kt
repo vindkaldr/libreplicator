@@ -15,14 +15,12 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module
+package org.libreplicator.component.replicator
 
-import dagger.Binds
-import dagger.Module
-import org.libreplicator.api.Replicator
-import org.libreplicator.boundary.DefaultReplicator
+import dagger.Component
+import org.libreplicator.component.LibReplicatorTestComponent
+import org.libreplicator.module.replicator.ReplicatorModule
 
-@Module
-interface BoundaryModule {
-    @Binds fun bindReplicator(defaultReplicator: DefaultReplicator): Replicator
-}
+@ReplicatorScope
+@Component(dependencies = [ LibReplicatorTestComponent::class ], modules = [ ReplicatorModule::class ])
+interface ReplicatorTestComponent : ReplicatorComponent

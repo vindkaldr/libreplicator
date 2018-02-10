@@ -15,13 +15,20 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module.test
+package org.libreplicator.module.replicator
 
-import org.libreplicator.gateway.api.InternetGateway
-import org.libreplicator.gateway.api.model.AddPortMapping
-import org.libreplicator.gateway.api.model.DeletePortMapping
+import dagger.Module
+import org.libreplicator.component.replicator.ReplicatorScope
+import org.libreplicator.module.replicator.BoundaryModule
+import org.libreplicator.module.replicator.CryptoModule
+import org.libreplicator.module.replicator.InteractorModule
+import org.libreplicator.module.replicator.JournalModule
 
-class FakeInternetGateway : InternetGateway {
-    override fun addPortMapping(portMapping: AddPortMapping) {}
-    override fun deletePortMapping(portMapping: DeletePortMapping) {}
-}
+@ReplicatorScope
+@Module(includes = [
+    BoundaryModule::class,
+    InteractorModule::class,
+    CryptoModule::class,
+    JournalModule::class
+])
+interface ReplicatorModule

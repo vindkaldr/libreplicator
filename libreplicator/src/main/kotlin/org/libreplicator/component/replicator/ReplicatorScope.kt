@@ -15,12 +15,10 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator
+package org.libreplicator.component.replicator
 
-import org.libreplicator.module.replicator.setting.ReplicatorCryptoSettings
-import org.libreplicator.module.replicator.setting.ReplicatorJournalSettings
+import javax.inject.Scope
 
-class ReplicatorSettings(
-    val cryptoSettings: ReplicatorCryptoSettings = ReplicatorCryptoSettings(),
-    val journalSettings: ReplicatorJournalSettings = ReplicatorJournalSettings()
-)
+@Scope
+@Retention
+annotation class ReplicatorScope

@@ -18,33 +18,23 @@
 package org.libreplicator.component
 
 import dagger.Component
-import org.libreplicator.api.Replicator
-import org.libreplicator.module.BoundaryModule
 import org.libreplicator.module.ClientModule
-import org.libreplicator.module.CryptoModule
-import org.libreplicator.module.GatewayModule
+import org.libreplicator.module.FakeGatewayModule
+import org.libreplicator.module.FakeLocatorModule
 import org.libreplicator.module.HttpClientModule
 import org.libreplicator.module.HttpServerModule
-import org.libreplicator.module.InteractorModule
-import org.libreplicator.module.JournalModule
 import org.libreplicator.module.JsonModule
-import org.libreplicator.module.LocatorModule
 import org.libreplicator.module.ServerModule
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = arrayOf(
-        BoundaryModule::class,
-        ClientModule::class,
-        CryptoModule::class,
-        GatewayModule::class,
-        HttpClientModule::class,
-        HttpServerModule::class,
-        InteractorModule::class,
-        JournalModule::class,
-        JsonModule::class,
-        LocatorModule::class,
-        ServerModule::class))
-interface ProductionComponent {
-    fun getReplicator(): Replicator
-}
+@Component(modules = [
+    ClientModule::class,
+    FakeGatewayModule::class,
+    HttpClientModule::class,
+    HttpServerModule::class,
+    JsonModule::class,
+    FakeLocatorModule::class,
+    ServerModule::class
+])
+interface LibReplicatorTestComponent : LibReplicatorComponent

@@ -15,17 +15,19 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator
+package org.libreplicator.integration
 
 import kotlinx.coroutines.experimental.runBlocking
 import org.hamcrest.Matchers.containsInAnyOrder
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertThat
 import org.junit.Test
+import org.libreplicator.ReplicatorSettings
+import org.libreplicator.ReplicatorTestFactory
 import org.libreplicator.api.LocalLog
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
-import org.libreplicator.module.setting.ReplicatorCryptoSettings
+import org.libreplicator.module.replicator.setting.ReplicatorCryptoSettings
 import org.libreplicator.testdouble.RemoteEventLogObserverMock
 
 class ReplicatorCryptoIntegrationTest {
@@ -45,31 +47,35 @@ class ReplicatorCryptoIntegrationTest {
         private val SHARED_SECRET = "sharedSecret"
     }
 
-    private val localReplicatorFactory = ReplicatorTestFactory(ReplicatorSettings(
-            cryptoSettings = ReplicatorCryptoSettings(
-                isEncryptionEnabled = true,
-                sharedSecret = SHARED_SECRET
-            )
-    ))
     private val localNode = LocalNode(LOCAL_NODE_ID, NODE_HOST, LOCAL_NODE_PORT)
+    private val localReplicatorFactory = ReplicatorTestFactory(localNode)
 
     @Test
     fun replicator_shouldBeAbleToDecryptMessages_withSharedSecret() = runBlocking {
-        val remoteReplicatorFactory = ReplicatorTestFactory(ReplicatorSettings(
-                cryptoSettings = ReplicatorCryptoSettings(
+        val remoteNode = LocalNode(REMOTE_NODE_ID, NODE_HOST, REMOTE_NODE_PORT)
+        val remoteReplicatorFactory = ReplicatorTestFactory(remoteNode)
+
+        val remoteReplicator = remoteReplicatorFactory.create(
+            remoteNodes = listOf(RemoteNode(localNode.nodeId, localNode.hostname, localNode.port)),
+            settings = ReplicatorSettings(
+                ReplicatorCryptoSettings(
                     isEncryptionEnabled = true,
                     sharedSecret = SHARED_SECRET
                 )
-        ))
-        val remoteNode = LocalNode(REMOTE_NODE_ID, NODE_HOST, REMOTE_NODE_PORT)
-
-        val remoteReplicator = remoteReplicatorFactory.create(localNode = remoteNode,
-                remoteNodes = listOf(RemoteNode(localNode.nodeId, localNode.hostname, localNode.port)))
+            )
+        )
         val remoteEventLogObserverMock = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 3)
         val remoteSubscription = remoteReplicator.subscribe(remoteEventLogObserverMock)
 
-        val localReplicator = localReplicatorFactory.create(localNode = localNode,
-                remoteNodes = listOf(RemoteNode(remoteNode.nodeId, remoteNode.hostname, remoteNode.port)))
+        val localReplicator = localReplicatorFactory.create(
+            remoteNodes = listOf(RemoteNode(remoteNode.nodeId, remoteNode.hostname, remoteNode.port)),
+            settings = ReplicatorSettings(
+                ReplicatorCryptoSettings(
+                    isEncryptionEnabled = true,
+                    sharedSecret = SHARED_SECRET
+                )
+            )
+        )
         val localSubscription = localReplicator.subscribe(RemoteEventLogObserverMock())
         localReplicator.replicate(LocalLog(FIRST_LOG))
         localReplicator.replicate(LocalLog(SECOND_LOG))
@@ -83,16 +89,27 @@ class ReplicatorCryptoIntegrationTest {
 
     @Test
     fun replicator_shouldNotBeAbleToDecryptMessages_withoutSharedSecret() = runBlocking {
-        val remoteReplicatorFactory = ReplicatorTestFactory()
-        val remoteNode = LocalNode(REMOTE_NODE_ID, NODE_HOST, REMOTE_NODE_PORT)
+        val remoteNode = LocalNode(
+            REMOTE_NODE_ID,
+            NODE_HOST,
+            REMOTE_NODE_PORT
+        )
+        val remoteReplicatorFactory = ReplicatorTestFactory(remoteNode)
 
-        val remoteReplicator = remoteReplicatorFactory.create(localNode = remoteNode,
-                remoteNodes = listOf(RemoteNode(localNode.nodeId, localNode.hostname, localNode.port)))
+        val remoteReplicator = remoteReplicatorFactory.create(
+            remoteNodes = listOf(RemoteNode(localNode.nodeId, localNode.hostname, localNode.port)))
         val remoteEventLogObserverMock = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 3)
         val remoteSubscription = remoteReplicator.subscribe(remoteEventLogObserverMock)
 
-        val localReplicator = localReplicatorFactory.create(localNode = localNode,
-                remoteNodes = listOf(RemoteNode(remoteNode.nodeId, remoteNode.hostname, remoteNode.port)))
+        val localReplicator = localReplicatorFactory.create(
+            remoteNodes = listOf(RemoteNode(remoteNode.nodeId, remoteNode.hostname, remoteNode.port)),
+            settings = ReplicatorSettings(
+                ReplicatorCryptoSettings(
+                    isEncryptionEnabled = true,
+                    sharedSecret = SHARED_SECRET
+                )
+            )
+        )
         val localSubscription = localReplicator.subscribe(RemoteEventLogObserverMock())
         localReplicator.replicate(LocalLog(FIRST_LOG))
         localReplicator.replicate(LocalLog(SECOND_LOG))

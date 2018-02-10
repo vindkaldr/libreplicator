@@ -15,21 +15,21 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module
+package org.libreplicator.module.replicator
 
 import dagger.Binds
 import dagger.Module
+import org.libreplicator.component.replicator.ReplicatorScope
 import org.libreplicator.interactor.api.LogDispatcher
 import org.libreplicator.interactor.dispatcher.DefaultLogDispatcher
 import org.libreplicator.interactor.router.DefaultMessageRouter
 import org.libreplicator.interactor.router.MessageRouter
 import org.libreplicator.interactor.state.DefaultStateInteractor
 import org.libreplicator.interactor.state.StateInteractor
-import javax.inject.Singleton
 
 @Module
 interface InteractorModule {
-    @Binds @Singleton fun bindStateInteractor(defaultStateInteractor: DefaultStateInteractor): StateInteractor
+    @Binds @ReplicatorScope fun bindStateInteractor(defaultStateInteractor: DefaultStateInteractor): StateInteractor
     @Binds fun bindLogDispatcher(defaultLogDispatcher: DefaultLogDispatcher): LogDispatcher
     @Binds fun bindMessageRouter(defaultMessageRouter: DefaultMessageRouter): MessageRouter
 }

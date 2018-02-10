@@ -15,22 +15,15 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module.test
+package org.libreplicator.component.replicator
 
-import org.libreplicator.api.LocalNode
-import org.libreplicator.api.RemoteNode
-import org.libreplicator.locator.api.NodeLocator
+import dagger.Component
+import org.libreplicator.api.Replicator
+import org.libreplicator.component.LibReplicatorComponent
+import org.libreplicator.module.replicator.ReplicatorModule
 
-class FakeNodeLocator : NodeLocator {
-    private val nodes = mutableMapOf<String, RemoteNode>()
-
-    override fun addNode(localNode: LocalNode) {
-        nodes[localNode.nodeId] = RemoteNode(localNode.nodeId, localNode.hostname, localNode.port)
-    }
-
-    override fun removeNode(nodeId: String) {
-        nodes.remove(nodeId)
-    }
-
-    override fun getNode(nodeId: String): RemoteNode? = nodes[nodeId]
+@ReplicatorScope
+@Component(dependencies = [ LibReplicatorComponent::class ], modules = [ ReplicatorModule::class ])
+interface ReplicatorComponent {
+    fun replicator(): Replicator
 }

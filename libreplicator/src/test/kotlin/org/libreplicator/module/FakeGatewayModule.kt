@@ -15,12 +15,23 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator
+package org.libreplicator.module
 
-import org.libreplicator.module.replicator.setting.ReplicatorCryptoSettings
-import org.libreplicator.module.replicator.setting.ReplicatorJournalSettings
+import dagger.Module
+import dagger.Provides
+import org.libreplicator.gateway.api.InternetGateway
+import org.libreplicator.gateway.api.model.AddPortMapping
+import org.libreplicator.gateway.api.model.DeletePortMapping
 
-class ReplicatorSettings(
-    val cryptoSettings: ReplicatorCryptoSettings = ReplicatorCryptoSettings(),
-    val journalSettings: ReplicatorJournalSettings = ReplicatorJournalSettings()
-)
+@Module
+class FakeGatewayModule {
+    private companion object {
+        private val internetGateway = object : InternetGateway {
+            override fun addPortMapping(portMapping: AddPortMapping) {}
+            override fun deletePortMapping(portMapping: DeletePortMapping) {}
+        }
+    }
+
+    @Provides
+    fun providesInternetGateway() = internetGateway
+}

@@ -15,16 +15,32 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module.test
+package org.libreplicator.module
 
 import dagger.Module
 import dagger.Provides
-import org.libreplicator.gateway.api.InternetGateway
+import org.libreplicator.api.LocalNode
+import org.libreplicator.api.RemoteNode
+import org.libreplicator.locator.api.NodeLocator
 
 @Module
-class FakeGatewayModule {
-    @Provides
-    fun providesInternetGateway(): InternetGateway {
-        return FakeInternetGateway()
+class FakeLocatorModule {
+    private companion object {
+        private val nodeLocator = object : NodeLocator {
+            private val nodes = mutableMapOf<String, RemoteNode>()
+
+            override fun addNode(localNode: LocalNode) {
+                nodes[localNode.nodeId] = RemoteNode(localNode.nodeId, localNode.hostname, localNode.port)
+            }
+
+            override fun removeNode(nodeId: String) {
+                nodes.remove(nodeId)
+            }
+
+            override fun getNode(nodeId: String): RemoteNode? = nodes[nodeId]
+        }
     }
+
+    @Provides
+    fun provideNodeLocator() = nodeLocator
 }

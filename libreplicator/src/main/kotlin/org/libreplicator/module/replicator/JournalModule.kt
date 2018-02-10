@@ -15,21 +15,21 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module
+package org.libreplicator.module.replicator
 
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.experimental.runBlocking
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
+import org.libreplicator.component.replicator.ReplicatorScope
 import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.journal.DefaultReplicatorStateJournal
 import org.libreplicator.journal.file.DefaultFileHandler
 import org.libreplicator.journal.file.FileHandler
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.model.ReplicatorState
-import org.libreplicator.module.setting.ReplicatorJournalSettings
-import javax.inject.Singleton
+import org.libreplicator.module.replicator.setting.ReplicatorJournalSettings
 
 @Module
 class JournalModule(
@@ -42,7 +42,7 @@ class JournalModule(
         return DefaultFileHandler()
     }
 
-    @Provides @Singleton
+    @Provides @ReplicatorScope
     fun provideReplicatorState(fileHandler: FileHandler, jsonMapper: JsonMapper, cipher: Cipher): ReplicatorState = runBlocking {
         if (!journalSettings.isJournalingEnabled) {
             return@runBlocking ReplicatorState(localNode, remoteNodes)

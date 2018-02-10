@@ -15,12 +15,13 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator
+package org.libreplicator.integration
 
 import kotlinx.coroutines.experimental.runBlocking
 import org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder
 import org.junit.Assert.assertThat
 import org.junit.Test
+import org.libreplicator.ReplicatorTestFactory
 import org.libreplicator.api.LocalLog
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
@@ -32,15 +33,15 @@ class ReplicatorLocatorIntegrationTest {
         private val LOG_2 = "log2"
     }
 
-    private val localReplicatorFactory = ReplicatorTestFactory()
     private val localNode = LocalNode("nodeId1", "localhost", 12345)
+    private val localReplicatorFactory = ReplicatorTestFactory(localNode)
 
-    private val remoteReplicatorFactory = ReplicatorTestFactory()
     private val remoteNode = LocalNode("nodeId2", "localhost", 12346)
+    private val remoteReplicatorFactory = ReplicatorTestFactory(remoteNode)
 
-    private val localReplicator = localReplicatorFactory.create(localNode = localNode,
+    private val localReplicator = localReplicatorFactory.create(
             remoteNodes = listOf(RemoteNode(remoteNode.nodeId)))
-    private val remoteReplicator = remoteReplicatorFactory.create(localNode = remoteNode,
+    private val remoteReplicator = remoteReplicatorFactory.create(
             remoteNodes = listOf(RemoteNode(localNode.nodeId)))
 
     private val localLogObserver = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 1)

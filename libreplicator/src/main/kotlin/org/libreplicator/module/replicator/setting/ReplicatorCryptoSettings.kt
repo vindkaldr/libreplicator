@@ -15,20 +15,6 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module.test
+package org.libreplicator.module.replicator.setting
 
-import dagger.Module
-import dagger.Provides
-import org.libreplicator.locator.api.NodeLocator
-
-@Module
-class FakeLocatorModule {
-    private companion object {
-        private val fakeNodeLocator = FakeNodeLocator()
-    }
-
-    @Provides
-    fun provideNodeLocator(): NodeLocator {
-        return fakeNodeLocator
-    }
-}
+class ReplicatorCryptoSettings(val isEncryptionEnabled: Boolean = false, val sharedSecret: String = "")

@@ -15,12 +15,13 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator
+package org.libreplicator.smoke
 
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Test
+import org.libreplicator.ReplicatorTestFactory
 import org.libreplicator.api.LocalLog
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
@@ -30,8 +31,6 @@ class ReplicatorConcurrentSmokeTest {
     private companion object {
         private val LOG = "log"
     }
-
-    private val replicatorFactory = ReplicatorTestFactory()
 
     private val node1 = LocalNode("nodeId1", "localhost", 12345)
     private val node2 = LocalNode("nodeId2", "localhost", 12346)
@@ -59,7 +58,7 @@ class ReplicatorConcurrentSmokeTest {
     }
 
     private suspend fun testRunReplicator(localNode: LocalNode, remoteNodes: List<RemoteNode>) {
-        val replicator = replicatorFactory.create(localNode, remoteNodes)
+        val replicator = ReplicatorTestFactory(localNode).create(remoteNodes)
 
         var subscription = replicator.subscribe(RemoteEventLogObserverDummy())
         replicator.replicate(LocalLog(LOG))

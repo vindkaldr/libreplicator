@@ -15,24 +15,14 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module
+package org.libreplicator.module.replicator
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
-import org.libreplicator.crypto.DefaultCipher
-import org.libreplicator.crypto.api.Cipher
-import org.libreplicator.module.setting.ReplicatorCryptoSettings
+import org.libreplicator.api.Replicator
+import org.libreplicator.boundary.DefaultReplicator
 
 @Module
-class CryptoModule(private val cryptoSettings: ReplicatorCryptoSettings) {
-    @Provides
-    fun provideCipher(): Cipher {
-        if (cryptoSettings.isEncryptionEnabled && cryptoSettings.sharedSecret.isNotBlank()) {
-            return DefaultCipher(cryptoSettings.sharedSecret)
-        }
-        return object : Cipher {
-            override fun encrypt(content: String): String = content
-            override fun decrypt(encryptedContent: String): String = encryptedContent
-        }
-    }
+interface BoundaryModule {
+    @Binds fun bindReplicator(defaultReplicator: DefaultReplicator): Replicator
 }

@@ -15,6 +15,18 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module.setting
+package org.libreplicator.module.replicator.setting
 
-class ReplicatorCryptoSettings(val isEncryptionEnabled: Boolean = false, val sharedSecret: String = "")
+import java.nio.file.Path
+import java.nio.file.Paths
+
+class ReplicatorJournalSettings(
+        val isJournalingEnabled: Boolean = false,
+        val directoryOfJournals: Path = getDefaultJournalsDirectorySetting()
+) {
+    private companion object {
+        fun getDefaultJournalsDirectorySetting(): Path {
+            return Paths.get(System.getProperty("java.io.tmpdir")).resolve("libreplicator-journals")
+        }
+    }
+}

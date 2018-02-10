@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator
+package org.libreplicator.integration
 
 import kotlinx.coroutines.experimental.runBlocking
 import org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder
@@ -23,6 +23,7 @@ import org.junit.After
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.libreplicator.ReplicatorTestFactory
 import org.libreplicator.api.LocalLog
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
@@ -39,21 +40,19 @@ class ReplicatorIntegrationTest {
         private val LOG_3_2 = "log32"
     }
 
-    private val replicatorFactory = ReplicatorTestFactory()
-
     private val node1 = LocalNode("nodeId1", "localhost", 12345)
     private val node2 = LocalNode("nodeId2", "localhost", 12346)
     private val node3 = LocalNode("nodeId3", "localhost", 12347)
 
-    private val replicator1 = replicatorFactory.create(localNode = node1,
+    private val replicator1 = ReplicatorTestFactory(localNode = node1).create(
             remoteNodes = listOf(RemoteNode(node2.nodeId, node2.hostname, node2.port),
                     RemoteNode(node3.nodeId, node3.hostname, node3.port)))
 
-    private val replicator2 = replicatorFactory.create(localNode = node2,
+    private val replicator2 = ReplicatorTestFactory(localNode = node2).create(
             remoteNodes = listOf(RemoteNode(node1.nodeId, node1.hostname, node1.port),
                     RemoteNode(node3.nodeId, node3.hostname, node3.port)))
 
-    private val replicator3 = replicatorFactory.create(localNode = node3,
+    private val replicator3 = ReplicatorTestFactory(localNode = node3).create(
             remoteNodes = listOf(RemoteNode(node1.nodeId, node1.hostname, node1.port),
                     RemoteNode(node2.nodeId, node2.hostname, node2.port)))
 
