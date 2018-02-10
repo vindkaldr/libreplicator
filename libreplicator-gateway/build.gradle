@@ -17,7 +17,7 @@
 
 dependencies {
     compile project(':libreplicator-gateway-api')
-    compile project(':libreplicator-log')
+    compile project(':libreplicator-log-api')
 
     compile group: 'javax.inject', name: 'javax.inject', version: javaxInjectVersion
 

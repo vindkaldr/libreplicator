@@ -25,7 +25,7 @@ import org.libreplicator.gateway.api.InternetGatewayException
 import org.libreplicator.gateway.api.model.AddPortMapping
 import org.libreplicator.gateway.api.model.DeletePortMapping
 import org.libreplicator.gateway.api.model.PortMapping
-import org.libreplicator.log.trace
+import org.libreplicator.log.api.trace
 import java.net.InetAddress
 import javax.inject.Inject
 

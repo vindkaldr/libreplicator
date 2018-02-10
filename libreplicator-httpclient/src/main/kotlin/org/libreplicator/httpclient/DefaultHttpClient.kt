@@ -26,8 +26,8 @@ import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
 import org.libreplicator.httpclient.api.HttpClient
-import org.libreplicator.log.trace
-import org.libreplicator.log.warn
+import org.libreplicator.log.api.trace
+import org.libreplicator.log.api.warn
 import java.net.SocketTimeoutException
 import java.net.URI
 import javax.inject.Inject

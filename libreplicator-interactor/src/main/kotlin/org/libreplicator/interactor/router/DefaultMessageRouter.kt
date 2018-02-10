@@ -25,8 +25,8 @@ import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.crypto.api.CipherException
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonReadException
-import org.libreplicator.log.trace
-import org.libreplicator.log.warn
+import org.libreplicator.log.api.trace
+import org.libreplicator.log.api.warn
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.server.api.ReplicatorServer
 import javax.inject.Inject

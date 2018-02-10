@@ -23,7 +23,7 @@ import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.Replicator
 import org.libreplicator.api.Subscription
 import org.libreplicator.interactor.api.LogDispatcher
-import org.libreplicator.log.trace
+import org.libreplicator.log.api.trace
 import javax.inject.Inject
 
 class DefaultReplicator @Inject constructor(private val logDispatcher: LogDispatcher) : Replicator {

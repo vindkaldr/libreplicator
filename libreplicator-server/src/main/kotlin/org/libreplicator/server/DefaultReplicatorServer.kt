@@ -26,7 +26,7 @@ import org.libreplicator.gateway.api.model.DeletePortMapping
 import org.libreplicator.gateway.api.model.InternetProtocol
 import org.libreplicator.httpserver.api.HttpServer
 import org.libreplicator.locator.api.NodeLocator
-import org.libreplicator.log.trace
+import org.libreplicator.log.api.trace
 import org.libreplicator.server.api.ReplicatorServer
 import javax.inject.Inject
 

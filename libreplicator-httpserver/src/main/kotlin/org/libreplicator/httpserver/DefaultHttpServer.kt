@@ -31,7 +31,7 @@ import org.http4k.server.Jetty
 import org.http4k.server.asServer
 import org.libreplicator.api.Observer
 import org.libreplicator.httpserver.api.HttpServer
-import org.libreplicator.log.trace
+import org.libreplicator.log.api.trace
 import javax.inject.Inject
 
 class DefaultHttpServer @Inject constructor() : HttpServer {

@@ -24,7 +24,7 @@ import org.libreplicator.api.Subscription
 import org.libreplicator.interactor.api.LogDispatcher
 import org.libreplicator.interactor.router.MessageRouter
 import org.libreplicator.interactor.state.StateInteractor
-import org.libreplicator.log.trace
+import org.libreplicator.log.api.trace
 import org.libreplicator.model.ReplicatorMessage
 import javax.inject.Inject
 
