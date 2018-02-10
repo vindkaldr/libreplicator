@@ -15,10 +15,9 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.client
+package org.libreplicator.interactor.client
 
 import org.libreplicator.api.RemoteNode
-import org.libreplicator.client.api.ReplicatorClient
 import org.libreplicator.httpclient.api.HttpClient
 import org.libreplicator.locator.api.NodeLocator
 import javax.inject.Inject
@@ -41,7 +40,9 @@ class DefaultReplicatorClient @Inject constructor(
     override fun synchronizeWithNode(remoteNode: RemoteNode, message: String) {
         val node = resolveNode(remoteNode)
         if (node != null) {
-            val uri = httpClient.createUri(node.hostname, node.port, SYNC_PATH)
+            val uri = httpClient.createUri(node.hostname, node.port,
+                SYNC_PATH
+            )
             httpClient.post(uri, message)
         }
     }

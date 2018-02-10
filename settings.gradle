@@ -19,8 +19,6 @@ rootProject.name = 'libreplicator-root'
 
 include ':libreplicator'
 include ':libreplicator-api'
-include ':libreplicator-client'
-include ':libreplicator-client-api'
 include ':libreplicator-common-test'
 include ':libreplicator-crypto'
 include ':libreplicator-crypto-api'

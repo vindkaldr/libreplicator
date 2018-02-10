@@ -20,7 +20,7 @@ package org.libreplicator.interactor.router
 import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Subscription
-import org.libreplicator.client.api.ReplicatorClient
+import org.libreplicator.interactor.client.ReplicatorClient
 import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.crypto.api.CipherException
 import org.libreplicator.json.api.JsonMapper
@@ -32,10 +32,10 @@ import org.libreplicator.server.api.ReplicatorServer
 import javax.inject.Inject
 
 class DefaultMessageRouter @Inject constructor(
-        private val jsonMapper: JsonMapper,
-        private val cipher: Cipher,
-        private val replicatorClient: ReplicatorClient,
-        private val replicatorServer: ReplicatorServer
+    private val jsonMapper: JsonMapper,
+    private val cipher: Cipher,
+    private val replicatorClient: ReplicatorClient,
+    private val replicatorServer: ReplicatorServer
 ) : MessageRouter {
     override fun routeMessage(remoteNode: RemoteNode, message: ReplicatorMessage) {
         trace("Routing message..")

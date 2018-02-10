@@ -18,7 +18,7 @@
 package org.libreplicator.component
 
 import dagger.Component
-import org.libreplicator.client.api.ReplicatorClient
+import org.libreplicator.interactor.client.ReplicatorClient
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.module.ClientModule
 import org.libreplicator.module.GatewayModule

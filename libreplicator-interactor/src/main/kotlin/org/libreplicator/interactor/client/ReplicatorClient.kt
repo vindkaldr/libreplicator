@@ -15,6 +15,12 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    compile project(':libreplicator-model')
+package org.libreplicator.interactor.client
+
+import org.libreplicator.api.RemoteNode
+import java.io.Closeable
+
+interface ReplicatorClient : Closeable {
+    fun initialize()
+    fun synchronizeWithNode(remoteNode: RemoteNode, message: String)
 }
