@@ -23,6 +23,7 @@ sourceSets {
 }
 
 dependencies {
+    compile project(':libreplicator-api')
     compile project(':libreplicator-boundary')
     compile project(':libreplicator-client')
     compile project(':libreplicator-crypto')
@@ -33,6 +34,7 @@ dependencies {
     compile project(':libreplicator-journal')
     compile project(':libreplicator-json')
     compile project(':libreplicator-locator')
+    compile project(':libreplicator-log')
     compile project(':libreplicator-model')
     compile project(':libreplicator-server')
 
@@ -45,4 +47,5 @@ dependencies {
 
     testCompile group: 'junit', name: 'junit', version: junitVersion
     testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrestVersion
+    testCompile group: 'org.slf4j', name: 'slf4j-simple', version: slf4jVersion
 }

@@ -31,14 +31,10 @@ import org.http4k.server.Jetty
 import org.http4k.server.asServer
 import org.libreplicator.api.Observer
 import org.libreplicator.httpserver.api.HttpServer
-import org.slf4j.LoggerFactory
+import org.libreplicator.log.trace
 import javax.inject.Inject
 
 class DefaultHttpServer @Inject constructor() : HttpServer {
-    private companion object {
-        private val logger = LoggerFactory.getLogger(DefaultHttpServer::class.java)
-    }
-
     private val coroutineContext = newSingleThreadContext("")
     private lateinit var server: Http4kServer
 
@@ -50,14 +46,14 @@ class DefaultHttpServer @Inject constructor() : HttpServer {
                 Response(Status.OK)
             }}).asServer(Jetty(port)).start()
         }.join()
-        logger.trace("Started http server")
+        trace("Started http server")
     }
 
     override suspend fun stop() {
         launch(coroutineContext) {
-            logger.trace("Stopping http server..")
+            trace("Stopping http server..")
             server.stop()
-            logger.trace("Stopped http server")
+            trace("Stopped http server")
         }.join()
     }
 }

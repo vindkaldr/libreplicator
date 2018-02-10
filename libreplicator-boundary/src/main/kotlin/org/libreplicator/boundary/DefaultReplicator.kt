@@ -23,21 +23,17 @@ import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.Replicator
 import org.libreplicator.api.Subscription
 import org.libreplicator.interactor.api.LogDispatcher
-import org.slf4j.LoggerFactory
+import org.libreplicator.log.trace
 import javax.inject.Inject
 
 class DefaultReplicator @Inject constructor(private val logDispatcher: LogDispatcher) : Replicator {
-    private companion object {
-        private val logger = LoggerFactory.getLogger(DefaultReplicator::class.java)
-    }
-
     override suspend fun replicate(localLog: LocalLog) {
-        logger.trace("Replicating event log..")
+        trace("Replicating event log..")
         logDispatcher.dispatch(localLog)
     }
 
     override suspend fun subscribe(observer: Observer<RemoteLog>): Subscription {
-        logger.trace("Subscribing to replicator..")
+        trace("Subscribing to replicator..")
         return logDispatcher.subscribe(observer)
     }
 }

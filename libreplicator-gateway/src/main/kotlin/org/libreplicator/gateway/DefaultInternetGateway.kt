@@ -20,22 +20,18 @@ package org.libreplicator.gateway
 import org.bitlet.weupnp.GatewayDevice
 import org.bitlet.weupnp.GatewayDiscover
 import org.bitlet.weupnp.PortMappingEntry
-import org.libreplicator.gateway.api.InternetGatewayException
 import org.libreplicator.gateway.api.InternetGateway
+import org.libreplicator.gateway.api.InternetGatewayException
 import org.libreplicator.gateway.api.model.AddPortMapping
 import org.libreplicator.gateway.api.model.DeletePortMapping
 import org.libreplicator.gateway.api.model.PortMapping
-import org.slf4j.LoggerFactory
+import org.libreplicator.log.trace
 import java.net.InetAddress
 import javax.inject.Inject
 
 class DefaultInternetGateway @Inject constructor() : InternetGateway {
-    private companion object {
-        private val logger = LoggerFactory.getLogger(DefaultInternetGateway::class.java)
-    }
-
     override fun addPortMapping(portMapping: AddPortMapping) {
-        logger.trace("Adding port mapping..")
+        trace("Adding port mapping..")
         val device = discoverGatewayDevice() ?: throw InternetGatewayException("Failed to discover gateway device!")
 
         val existingPortMappingEntry = PortMappingEntry()
@@ -46,23 +42,23 @@ class DefaultInternetGateway @Inject constructor() : InternetGateway {
         }
 
         addPortMapping(device, portMapping)
-        logger.trace("Port mapping added")
+        trace("Port mapping added")
     }
 
     override fun deletePortMapping(portMapping: DeletePortMapping) {
-        logger.trace("Deleting port mapping..")
+        trace("Deleting port mapping..")
         val device = discoverGatewayDevice() ?: throw InternetGatewayException("Failed to discover gateway device!")
 
         val existingPortMappingEntry = PortMappingEntry()
 
         if (!isSpecificPortMappingExists(device, portMapping, existingPortMappingEntry)) {
-            logger.trace("Port is not mapped!")
+            trace("Port is not mapped!")
             return
         }
 
         checkPortMappingNotSetByOtherDevice(existingPortMappingEntry)
         deletePortMapping(device, portMapping)
-        logger.trace("Port mapping deleted")
+        trace("Port mapping deleted")
     }
 
     private fun discoverGatewayDevice(): GatewayDevice? {
@@ -75,7 +71,7 @@ class DefaultInternetGateway @Inject constructor() : InternetGateway {
             = device.getSpecificPortMappingEntry(portMapping.externalPort, portMapping.protocol.toString(), portMappingEntry)
 
     private fun checkPortMappingNotSetByOtherDevice(existingPortMappingEntry: PortMappingEntry) {
-        logger.trace("Port mapping exists!")
+        trace("Port mapping exists!")
         if (isPortMappingSetByOtherDevice(existingPortMappingEntry)) {
             throw InternetGatewayException("Port mapping exists by other device!")
         }

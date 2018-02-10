@@ -29,6 +29,7 @@ subprojects {
 
     dependencies {
         compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlinVersion
+        compile group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: kotlinVersion
         compile group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core', version: kotlinCoroutineVersion
     }
 

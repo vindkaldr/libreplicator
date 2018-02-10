@@ -26,14 +26,14 @@ import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
 import org.libreplicator.httpclient.api.HttpClient
-import org.slf4j.LoggerFactory
+import org.libreplicator.log.trace
+import org.libreplicator.log.warn
 import java.net.SocketTimeoutException
 import java.net.URI
 import javax.inject.Inject
 
 class DefaultHttpClient @Inject constructor() : HttpClient {
     private companion object {
-        private val logger = LoggerFactory.getLogger(DefaultHttpClient::class.java)
         private val HTTP_SCHEME = "http"
     }
 
@@ -46,16 +46,16 @@ class DefaultHttpClient @Inject constructor() : HttpClient {
     override fun post(uri: URI, content: String) {
         try {
             httpClient.execute(createHttpPostRequest(uri, content))
-            logger.trace("Connected to remote node")
+            trace("Connected to remote node")
         }
         catch (e: HttpHostConnectException) {
-            logger.warn("Failed to connect to remote node!")
+            warn("Failed to connect to remote node!")
         }
         catch (e: NoHttpResponseException) {
-            logger.warn("Failed to reuse connection!")
+            warn("Failed to reuse connection!")
         }
         catch (e: SocketTimeoutException) {
-            logger.warn("Failed to connect to remote node!")
+            warn("Failed to connect to remote node!")
         }
     }
 

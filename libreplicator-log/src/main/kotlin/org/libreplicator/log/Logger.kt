@@ -15,16 +15,23 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    compile project(':libreplicator-api')
-    compile project(':libreplicator-interactor-api')
-    compile project(':libreplicator-log')
+package org.libreplicator.log
 
-    testCompile project(':libreplicator-common-test')
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import kotlin.reflect.KClass
 
-    compile group: 'javax.inject', name: 'javax.inject', version: javaxInjectVersion
+@PublishedApi
+internal val loggers = mutableMapOf<KClass<*>, Logger>()
 
-    testCompile group: 'junit', name: 'junit', version: junitVersion
-    testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrestVersion
-    testCompile group: 'org.slf4j', name: 'slf4j-simple', version: slf4jVersion
+@PublishedApi
+internal inline fun <reified T : Any> T.getLogger() =
+    loggers.getOrPut(this::class, { LoggerFactory.getLogger(this::class.java) })
+
+inline fun <reified T : Any> T.trace(message: String) {
+    getLogger().trace(message)
+}
+
+inline fun <reified T : Any> T.warn(message: String) {
+    getLogger().warn(message)
 }

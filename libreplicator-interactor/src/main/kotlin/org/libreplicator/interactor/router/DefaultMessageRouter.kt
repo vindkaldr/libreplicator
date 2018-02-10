@@ -25,9 +25,10 @@ import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.crypto.api.CipherException
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonReadException
+import org.libreplicator.log.trace
+import org.libreplicator.log.warn
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.server.api.ReplicatorServer
-import org.slf4j.LoggerFactory
 import javax.inject.Inject
 
 class DefaultMessageRouter @Inject constructor(
@@ -36,17 +37,13 @@ class DefaultMessageRouter @Inject constructor(
         private val replicatorClient: ReplicatorClient,
         private val replicatorServer: ReplicatorServer
 ) : MessageRouter {
-    private companion object {
-        private val logger = LoggerFactory.getLogger(DefaultMessageRouter::class.java)
-    }
-
     override fun routeMessage(remoteNode: RemoteNode, message: ReplicatorMessage) {
-        logger.trace("Routing message..")
+        trace("Routing message..")
         replicatorClient.synchronizeWithNode(remoteNode, cipher.encrypt(jsonMapper.write(message)))
     }
 
     override suspend fun subscribe(observer: Observer<ReplicatorMessage>): Subscription {
-        logger.trace("Subscribing to message router..")
+        trace("Subscribing to message router..")
 
         replicatorClient.initialize()
         val subscription = replicatorServer.subscribe(object : Observer<String> {
@@ -55,17 +52,17 @@ class DefaultMessageRouter @Inject constructor(
                     observer.observe(jsonMapper.read(cipher.decrypt(observable), ReplicatorMessage::class))
                 }
                 catch (e: CipherException) {
-                    logger.warn("Failed to deserialize corrupt message!")
+                    warn("Failed to deserialize corrupt message!")
                 }
                 catch (e: JsonReadException) {
-                    logger.warn("Failed to deserialize invalid message!")
+                    warn("Failed to deserialize invalid message!")
                 }
             }
         })
 
         return object : Subscription {
             override suspend fun unsubscribe() {
-                logger.trace("Unsubscribing from message router..")
+                trace("Unsubscribing from message router..")
 
                 replicatorClient.close()
                 subscription.unsubscribe()
