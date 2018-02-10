@@ -15,15 +15,22 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module.replicator
+package org.libreplicator.core.state.interaction
 
-import dagger.Module
-import org.libreplicator.component.replicator.ReplicatorScope
+import kotlinx.coroutines.experimental.channels.SendChannel
+import org.libreplicator.api.LocalLog
+import org.libreplicator.api.RemoteLog
+import org.libreplicator.api.RemoteNode
+import org.libreplicator.model.ReplicatorMessage
 
-@ReplicatorScope
-@Module(includes = [
-    CoreModule::class,
-    CryptoModule::class,
-    JournalModule::class
-])
-interface ReplicatorModule
+sealed class StateInteraction {
+    class ObserveLocalEvent(
+            val localLog: LocalLog,
+            val channel: SendChannel<Map<RemoteNode, ReplicatorMessage>>
+    ) : StateInteraction()
+
+    class ObserveRemoteMessage(
+            val message: ReplicatorMessage,
+            val channel: SendChannel<List<RemoteLog>>
+    ) : StateInteraction()
+}

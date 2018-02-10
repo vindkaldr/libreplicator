@@ -15,15 +15,23 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module.replicator
+package org.libreplicator.core.router.testdouble
 
-import dagger.Module
-import org.libreplicator.component.replicator.ReplicatorScope
+import org.junit.Assert.fail
+import org.libreplicator.crypto.api.Cipher
 
-@ReplicatorScope
-@Module(includes = [
-    CoreModule::class,
-    CryptoModule::class,
-    JournalModule::class
-])
-interface ReplicatorModule
+class CipherStub(private val contentToEncrypt: String, private val contentToDecrypt: String) : Cipher {
+    override fun encrypt(content: String): String {
+        if (content != contentToEncrypt) {
+            fail("Unexpected call!")
+        }
+        return contentToDecrypt
+    }
+
+    override fun decrypt(encryptedContent: String): String {
+        if (encryptedContent != contentToDecrypt) {
+            fail("Unexpected call!")
+        }
+        return contentToEncrypt
+    }
+}

@@ -15,15 +15,26 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module.replicator
+package org.libreplicator.core.router.testdouble
 
-import dagger.Module
-import org.libreplicator.component.replicator.ReplicatorScope
+import org.junit.Assert.fail
+import org.libreplicator.api.Observer
+import org.libreplicator.api.Subscription
+import org.libreplicator.core.server.ReplicatorServer
 
-@ReplicatorScope
-@Module(includes = [
-    CoreModule::class,
-    CryptoModule::class,
-    JournalModule::class
-])
-interface ReplicatorModule
+class ReplicatorServerStub constructor(private val subscription: Subscription) :
+    ReplicatorServer {
+    var observedObserver: Observer<String>? = null
+
+    override suspend fun subscribe(observer: Observer<String>): Subscription {
+        if (observedObserver != null) {
+            fail("Unexpected call!")
+        }
+        observedObserver = observer
+        return subscription
+    }
+
+    fun hasBeenSubscribedTo(): Boolean {
+        return observedObserver != null
+    }
+}

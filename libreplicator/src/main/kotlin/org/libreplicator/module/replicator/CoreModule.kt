@@ -17,13 +17,19 @@
 
 package org.libreplicator.module.replicator
 
+import dagger.Binds
 import dagger.Module
+import org.libreplicator.api.Replicator
 import org.libreplicator.component.replicator.ReplicatorScope
+import org.libreplicator.core.replicator.DefaultReplicator
+import org.libreplicator.core.router.DefaultMessageRouter
+import org.libreplicator.core.router.MessageRouter
+import org.libreplicator.core.state.DefaultStateInteractor
+import org.libreplicator.core.state.StateInteractor
 
-@ReplicatorScope
-@Module(includes = [
-    CoreModule::class,
-    CryptoModule::class,
-    JournalModule::class
-])
-interface ReplicatorModule
+@Module
+interface CoreModule {
+    @Binds @ReplicatorScope fun bindStateInteractor(defaultStateInteractor: DefaultStateInteractor): StateInteractor
+    @Binds fun bindReplicator(defaultReplicator: DefaultReplicator): Replicator
+    @Binds fun bindMessageRouter(defaultMessageRouter: DefaultMessageRouter): MessageRouter
+}

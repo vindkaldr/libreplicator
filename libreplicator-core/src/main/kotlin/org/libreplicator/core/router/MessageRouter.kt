@@ -15,15 +15,15 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module.replicator
+package org.libreplicator.core.router
 
-import dagger.Module
-import org.libreplicator.component.replicator.ReplicatorScope
+import org.libreplicator.api.Observer
+import org.libreplicator.api.RemoteNode
+import org.libreplicator.api.Observable
+import org.libreplicator.api.Subscription
+import org.libreplicator.model.ReplicatorMessage
 
-@ReplicatorScope
-@Module(includes = [
-    CoreModule::class,
-    CryptoModule::class,
-    JournalModule::class
-])
-interface ReplicatorModule
+interface MessageRouter : Observable<ReplicatorMessage> {
+    fun routeMessage(remoteNode: RemoteNode, message: ReplicatorMessage)
+    override suspend fun subscribe(observer: Observer<ReplicatorMessage>): Subscription
+}

@@ -15,15 +15,12 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module.replicator
+package org.libreplicator.core.client
 
-import dagger.Module
-import org.libreplicator.component.replicator.ReplicatorScope
+import org.libreplicator.api.RemoteNode
+import java.io.Closeable
 
-@ReplicatorScope
-@Module(includes = [
-    CoreModule::class,
-    CryptoModule::class,
-    JournalModule::class
-])
-interface ReplicatorModule
+interface ReplicatorClient : Closeable {
+    fun initialize()
+    fun synchronizeWithNode(remoteNode: RemoteNode, message: String)
+}

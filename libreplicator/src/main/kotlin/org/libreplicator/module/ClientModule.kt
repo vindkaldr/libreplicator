@@ -19,8 +19,8 @@ package org.libreplicator.module
 
 import dagger.Binds
 import dagger.Module
-import org.libreplicator.interactor.client.DefaultReplicatorClient
-import org.libreplicator.interactor.client.ReplicatorClient
+import org.libreplicator.core.client.DefaultReplicatorClient
+import org.libreplicator.core.client.ReplicatorClient
 import javax.inject.Singleton
 
 @Module

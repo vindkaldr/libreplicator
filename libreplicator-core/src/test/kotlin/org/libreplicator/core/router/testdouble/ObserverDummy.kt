@@ -15,15 +15,12 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module.replicator
+package org.libreplicator.core.router.testdouble
 
-import dagger.Module
-import org.libreplicator.component.replicator.ReplicatorScope
+import org.libreplicator.api.Observer
+import org.libreplicator.model.ReplicatorMessage
 
-@ReplicatorScope
-@Module(includes = [
-    CoreModule::class,
-    CryptoModule::class,
-    JournalModule::class
-])
-interface ReplicatorModule
+class ObserverDummy : Observer<ReplicatorMessage> {
+    override suspend fun observe(observable: ReplicatorMessage) {
+    }
+}

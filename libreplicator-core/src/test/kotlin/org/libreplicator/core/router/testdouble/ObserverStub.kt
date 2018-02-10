@@ -15,15 +15,19 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module.replicator
+package org.libreplicator.core.router.testdouble
 
-import dagger.Module
-import org.libreplicator.component.replicator.ReplicatorScope
+import org.junit.Assert.fail
+import org.libreplicator.api.Observer
+import org.libreplicator.model.ReplicatorMessage
 
-@ReplicatorScope
-@Module(includes = [
-    CoreModule::class,
-    CryptoModule::class,
-    JournalModule::class
-])
-interface ReplicatorModule
+class ObserverStub : Observer<ReplicatorMessage> {
+    var observedMessage: ReplicatorMessage? = null
+
+    override suspend fun observe(observable: ReplicatorMessage) {
+        if (observedMessage != null) {
+            fail("Unexpected call!")
+        }
+        observedMessage = observable
+    }
+}
