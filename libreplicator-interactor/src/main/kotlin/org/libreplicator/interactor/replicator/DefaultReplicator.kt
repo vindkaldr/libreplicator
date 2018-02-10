@@ -15,32 +15,32 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.interactor.dispatcher
+package org.libreplicator.interactor.replicator
 
 import org.libreplicator.api.LocalLog
 import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteLog
+import org.libreplicator.api.Replicator
 import org.libreplicator.api.Subscription
-import org.libreplicator.interactor.api.LogDispatcher
 import org.libreplicator.interactor.router.MessageRouter
 import org.libreplicator.interactor.state.StateInteractor
 import org.libreplicator.log.api.trace
 import org.libreplicator.model.ReplicatorMessage
 import javax.inject.Inject
 
-class DefaultLogDispatcher @Inject constructor(
+class DefaultReplicator @Inject constructor(
         private val messageRouter: MessageRouter,
         private val stateInteractor: StateInteractor
-) : LogDispatcher {
-    override suspend fun dispatch(localLog: LocalLog) {
-        trace("Dispatching event log..")
+) : Replicator {
+    override suspend fun replicate(localLog: LocalLog) {
+        trace("Replicating event log..")
         stateInteractor.getNodesWithMissingLogs(localLog).forEach {
             messageRouter.routeMessage(it.key, it.value)
         }
     }
 
     override suspend fun subscribe(observer: Observer<RemoteLog>): Subscription {
-        trace("Subscribing to log dispatcher..")
+        trace("Subscribing to replicator..")
         return messageRouter.subscribe(object : Observer<ReplicatorMessage> {
             override suspend fun observe(observable: ReplicatorMessage) {
                 trace("Observed message")

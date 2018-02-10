@@ -31,7 +31,11 @@ class ReplicatorFactory(private val localNode: LocalNode) {
         .serverModule(ServerModule(localNode))
         .build()
 
-    fun create(remoteNodes: List<RemoteNode>, settings: ReplicatorSettings = ReplicatorSettings()): Replicator {
+    fun create(
+        groupId: String,
+        remoteNodes: List<RemoteNode>,
+        settings: ReplicatorSettings = ReplicatorSettings()
+    ): Replicator {
         return DaggerReplicatorComponent.builder()
             .libReplicatorComponent(libReplicatorComponent)
             .cryptoModule(CryptoModule(settings.cryptoSettings))

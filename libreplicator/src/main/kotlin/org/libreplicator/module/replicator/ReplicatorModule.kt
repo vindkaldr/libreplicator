@@ -19,14 +19,9 @@ package org.libreplicator.module.replicator
 
 import dagger.Module
 import org.libreplicator.component.replicator.ReplicatorScope
-import org.libreplicator.module.replicator.BoundaryModule
-import org.libreplicator.module.replicator.CryptoModule
-import org.libreplicator.module.replicator.InteractorModule
-import org.libreplicator.module.replicator.JournalModule
 
 @ReplicatorScope
 @Module(includes = [
-    BoundaryModule::class,
     InteractorModule::class,
     CryptoModule::class,
     JournalModule::class
