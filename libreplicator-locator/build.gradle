@@ -16,8 +16,8 @@
  */
 
 dependencies {
+    compile project(':libreplicator-api')
     compile project(':libreplicator-locator-api')
-    compile project(':libreplicator-model')
 
     compile group: 'javax.inject', name: 'javax.inject', version: javaxInjectVersion
 }

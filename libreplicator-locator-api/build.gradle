@@ -16,5 +16,5 @@
  */
 
 dependencies {
-    compile project(':libreplicator-model')
+    compile project(':libreplicator-api')
 }
