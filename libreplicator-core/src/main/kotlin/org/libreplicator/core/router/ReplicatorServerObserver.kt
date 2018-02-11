@@ -17,9 +17,10 @@
 
 package org.libreplicator.core.router
 
-import org.libreplicator.api.RemoteNode
-import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.api.Observer
 
-interface MessageRouter : ScopedObservable<ReplicatorMessage> {
-    fun routeMessage(remoteNode: RemoteNode, message: ReplicatorMessage)
+class ReplicatorServerObserver(private val messageRouter: DefaultMessageRouter) : Observer<String> {
+    override suspend fun observe(observable: String) {
+        messageRouter.observeMessage(observable)
+    }
 }

@@ -18,8 +18,19 @@
 package org.libreplicator.core.router
 
 import org.libreplicator.api.Observer
+import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Subscription
+import org.libreplicator.log.api.trace
+import org.libreplicator.model.ReplicatorMessage
 
-interface TopicObservable<out T> {
-    suspend fun subscribe(topic: String, observer: Observer<T>): Subscription
+class TracingMessageRouter(private val messageRouter: MessageRouter) : MessageRouter {
+    override fun routeMessage(remoteNode: RemoteNode, message: ReplicatorMessage) {
+        trace("Routing message..")
+        messageRouter.routeMessage(remoteNode, message)
+    }
+
+    override suspend fun subscribe(scope: String, observer: Observer<ReplicatorMessage>): Subscription {
+        trace("Subscribing to message router..")
+        return messageRouter.subscribe(scope, observer)
+    }
 }

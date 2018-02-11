@@ -17,4 +17,15 @@
 
 package org.libreplicator.core.router
 
-class NotSubscribedException : Throwable()
+import org.libreplicator.api.Subscription
+import org.libreplicator.log.api.trace
+
+class MessageRouterSubscription(
+    private val scope: String,
+    private val messageRouter: DefaultMessageRouter
+) : Subscription {
+    override suspend fun unsubscribe() {
+        trace("Unsubscribing from message router..")
+        messageRouter.unsubscribe(scope)
+    }
+}

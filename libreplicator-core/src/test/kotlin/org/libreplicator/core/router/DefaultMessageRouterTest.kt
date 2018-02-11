@@ -127,20 +127,20 @@ class DefaultMessageRouterTest {
         assertThat(observerStub.observedMessage, nullValue())
     }
 
-    @Test(expected = AlreadySubscribedException::class)
+    @Test(expected = IllegalStateException::class)
     fun `subscribe not allows subscribing to same group twice`() = runBlocking<Unit> {
         messageRouter.subscribe(groupId, observerStub)
         messageRouter.subscribe(groupId, observerStub)
     }
 
-    @Test(expected = AlreadySubscribedException::class)
+    @Test(expected = IllegalStateException::class)
     fun `subscribe not allows subscribing to same group twice with other subscriptions`() = runBlocking<Unit> {
         messageRouter.subscribe(groupId, observerStub)
         messageRouter.subscribe(otherGroupId, observerStub)
         messageRouter.subscribe(otherGroupId, observerStub)
     }
 
-    @Test(expected = NotSubscribedException::class)
+    @Test(expected = IllegalStateException::class)
     fun `unsubscribe not allows unsubscribing from the same group twice`() = runBlocking {
         val subscription = messageRouter.subscribe(groupId, observerStub)
         subscription.unsubscribe()

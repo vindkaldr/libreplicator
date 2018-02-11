@@ -22,6 +22,7 @@ import dagger.Provides
 import org.libreplicator.core.client.ReplicatorClient
 import org.libreplicator.core.router.DefaultMessageRouter
 import org.libreplicator.core.router.MessageRouter
+import org.libreplicator.core.router.TracingMessageRouter
 import org.libreplicator.core.server.ReplicatorServer
 import org.libreplicator.json.api.JsonMapper
 import javax.inject.Singleton
@@ -34,6 +35,6 @@ class RouterModule {
         replicatorClient: ReplicatorClient,
         replicatorServer: ReplicatorServer
     ): MessageRouter {
-        return DefaultMessageRouter(jsonMapper, replicatorClient, replicatorServer)
+        return TracingMessageRouter(DefaultMessageRouter(jsonMapper, replicatorClient, replicatorServer))
     }
 }

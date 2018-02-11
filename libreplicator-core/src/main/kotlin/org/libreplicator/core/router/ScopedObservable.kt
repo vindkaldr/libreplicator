@@ -17,4 +17,9 @@
 
 package org.libreplicator.core.router
 
-class AlreadySubscribedException : Throwable()
+import org.libreplicator.api.Observer
+import org.libreplicator.api.Subscription
+
+interface ScopedObservable<out T> {
+    suspend fun subscribe(scope: String, observer: Observer<T>): Subscription
+}
