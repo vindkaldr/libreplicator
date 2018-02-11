@@ -38,32 +38,33 @@ private val otherRemoteNode = RemoteNode("otherRemoteNode", "localhost", 12347)
 private const val groupId = "groupId"
 private const val otherGroupId = "otherGroupId"
 
+private val localReplicatorFactory = ReplicatorTestFactory(localNode)
+private val localReplicator = localReplicatorFactory.create(groupId, listOf(remoteNode))
+private val localObserver = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 1)
+private val otherLocalReplicator = localReplicatorFactory.create(otherGroupId, listOf(otherRemoteNode))
+private val otherLocalObserver = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 1)
+
+private val remoteReplicatorFactory = ReplicatorTestFactory(remoteNode.toLocalNode())
+private val remoteReplicator = remoteReplicatorFactory.create(groupId, listOf(localNode.toRemoteNode()))
+private val remoteObserver = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 1)
+
+private val otherRemoteReplicatorFactory = ReplicatorTestFactory(otherRemoteNode.toLocalNode())
+private val otherRemoteReplicator = otherRemoteReplicatorFactory.create(otherGroupId, listOf(localNode.toRemoteNode()))
+private val otherRemoteObserver = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 1)
+
+private fun LocalNode.toRemoteNode() = RemoteNode(nodeId, hostname, port)
+private fun RemoteNode.toLocalNode() = LocalNode(nodeId, hostname, port)
+
 class ReplicatorRouterIntegrationTest {
     @Test
-    fun `libreplicator uses one local node and routes messages of replicators`() = runBlocking {
-        val localReplicatorFactory = ReplicatorTestFactory(localNode)
-        val localReplicator = localReplicatorFactory.create(groupId, listOf(remoteNode))
-        val localObserver = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 1)
-        val otherLocalReplicator = localReplicatorFactory.create(otherGroupId, listOf(otherRemoteNode))
-        val otherLocalObserver = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 1)
-
-        val remoteReplicatorFactory = ReplicatorTestFactory(remoteNode.toLocalNode())
-        val remoteReplicator = remoteReplicatorFactory.create(groupId, listOf(localNode.toRemoteNode()))
-        val remoteObserver = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 1)
-
-        val otherRemoteReplicatorFactory = ReplicatorTestFactory(otherRemoteNode.toLocalNode())
-        val otherRemoteReplicator = otherRemoteReplicatorFactory.create(otherGroupId, listOf(localNode.toRemoteNode()))
-        val otherRemoteObserver = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 1)
-
+    fun `libreplicator uses one local server and routes messages to replicators`() = runBlocking {
         val localSubscription = localReplicator.subscribe(localObserver)
         val otherLocalSubscription = otherLocalReplicator.subscribe(otherLocalObserver)
-
         val remoteSubscription = remoteReplicator.subscribe(remoteObserver)
         val otherRemoteSubscription = otherRemoteReplicator.subscribe(otherRemoteObserver)
 
         localReplicator.replicate(localLog)
         otherLocalReplicator.replicate(otherLocalLog)
-
         remoteReplicator.replicate(remoteLog)
         otherRemoteReplicator.replicate(otherRemoteLog)
 
@@ -77,7 +78,4 @@ class ReplicatorRouterIntegrationTest {
         remoteSubscription.unsubscribe()
         otherRemoteSubscription.unsubscribe()
     }
-
-    private fun LocalNode.toRemoteNode() = RemoteNode(nodeId, hostname, port)
-    private fun RemoteNode.toLocalNode() = LocalNode(nodeId, hostname, port)
 }
