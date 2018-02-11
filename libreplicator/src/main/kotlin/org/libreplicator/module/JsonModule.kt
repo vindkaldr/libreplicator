@@ -27,10 +27,11 @@ import org.libreplicator.json.mixin.ReplicatorStateMixin
 import org.libreplicator.json.mixin.TimeTableMixin
 import org.libreplicator.model.ReplicatorState
 import org.libreplicator.model.TimeTable
+import javax.inject.Singleton
 
 @Module
 class JsonModule {
-    @Provides
+    @Provides @Singleton
     fun provideJsonMapper(jsonMixins: Set<JsonMixin>): JsonMapper {
         return DefaultJsonMapper(jsonMixins)
     }

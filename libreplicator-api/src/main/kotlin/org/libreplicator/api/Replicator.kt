@@ -18,6 +18,7 @@
 package org.libreplicator.api
 
 interface Replicator : Observable<RemoteLog> {
+    suspend fun replicate(localLog: String)
     suspend fun replicate(localLog: LocalLog)
     override suspend fun subscribe(observer: Observer<RemoteLog>): Subscription
 }

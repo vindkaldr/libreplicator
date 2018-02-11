@@ -21,8 +21,9 @@ import dagger.Binds
 import dagger.Module
 import org.libreplicator.locator.DefaultNodeLocator
 import org.libreplicator.locator.api.NodeLocator
+import javax.inject.Singleton
 
 @Module
 interface LocatorModule {
-    @Binds fun provideNodeLocator(defaultNodeLocator: DefaultNodeLocator): NodeLocator
+    @Binds @Singleton fun provideNodeLocator(defaultNodeLocator: DefaultNodeLocator): NodeLocator
 }

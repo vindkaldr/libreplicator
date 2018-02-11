@@ -21,51 +21,68 @@ import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Subscription
 import org.libreplicator.core.client.ReplicatorClient
-import org.libreplicator.crypto.api.Cipher
+import org.libreplicator.core.server.ReplicatorServer
 import org.libreplicator.crypto.api.CipherException
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.log.api.trace
 import org.libreplicator.log.api.warn
 import org.libreplicator.model.ReplicatorMessage
-import org.libreplicator.core.server.ReplicatorServer
 import javax.inject.Inject
 
 class DefaultMessageRouter @Inject constructor(
     private val jsonMapper: JsonMapper,
-    private val cipher: Cipher,
     private val replicatorClient: ReplicatorClient,
     private val replicatorServer: ReplicatorServer
 ) : MessageRouter {
+    private val subscriptions = mutableMapOf<String, Observer<ReplicatorMessage>>()
+    private lateinit var serverSubscription: Subscription
+
     override fun routeMessage(remoteNode: RemoteNode, message: ReplicatorMessage) {
         trace("Routing message..")
-        replicatorClient.synchronizeWithNode(remoteNode, cipher.encrypt(jsonMapper.write(message)))
+        replicatorClient.synchronizeWithNode(remoteNode, jsonMapper.write(message))
     }
 
-    override suspend fun subscribe(observer: Observer<ReplicatorMessage>): Subscription {
+    override suspend fun subscribe(topic: String, observer: Observer<ReplicatorMessage>): Subscription {
         trace("Subscribing to message router..")
 
-        replicatorClient.initialize()
-        val subscription = replicatorServer.subscribe(object : Observer<String> {
-            override suspend fun observe(observable: String) {
-                try {
-                    observer.observe(jsonMapper.read(cipher.decrypt(observable), ReplicatorMessage::class))
+        if (subscriptions.containsKey(topic)) {
+            throw AlreadySubscribedException()
+        }
+        subscriptions[topic] = observer
+
+        if (subscriptions.size == 1) {
+            replicatorClient.initialize()
+            serverSubscription = replicatorServer.subscribe(object : Observer<String> {
+                override suspend fun observe(observable: String) {
+                    try {
+                        val message = jsonMapper.read(observable, ReplicatorMessage::class)
+                        subscriptions[message.groupId]?.observe(message)
+                    }
+                    catch (e: CipherException) {
+                        warn("Failed to deserialize corrupt message!")
+                    }
+                    catch (e: JsonReadException) {
+                        warn("Failed to deserialize invalid message!")
+                    }
                 }
-                catch (e: CipherException) {
-                    warn("Failed to deserialize corrupt message!")
-                }
-                catch (e: JsonReadException) {
-                    warn("Failed to deserialize invalid message!")
-                }
-            }
-        })
+            })
+        }
 
         return object : Subscription {
+            private var isUnsubscribed = false
+
             override suspend fun unsubscribe() {
+                if (isUnsubscribed) throw NotSubscribedException()
+
                 trace("Unsubscribing from message router..")
 
-                replicatorClient.close()
-                subscription.unsubscribe()
+                subscriptions.remove(topic)
+                if (subscriptions.isEmpty()) {
+                    replicatorClient.close()
+                    serverSubscription.unsubscribe()
+                }
+                isUnsubscribed = true
             }
         }
     }

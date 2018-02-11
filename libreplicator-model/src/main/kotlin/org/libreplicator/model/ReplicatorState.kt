@@ -57,9 +57,9 @@ data class ReplicatorState constructor(
         observer.observe(this)
     }
 
-    suspend fun updateFromMessage(message: ReplicatorMessage) {
-        logs.addAll(message.eventLogs)
-        timeTable.merge(localNode!!.nodeId, message)
+    suspend fun updateFromMessage(payload: ReplicatorPayload) {
+        logs.addAll(payload.eventLogs)
+        timeTable.merge(localNode!!.nodeId, payload)
 
         val logsToRemove = getDistributedEventLogs()
         logs.removeAll(logsToRemove)
@@ -67,11 +67,11 @@ data class ReplicatorState constructor(
         observer.observe(this)
     }
 
-    fun getNodesWithMissingEventLogs(): Map<RemoteNode, ReplicatorMessage> =
+    fun getNodesWithMissingEventLogs(): Map<RemoteNode, ReplicatorPayload> =
             remoteNodes!!.map { node -> node to getMissingEventLogs(node) }
                     .filter { it.second.isNotEmpty() }
                     .toMap()
-                    .mapValues { ReplicatorMessage(localNode!!.nodeId, it.value, timeTable) }
+                    .mapValues { ReplicatorPayload(localNode!!.nodeId, it.value, timeTable) }
 
     fun getMissingEventLogs(node: Node = localNode!!, eventLogs: List<RemoteLog> = logs.toList()): List<RemoteLog> =
             eventLogs.filter { !hasEventLog(node, it) }

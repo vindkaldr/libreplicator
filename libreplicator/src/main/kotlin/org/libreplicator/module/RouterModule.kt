@@ -15,13 +15,25 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module.replicator
+package org.libreplicator.module
 
 import dagger.Module
+import dagger.Provides
+import org.libreplicator.core.client.ReplicatorClient
+import org.libreplicator.core.router.DefaultMessageRouter
+import org.libreplicator.core.router.MessageRouter
+import org.libreplicator.core.server.ReplicatorServer
+import org.libreplicator.json.api.JsonMapper
+import javax.inject.Singleton
 
-@Module(includes = [
-    CoreModule::class,
-    CryptoModule::class,
-    JournalModule::class
-])
-interface ReplicatorModule
+@Module
+class RouterModule {
+    @Provides @Singleton
+    fun bindMessageRouter(
+        jsonMapper: JsonMapper,
+        replicatorClient: ReplicatorClient,
+        replicatorServer: ReplicatorServer
+    ): MessageRouter {
+        return DefaultMessageRouter(jsonMapper, replicatorClient, replicatorServer)
+    }
+}

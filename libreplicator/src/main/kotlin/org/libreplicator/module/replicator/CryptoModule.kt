@@ -19,13 +19,14 @@ package org.libreplicator.module.replicator
 
 import dagger.Module
 import dagger.Provides
+import org.libreplicator.component.replicator.ReplicatorScope
 import org.libreplicator.crypto.DefaultCipher
 import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.module.replicator.setting.ReplicatorCryptoSettings
 
 @Module
 class CryptoModule(private val cryptoSettings: ReplicatorCryptoSettings) {
-    @Provides
+    @Provides @ReplicatorScope
     fun provideCipher(): Cipher {
         if (cryptoSettings.isEncryptionEnabled && cryptoSettings.sharedSecret.isNotBlank()) {
             return DefaultCipher(cryptoSettings.sharedSecret)

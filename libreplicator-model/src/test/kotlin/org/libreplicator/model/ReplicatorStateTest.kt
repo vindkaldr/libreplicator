@@ -50,7 +50,7 @@ class ReplicatorStateTest {
 
         val NODE_1_EVENT_LOG_1 = LocalLog(NODE_1_LOG_1)
         val NODE_2_EVENT_LOG_1 = RemoteLog(REMOTE_NODE_2_ID, 1L, NODE_2_LOG_1)
-        val NODE_2_REPLICATOR_MESSAGE = ReplicatorMessage(REMOTE_NODE_2_ID, listOf(NODE_2_EVENT_LOG_1),
+        val NODE_2_REPLICATOR_MESSAGE = ReplicatorPayload(REMOTE_NODE_2_ID, listOf(NODE_2_EVENT_LOG_1),
                 TimeTable(mutableMapOf(REMOTE_NODE_2_ID to mutableMapOf(REMOTE_NODE_2_ID to 1L))))
     }
 
@@ -88,9 +88,9 @@ class ReplicatorStateTest {
                 mutableSetOf(node1Log1, node1Log2, node3Log1), timeTable)
         val actual = state.getNodesWithMissingEventLogs()
 
-        val expected = mapOf(REMOTE_NODE_1 to ReplicatorMessage(LOCAL_NODE.nodeId, listOf(node3Log1), timeTable),
-                REMOTE_NODE_2 to ReplicatorMessage(LOCAL_NODE.nodeId, listOf(node3Log1, node1Log2), timeTable),
-                REMOTE_NODE_3 to ReplicatorMessage(LOCAL_NODE.nodeId, listOf(node1Log1, node1Log2), timeTable))
+        val expected = mapOf(REMOTE_NODE_1 to ReplicatorPayload(LOCAL_NODE.nodeId, listOf(node3Log1), timeTable),
+                REMOTE_NODE_2 to ReplicatorPayload(LOCAL_NODE.nodeId, listOf(node3Log1, node1Log2), timeTable),
+                REMOTE_NODE_3 to ReplicatorPayload(LOCAL_NODE.nodeId, listOf(node1Log1, node1Log2), timeTable))
 
         assertThat(actual, equalTo(expected))
     }
@@ -152,7 +152,7 @@ class ReplicatorStateTest {
         timeTable[REMOTE_NODE_2.nodeId, REMOTE_NODE_2.nodeId] = 1
 
         assertThat(nodesWithMessages[REMOTE_NODE_3],
-                equalTo(ReplicatorMessage(LOCAL_NODE.nodeId, listOf(NODE_2_EVENT_LOG_1), timeTable)))
+                equalTo(ReplicatorPayload(LOCAL_NODE.nodeId, listOf(NODE_2_EVENT_LOG_1), timeTable)))
     }
 
     @Test

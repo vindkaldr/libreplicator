@@ -17,24 +17,20 @@
 
 package org.libreplicator.core.router.testdouble
 
-import org.junit.Assert.fail
 import org.libreplicator.api.Observer
 import org.libreplicator.api.Subscription
 import org.libreplicator.core.server.ReplicatorServer
 
-class ReplicatorServerStub constructor(private val subscription: Subscription) :
-    ReplicatorServer {
+class ReplicatorServerStub constructor(private val subscription: Subscription) : ReplicatorServer {
     var observedObserver: Observer<String>? = null
+    private var subscriptionCount = 0
 
     override suspend fun subscribe(observer: Observer<String>): Subscription {
-        if (observedObserver != null) {
-            fail("Unexpected call!")
-        }
         observedObserver = observer
+        subscriptionCount += 1
         return subscription
     }
 
-    fun hasBeenSubscribedTo(): Boolean {
-        return observedObserver != null
-    }
+    fun hasBeenSubscribedTo() = subscriptionCount > 0
+    fun hasBeenSubscribedToOnlyOnce() = subscriptionCount == 1
 }

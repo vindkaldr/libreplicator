@@ -20,51 +20,50 @@ package org.libreplicator.core.router
 import kotlinx.coroutines.experimental.runBlocking
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.nullValue
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertThat
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.libreplicator.api.RemoteNode
-import org.libreplicator.core.router.testdouble.CipherStub
-import org.libreplicator.core.router.testdouble.CorruptedCipherStub
 import org.libreplicator.core.router.testdouble.InvalidJsonMapperStub
-import org.libreplicator.core.router.testdouble.JsonMapperStub
+import org.libreplicator.core.router.testdouble.JsonMapperMessageStub
 import org.libreplicator.core.router.testdouble.ObserverDummy
 import org.libreplicator.core.router.testdouble.ObserverStub
 import org.libreplicator.core.router.testdouble.ReplicatorClientStub
 import org.libreplicator.core.router.testdouble.ReplicatorServerStub
 import org.libreplicator.core.router.testdouble.SubscriptionStub
 import org.libreplicator.model.ReplicatorMessage
-import org.libreplicator.model.TimeTable
+
+private const val groupId = "groupId"
+private const val otherGroupId = "otherGroupId"
+private val remoteNode = RemoteNode("remoteNode", "localhost", 12346)
+
+private const val payload = "payload"
+private val message = ReplicatorMessage(groupId, payload)
+private const val serializedMessage = "serializedMessage"
+
+private const val otherPayload = "otherPayload"
+private val otherMessage = ReplicatorMessage(otherGroupId, otherPayload)
+private const val otherSerializedMessage = "otherSerializedMessage"
 
 class DefaultMessageRouterTest {
-    private companion object {
-        private val MESSAGE = ReplicatorMessage("nodeId", listOf(), TimeTable())
-        private val SERIALIZED_MESSAGE = "serializedMessage"
-        private val ENCRYPTED_SERIALIZED_MESSAGE = "encryptedSerializedMessage"
-        private val REMOTE_NODE = RemoteNode("remoteNode", "localhost", 12346)
-    }
-
-    private lateinit var jsonMapperStub: JsonMapperStub
-    private lateinit var cipherStub: CipherStub
+    private lateinit var jsonMapperStub: JsonMapperMessageStub
     private lateinit var replicatorClientStub: ReplicatorClientStub
     private lateinit var subscriptionStub: SubscriptionStub
     private lateinit var replicatorServerStub: ReplicatorServerStub
 
     private lateinit var observerDummy: ObserverDummy
     private lateinit var observerStub: ObserverStub
+    private lateinit var otherObserverStub: ObserverStub
 
     private lateinit var messageRouter: MessageRouter
 
     @Before
     fun setUp() {
-        jsonMapperStub = JsonMapperStub(
-            objectToWrite = MESSAGE,
-            stringToRead = SERIALIZED_MESSAGE
-        )
-        cipherStub = CipherStub(
-            contentToEncrypt = SERIALIZED_MESSAGE,
-            contentToDecrypt = ENCRYPTED_SERIALIZED_MESSAGE
+        jsonMapperStub = JsonMapperMessageStub(
+            objectsToWrite = listOf(message, otherMessage),
+            stringsToRead = listOf(serializedMessage, otherSerializedMessage)
         )
         replicatorClientStub = ReplicatorClientStub()
         subscriptionStub = SubscriptionStub()
@@ -72,84 +71,159 @@ class DefaultMessageRouterTest {
 
         observerDummy = ObserverDummy()
         observerStub = ObserverStub()
+        otherObserverStub = ObserverStub()
 
         messageRouter = DefaultMessageRouter(
             jsonMapperStub,
-            cipherStub,
             replicatorClientStub,
             replicatorServerStub
         )
     }
 
     @Test
-    fun subscribe_shouldInitializeClient() = runBlocking {
-        messageRouter.subscribe(observerDummy)
-        assertTrue(replicatorClientStub.wasInitialized())
+    fun `subscribe initializes client`() = runBlocking {
+        messageRouter.subscribe(groupId, observerDummy)
+        assertTrue(replicatorClientStub.isInitialized())
     }
 
     @Test
-    fun unsubscribe_shouldCloseClient() = runBlocking {
-        messageRouter.subscribe(observerDummy).unsubscribe()
-        assertTrue(replicatorClientStub.wasClosed())
+    fun `unsubscribe closes client`() = runBlocking {
+        messageRouter.subscribe(groupId, observerDummy).unsubscribe()
+        assertTrue(replicatorClientStub.isClosed())
     }
 
     @Test
-    fun routeMessage_shouldSerializeAndEncryptAndRouteMessageToClient() = runBlocking {
-        messageRouter.routeMessage(
-            REMOTE_NODE,
-            MESSAGE
-        )
-        assertTrue(replicatorClientStub.sentMessage(
-            REMOTE_NODE,
-            ENCRYPTED_SERIALIZED_MESSAGE
-        ))
+    fun `routeMessage writes message to client`() = runBlocking {
+        messageRouter.routeMessage(remoteNode, message)
+        assertTrue(replicatorClientStub.sentMessage(remoteNode, serializedMessage))
     }
 
     @Test
-    fun subscribe_shouldSubscribeToServer() = runBlocking {
-        messageRouter.subscribe(observerDummy)
+    fun `subscribe subscribes to server`() = runBlocking {
+        messageRouter.subscribe(groupId, observerDummy)
         assertTrue(replicatorServerStub.hasBeenSubscribedTo())
     }
 
     @Test
-    fun unsubscribe_shouldUnsubscribeFromServer() = runBlocking {
-        messageRouter.subscribe(observerDummy).unsubscribe()
+    fun `unsubscribe unsubscribes from server`() = runBlocking {
+        messageRouter.subscribe(groupId, observerDummy).unsubscribe()
         assertTrue(subscriptionStub.hasBeenUnsubscribedFrom())
     }
 
     @Test
-    fun router_shouldNotifyObserver_aboutReceivedMessage() = runBlocking {
-        messageRouter.subscribe(observerStub)
-        replicatorServerStub.observedObserver?.observe(ENCRYPTED_SERIALIZED_MESSAGE)
+    fun `router notifies observer about received message`() = runBlocking {
+        messageRouter.subscribe(groupId, observerStub)
+        replicatorServerStub.observedObserver?.observe(serializedMessage)
 
-        assertThat(observerStub.observedMessage, equalTo(MESSAGE))
+        assertThat(observerStub.observedMessage, equalTo(message))
     }
 
     @Test
-    fun router_shouldNotNotifyObserver_aboutCorruptedMessage() = runBlocking {
-        messageRouter = DefaultMessageRouter(
-            jsonMapperStub,
-            CorruptedCipherStub(),
-            replicatorClientStub,
-            replicatorServerStub
-        )
-        messageRouter.subscribe(observerStub)
-        replicatorServerStub.observedObserver?.observe(ENCRYPTED_SERIALIZED_MESSAGE)
+    fun `router not notifies observer about invalid message`() = runBlocking {
+        messageRouter = DefaultMessageRouter(InvalidJsonMapperStub(), replicatorClientStub, replicatorServerStub)
+        messageRouter.subscribe(groupId, observerStub)
+        replicatorServerStub.observedObserver?.observe(serializedMessage)
 
         assertThat(observerStub.observedMessage, nullValue())
     }
 
-    @Test
-    fun router_shouldNotNotifyObserver_aboutInvalidMessage() = runBlocking {
-        messageRouter = DefaultMessageRouter(
-            InvalidJsonMapperStub(),
-            cipherStub,
-            replicatorClientStub,
-            replicatorServerStub
-        )
-        messageRouter.subscribe(observerStub)
-        replicatorServerStub.observedObserver?.observe(ENCRYPTED_SERIALIZED_MESSAGE)
+    @Test(expected = AlreadySubscribedException::class)
+    fun `subscribe not allows subscribing to same group twice`() = runBlocking<Unit> {
+        messageRouter.subscribe(groupId, observerStub)
+        messageRouter.subscribe(groupId, observerStub)
+    }
 
-        assertThat(observerStub.observedMessage, nullValue())
+    @Test(expected = AlreadySubscribedException::class)
+    fun `subscribe not allows subscribing to same group twice with other subscriptions`() = runBlocking<Unit> {
+        messageRouter.subscribe(groupId, observerStub)
+        messageRouter.subscribe(otherGroupId, observerStub)
+        messageRouter.subscribe(otherGroupId, observerStub)
+    }
+
+    @Test(expected = NotSubscribedException::class)
+    fun `unsubscribe not allows unsubscribing from the same group twice`() = runBlocking {
+        val subscription = messageRouter.subscribe(groupId, observerStub)
+        subscription.unsubscribe()
+        subscription.unsubscribe()
+    }
+
+    @Test
+    fun `subscribe initializes client only for the first time`() = runBlocking {
+        messageRouter.subscribe(groupId, observerStub)
+        messageRouter.subscribe(otherGroupId, observerStub)
+        assertTrue(replicatorClientStub.isInitializedOnce())
+    }
+
+    @Test
+    fun `unsubscribe not closes client if other also subscribed`() = runBlocking {
+        val groupSubscription = messageRouter.subscribe(groupId, observerStub)
+        messageRouter.subscribe(otherGroupId, observerStub)
+
+        groupSubscription.unsubscribe()
+
+        assertFalse(replicatorClientStub.isClosed())
+    }
+
+    @Test
+    fun `unsubscribe closes client after last unsubscribed`() = runBlocking {
+        val groupSubscription = messageRouter.subscribe(groupId, observerStub)
+        val otherGroupSubscription = messageRouter.subscribe(otherGroupId, observerStub)
+
+        groupSubscription.unsubscribe()
+        otherGroupSubscription.unsubscribe()
+
+        assertTrue(replicatorClientStub.isClosedOnce())
+    }
+
+    @Test
+    fun `subscribe subscribes to server only for the first time`() = runBlocking {
+        messageRouter.subscribe(groupId, observerStub)
+        messageRouter.subscribe(otherGroupId, observerStub)
+        assertTrue(replicatorServerStub.hasBeenSubscribedToOnlyOnce())
+    }
+
+    @Test
+    fun `unsubscribe not unsubscribes from server if other also subscribed`() = runBlocking {
+        val groupSubscription = messageRouter.subscribe(groupId, observerStub)
+        messageRouter.subscribe(otherGroupId, observerStub)
+
+        groupSubscription.unsubscribe()
+
+        assertFalse(subscriptionStub.hasBeenUnsubscribedFrom())
+    }
+
+    @Test
+    fun `unsubscribe unsubscribes from server after last unsubscribed`() = runBlocking {
+        val groupSubscription = messageRouter.subscribe(groupId, observerStub)
+        val otherGroupSubscription = messageRouter.subscribe(otherGroupId, observerStub)
+
+        groupSubscription.unsubscribe()
+        otherGroupSubscription.unsubscribe()
+
+        assertTrue(subscriptionStub.hasBeenUnsubscribedFromOnce())
+    }
+
+    @Test
+    fun `router notifies observers about received messages`() = runBlocking {
+        messageRouter.subscribe(groupId, observerStub)
+        replicatorServerStub.observedObserver?.observe(serializedMessage)
+
+        messageRouter.subscribe(otherGroupId, otherObserverStub)
+        replicatorServerStub.observedObserver?.observe(otherSerializedMessage)
+
+        assertThat(observerStub.observedMessage, equalTo(message))
+        assertThat(otherObserverStub.observedMessage, equalTo(otherMessage))
+    }
+
+    @Test
+    fun `router allows subscribers to come and go`() = runBlocking {
+        messageRouter.subscribe(groupId, observerStub)
+
+        messageRouter.subscribe(otherGroupId, otherObserverStub).unsubscribe()
+        messageRouter.subscribe(otherGroupId, otherObserverStub)
+
+        replicatorServerStub.observedObserver?.observe(otherSerializedMessage)
+
+        assertThat(otherObserverStub.observedMessage, equalTo(otherMessage))
     }
 }

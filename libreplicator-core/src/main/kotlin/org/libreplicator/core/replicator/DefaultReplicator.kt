@@ -24,27 +24,34 @@ import org.libreplicator.api.Replicator
 import org.libreplicator.api.Subscription
 import org.libreplicator.core.router.MessageRouter
 import org.libreplicator.core.state.StateInteractor
+import org.libreplicator.core.transformer.PayloadWrapper
 import org.libreplicator.log.api.trace
 import org.libreplicator.model.ReplicatorMessage
 import javax.inject.Inject
 
 class DefaultReplicator @Inject constructor(
-    private val messageRouter: MessageRouter,
-    private val stateInteractor: StateInteractor
+    private val groupId: String,
+    private val stateInteractor: StateInteractor,
+    private val payloadWrapper: PayloadWrapper,
+    private val messageRouter: MessageRouter
 ) : Replicator {
+    override suspend fun replicate(localLog: String) {
+        replicate(LocalLog(localLog))
+    }
+
     override suspend fun replicate(localLog: LocalLog) {
         trace("Replicating event log..")
         stateInteractor.getNodesWithMissingLogs(localLog).forEach {
-            messageRouter.routeMessage(it.key, it.value)
+            messageRouter.routeMessage(it.key, payloadWrapper.wrap(it.value))
         }
     }
 
     override suspend fun subscribe(observer: Observer<RemoteLog>): Subscription {
         trace("Subscribing to replicator..")
-        return messageRouter.subscribe(object : Observer<ReplicatorMessage> {
+        return messageRouter.subscribe(groupId, object : Observer<ReplicatorMessage> {
             override suspend fun observe(observable: ReplicatorMessage) {
                 trace("Observed message")
-                stateInteractor.getMissingLogs(observable).forEach { observer.observe(it) }
+                stateInteractor.getMissingLogs(payloadWrapper.unwrap(observable)).forEach { observer.observe(it) }
             }
         })
     }

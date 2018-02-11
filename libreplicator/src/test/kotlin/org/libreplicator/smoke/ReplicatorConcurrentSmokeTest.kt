@@ -27,6 +27,8 @@ import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.testdouble.RemoteEventLogObserverDummy
 
+private const val groupId = "groupId"
+
 class ReplicatorConcurrentSmokeTest {
     private companion object {
         private val LOG = "log"
@@ -58,7 +60,7 @@ class ReplicatorConcurrentSmokeTest {
     }
 
     private suspend fun testRunReplicator(localNode: LocalNode, remoteNodes: List<RemoteNode>) {
-        val replicator = ReplicatorTestFactory(localNode).create(remoteNodes)
+        val replicator = ReplicatorTestFactory(localNode).create(groupId, remoteNodes)
 
         var subscription = replicator.subscribe(RemoteEventLogObserverDummy())
         replicator.replicate(LocalLog(LOG))

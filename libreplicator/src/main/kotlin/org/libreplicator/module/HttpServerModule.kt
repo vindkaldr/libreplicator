@@ -21,8 +21,9 @@ import dagger.Binds
 import dagger.Module
 import org.libreplicator.httpserver.DefaultHttpServer
 import org.libreplicator.httpserver.api.HttpServer
+import javax.inject.Singleton
 
 @Module
 interface HttpServerModule {
-    @Binds fun bindHttpServer(defaultHttpServer: DefaultHttpServer): HttpServer
+    @Binds @Singleton fun bindHttpServer(defaultHttpServer: DefaultHttpServer): HttpServer
 }

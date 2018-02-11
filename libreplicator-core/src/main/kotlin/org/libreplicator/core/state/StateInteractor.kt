@@ -20,9 +20,9 @@ package org.libreplicator.core.state
 import org.libreplicator.api.LocalLog
 import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.RemoteNode
-import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.model.ReplicatorPayload
 
 interface StateInteractor {
-    suspend fun getNodesWithMissingLogs(localLog: LocalLog): Map<RemoteNode, ReplicatorMessage>
-    suspend fun getMissingLogs(message: ReplicatorMessage): List<RemoteLog>
+    suspend fun getNodesWithMissingLogs(localLog: LocalLog): Map<RemoteNode, ReplicatorPayload>
+    suspend fun getMissingLogs(payload: ReplicatorPayload): List<RemoteLog>
 }

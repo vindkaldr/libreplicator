@@ -51,7 +51,7 @@ class TimeTableTest {
         val timeTable2 = TimeTable()
         timeTable2[NODE_2, NODE_2] = 10L
 
-        timeTable.merge(NODE_1, ReplicatorMessage(NODE_2, listOf(), timeTable2))
+        timeTable.merge(NODE_1, ReplicatorPayload(NODE_2, listOf(), timeTable2))
 
         assertThat(timeTable[NODE_1, NODE_1], equalTo(0L))
         assertThat(timeTable[NODE_1, NODE_2], equalTo(10L))
@@ -80,7 +80,7 @@ class TimeTableTest {
         timeTable2[NODE_1, NODE_3] = 7L
         timeTable2[NODE_3, NODE_1] = 14L
 
-        timeTable.merge(NODE_1, ReplicatorMessage(NODE_2, listOf(), timeTable2))
+        timeTable.merge(NODE_1, ReplicatorPayload(NODE_2, listOf(), timeTable2))
 
         assertThat(timeTable[NODE_1, NODE_1], equalTo(42L))
         assertThat(timeTable[NODE_1, NODE_2], equalTo(10L))

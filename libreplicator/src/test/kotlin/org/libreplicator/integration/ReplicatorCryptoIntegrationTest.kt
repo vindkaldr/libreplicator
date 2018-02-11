@@ -30,6 +30,8 @@ import org.libreplicator.api.RemoteNode
 import org.libreplicator.module.replicator.setting.ReplicatorCryptoSettings
 import org.libreplicator.testdouble.RemoteEventLogObserverMock
 
+private const val groupId = "groupId"
+
 class ReplicatorCryptoIntegrationTest {
     private companion object {
         private val LOCAL_NODE_ID = "localNodeId"
@@ -56,6 +58,7 @@ class ReplicatorCryptoIntegrationTest {
         val remoteReplicatorFactory = ReplicatorTestFactory(remoteNode)
 
         val remoteReplicator = remoteReplicatorFactory.create(
+            groupId = groupId,
             remoteNodes = listOf(RemoteNode(localNode.nodeId, localNode.hostname, localNode.port)),
             settings = ReplicatorSettings(
                 ReplicatorCryptoSettings(
@@ -68,6 +71,7 @@ class ReplicatorCryptoIntegrationTest {
         val remoteSubscription = remoteReplicator.subscribe(remoteEventLogObserverMock)
 
         val localReplicator = localReplicatorFactory.create(
+            groupId = groupId,
             remoteNodes = listOf(RemoteNode(remoteNode.nodeId, remoteNode.hostname, remoteNode.port)),
             settings = ReplicatorSettings(
                 ReplicatorCryptoSettings(
@@ -97,11 +101,14 @@ class ReplicatorCryptoIntegrationTest {
         val remoteReplicatorFactory = ReplicatorTestFactory(remoteNode)
 
         val remoteReplicator = remoteReplicatorFactory.create(
-            remoteNodes = listOf(RemoteNode(localNode.nodeId, localNode.hostname, localNode.port)))
+            groupId = groupId,
+            remoteNodes = listOf(RemoteNode(localNode.nodeId, localNode.hostname, localNode.port))
+        )
         val remoteEventLogObserverMock = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 3)
         val remoteSubscription = remoteReplicator.subscribe(remoteEventLogObserverMock)
 
         val localReplicator = localReplicatorFactory.create(
+            groupId = groupId,
             remoteNodes = listOf(RemoteNode(remoteNode.nodeId, remoteNode.hostname, remoteNode.port)),
             settings = ReplicatorSettings(
                 ReplicatorCryptoSettings(

@@ -30,7 +30,11 @@ import javax.inject.Singleton
 @Module
 class ServerModule constructor(private val localNode: LocalNode) {
     @Provides @Singleton
-    fun provideReplicatorServer(server: HttpServer, gateway: InternetGateway, locator: NodeLocator): ReplicatorServer {
+    fun provideReplicatorServer(
+        server: HttpServer,
+        gateway: InternetGateway,
+        locator: NodeLocator
+    ): ReplicatorServer {
         return DefaultReplicatorServer(server, gateway, locator, localNode)
     }
 }

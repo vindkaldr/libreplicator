@@ -27,13 +27,13 @@ import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonMixin
 import org.libreplicator.json.mixin.ReplicatorStateMixin
 import org.libreplicator.json.mixin.TimeTableMixin
-import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.model.ReplicatorPayload
 import org.libreplicator.model.ReplicatorState
 import org.libreplicator.model.TimeTable
 
 class DefaultJsonMapperTest {
     private companion object {
-        private val REPLICATOR_MESSAGE = ReplicatorMessage("nodeId", listOf(), TimeTable())
+        private val REPLICATOR_MESSAGE = ReplicatorPayload("nodeId", listOf(), TimeTable())
         private val SERIALIZED_REPLICATOR_MESSAGE = "{\"nodeId\":\"nodeId\",\"eventLogs\":[],\"timeTable\":{}}"
 
         private val REPLICATOR_STATE = ReplicatorState(LocalNode("", "", 0), listOf(RemoteNode("")), mutableSetOf(), TimeTable())
@@ -59,7 +59,7 @@ class DefaultJsonMapperTest {
 
     @Test
     fun read_shouldDeserializeReplicatorMessage() {
-        assertThat(jsonMapper.read(SERIALIZED_REPLICATOR_MESSAGE, ReplicatorMessage::class), equalTo(REPLICATOR_MESSAGE))
+        assertThat(jsonMapper.read(SERIALIZED_REPLICATOR_MESSAGE, ReplicatorPayload::class), equalTo(REPLICATOR_MESSAGE))
     }
 
     @Test

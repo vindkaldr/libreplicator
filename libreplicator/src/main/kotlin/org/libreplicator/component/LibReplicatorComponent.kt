@@ -18,7 +18,7 @@
 package org.libreplicator.component
 
 import dagger.Component
-import org.libreplicator.core.client.ReplicatorClient
+import org.libreplicator.core.router.MessageRouter
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.module.ClientModule
 import org.libreplicator.module.GatewayModule
@@ -26,8 +26,8 @@ import org.libreplicator.module.HttpClientModule
 import org.libreplicator.module.HttpServerModule
 import org.libreplicator.module.JsonModule
 import org.libreplicator.module.LocatorModule
+import org.libreplicator.module.RouterModule
 import org.libreplicator.module.ServerModule
-import org.libreplicator.core.server.ReplicatorServer
 import javax.inject.Singleton
 
 @Singleton
@@ -38,10 +38,10 @@ import javax.inject.Singleton
     HttpServerModule::class,
     JsonModule::class,
     LocatorModule::class,
-    ServerModule::class
+    ServerModule::class,
+    RouterModule::class
 ])
 interface LibReplicatorComponent {
-    fun replicatorClient(): ReplicatorClient
-    fun replicatorServer(): ReplicatorServer
+    fun messageRouter(): MessageRouter
     fun jsonMapper(): JsonMapper
 }

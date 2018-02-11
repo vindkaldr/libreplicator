@@ -30,6 +30,8 @@ import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Subscription
 import org.libreplicator.testdouble.RemoteEventLogObserverMock
 
+private const val groupId = "groupId"
+
 class ReplicatorIntegrationTest {
     private companion object {
         private val LOG_1_1 = "log11"
@@ -45,16 +47,19 @@ class ReplicatorIntegrationTest {
     private val node3 = LocalNode("nodeId3", "localhost", 12347)
 
     private val replicator1 = ReplicatorTestFactory(localNode = node1).create(
-            remoteNodes = listOf(RemoteNode(node2.nodeId, node2.hostname, node2.port),
-                    RemoteNode(node3.nodeId, node3.hostname, node3.port)))
+        groupId = groupId,
+        remoteNodes = listOf(RemoteNode(node2.nodeId, node2.hostname, node2.port),
+            RemoteNode(node3.nodeId, node3.hostname, node3.port)))
 
     private val replicator2 = ReplicatorTestFactory(localNode = node2).create(
-            remoteNodes = listOf(RemoteNode(node1.nodeId, node1.hostname, node1.port),
-                    RemoteNode(node3.nodeId, node3.hostname, node3.port)))
+        groupId = groupId,
+        remoteNodes = listOf(RemoteNode(node1.nodeId, node1.hostname, node1.port),
+            RemoteNode(node3.nodeId, node3.hostname, node3.port)))
 
     private val replicator3 = ReplicatorTestFactory(localNode = node3).create(
-            remoteNodes = listOf(RemoteNode(node1.nodeId, node1.hostname, node1.port),
-                    RemoteNode(node2.nodeId, node2.hostname, node2.port)))
+        groupId = groupId,
+        remoteNodes = listOf(RemoteNode(node1.nodeId, node1.hostname, node1.port),
+            RemoteNode(node2.nodeId, node2.hostname, node2.port)))
 
     private val eventLogObserverMock1 = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 4)
     private val eventLogObserverMock2 = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 4)

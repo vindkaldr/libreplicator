@@ -15,13 +15,11 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module.replicator
+package org.libreplicator.core.router
 
-import dagger.Module
+import org.libreplicator.api.Observer
+import org.libreplicator.api.Subscription
 
-@Module(includes = [
-    CoreModule::class,
-    CryptoModule::class,
-    JournalModule::class
-])
-interface ReplicatorModule
+interface TopicObservable<out T> {
+    suspend fun subscribe(topic: String, observer: Observer<T>): Subscription
+}

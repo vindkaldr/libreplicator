@@ -15,13 +15,6 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module.replicator
+package org.libreplicator.core.router
 
-import dagger.Module
-
-@Module(includes = [
-    CoreModule::class,
-    CryptoModule::class,
-    JournalModule::class
-])
-interface ReplicatorModule
+class AlreadySubscribedException : Throwable()

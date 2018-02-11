@@ -15,13 +15,8 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module.replicator
+package org.libreplicator.model
 
-import dagger.Module
+import org.libreplicator.api.RemoteLog
 
-@Module(includes = [
-    CoreModule::class,
-    CryptoModule::class,
-    JournalModule::class
-])
-interface ReplicatorModule
+data class ReplicatorPayload(val nodeId: String, val eventLogs: List<RemoteLog>, val timeTable: TimeTable)

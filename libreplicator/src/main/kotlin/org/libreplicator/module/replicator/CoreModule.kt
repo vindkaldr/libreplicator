@@ -17,19 +17,37 @@
 
 package org.libreplicator.module.replicator
 
-import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import org.libreplicator.api.Replicator
 import org.libreplicator.component.replicator.ReplicatorScope
 import org.libreplicator.core.replicator.DefaultReplicator
-import org.libreplicator.core.router.DefaultMessageRouter
 import org.libreplicator.core.router.MessageRouter
 import org.libreplicator.core.state.DefaultStateInteractor
 import org.libreplicator.core.state.StateInteractor
+import org.libreplicator.core.transformer.DefaultPayloadWrapper
+import org.libreplicator.core.transformer.PayloadWrapper
+import org.libreplicator.crypto.api.Cipher
+import org.libreplicator.json.api.JsonMapper
+import org.libreplicator.model.ReplicatorState
 
 @Module
-interface CoreModule {
-    @Binds @ReplicatorScope fun bindStateInteractor(defaultStateInteractor: DefaultStateInteractor): StateInteractor
-    @Binds fun bindReplicator(defaultReplicator: DefaultReplicator): Replicator
-    @Binds fun bindMessageRouter(defaultMessageRouter: DefaultMessageRouter): MessageRouter
+class CoreModule(private val groupId: String) {
+    @Provides @ReplicatorScope
+    fun bindReplicator(
+        stateInteractor: StateInteractor,
+        payloadWrapper: PayloadWrapper,
+        messageRouter: MessageRouter
+    ): Replicator {
+        return DefaultReplicator(groupId, stateInteractor, payloadWrapper, messageRouter)
+    }
+    @Provides @ReplicatorScope
+    fun bindStateInteractor(replicatorState: ReplicatorState): StateInteractor {
+        return DefaultStateInteractor(replicatorState)
+    }
+
+    @Provides @ReplicatorScope
+    fun bindPayloadWrapper(jsonMapper: JsonMapper, cipher: Cipher): PayloadWrapper {
+        return DefaultPayloadWrapper(groupId, jsonMapper, cipher)
+    }
 }

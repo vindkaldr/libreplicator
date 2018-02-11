@@ -15,26 +15,24 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.core.router.testdouble
+package org.libreplicator.core.transformer
 
-import org.junit.Assert.fail
+import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.model.ReplicatorMessage
-import kotlin.reflect.KClass
+import org.libreplicator.model.ReplicatorPayload
+import javax.inject.Inject
 
-class JsonMapperStub(private val objectToWrite: ReplicatorMessage, private val stringToRead: String) : JsonMapper {
-    override fun write(any: Any): String {
-        if (any != objectToWrite) {
-            fail("Unexpected call!")
-        }
-        return stringToRead
+class DefaultPayloadWrapper @Inject constructor(
+    private val groupId: String,
+    private val jsonMapper: JsonMapper,
+    private val cipher: Cipher
+) : PayloadWrapper {
+    override fun wrap(replicatorPayload: ReplicatorPayload): ReplicatorMessage {
+        return ReplicatorMessage(groupId, cipher.encrypt(jsonMapper.write(replicatorPayload)))
     }
 
-    override fun <T : Any> read(string: String, kotlinType: KClass<T>): T {
-        if (string != stringToRead && kotlinType != ReplicatorMessage::class) {
-            fail("Unexpected call!")
-        }
-        @Suppress("UNCHECKED_CAST")
-        return objectToWrite as T
+    override fun unwrap(replicatorMessage: ReplicatorMessage): ReplicatorPayload {
+        return jsonMapper.read(cipher.decrypt(replicatorMessage.payload), ReplicatorPayload::class)
     }
 }

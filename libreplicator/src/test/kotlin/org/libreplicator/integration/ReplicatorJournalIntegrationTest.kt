@@ -33,6 +33,8 @@ import org.libreplicator.module.replicator.setting.ReplicatorJournalSettings
 import org.libreplicator.testdouble.RemoteEventLogObserverMock
 import java.nio.file.Files
 
+private const val groupId = "groupId"
+
 class ReplicatorJournalIntegrationTest {
     private companion object {
         private val DIRECTORY_OF_JOURNALS = Files.createTempDirectory("libreplicator-journals-")
@@ -67,7 +69,8 @@ class ReplicatorJournalIntegrationTest {
     private val remoteReplicatorFactory = ReplicatorTestFactory(remoteNode)
     private val remoteEventLogObserverMock = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 3)
     private val remoteReplicator = remoteReplicatorFactory.create(
-            remoteNodes = listOf(RemoteNode(localNode.nodeId, localNode.hostname, localNode.port)))
+        groupId = groupId,
+        remoteNodes = listOf(RemoteNode(localNode.nodeId, localNode.hostname, localNode.port)))
     private lateinit var remoteReplicatorSubscription: Subscription
 
     @After
@@ -81,8 +84,9 @@ class ReplicatorJournalIntegrationTest {
     @Test
     fun replicator_shouldKeepState_whenJournalingEnabled() = runBlocking {
         localReplicator = localReplicatorFactory.create(
-                remoteNodes = listOf(RemoteNode(remoteNode.nodeId, remoteNode.hostname, remoteNode.port)),
-                settings = localLibReplicatorSettings)
+            groupId = groupId,
+            remoteNodes = listOf(RemoteNode(remoteNode.nodeId, remoteNode.hostname, remoteNode.port)),
+            settings = localLibReplicatorSettings)
         localReplicatorSubscription = localReplicator.subscribe(localEventLogObserverMock)
 
         localReplicator.replicate(LocalLog(FIRST_LOG))
@@ -92,8 +96,9 @@ class ReplicatorJournalIntegrationTest {
         remoteReplicatorSubscription = remoteReplicator.subscribe(remoteEventLogObserverMock)
 
         localReplicator = localReplicatorFactory.create(
-                remoteNodes = listOf(RemoteNode(remoteNode.nodeId, remoteNode.hostname, remoteNode.port)),
-                settings = localLibReplicatorSettings)
+            groupId = groupId,
+            remoteNodes = listOf(RemoteNode(remoteNode.nodeId, remoteNode.hostname, remoteNode.port)),
+            settings = localLibReplicatorSettings)
         localReplicatorSubscription = localReplicator.subscribe(localEventLogObserverMock)
         localReplicator.replicate(LocalLog(THIRD_LOG))
 

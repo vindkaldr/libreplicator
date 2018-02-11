@@ -24,6 +24,7 @@ import org.libreplicator.module.FakeLocatorModule
 import org.libreplicator.module.HttpClientModule
 import org.libreplicator.module.HttpServerModule
 import org.libreplicator.module.JsonModule
+import org.libreplicator.module.RouterModule
 import org.libreplicator.module.ServerModule
 import javax.inject.Singleton
 
@@ -35,6 +36,7 @@ import javax.inject.Singleton
     HttpServerModule::class,
     JsonModule::class,
     FakeLocatorModule::class,
-    ServerModule::class
+    ServerModule::class,
+    RouterModule::class
 ])
 interface LibReplicatorTestComponent : LibReplicatorComponent

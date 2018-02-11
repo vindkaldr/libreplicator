@@ -22,18 +22,15 @@ import org.libreplicator.api.RemoteNode
 import org.libreplicator.core.client.ReplicatorClient
 
 class ReplicatorClientStub : ReplicatorClient {
-    private var observedInitialize: Boolean = false
+    private var observedInitialize: Int = 0
 
     private var observedRemoteNode: RemoteNode? = null
     private var observedMessage: String? = null
 
-    private var observedClose: Boolean = false
+    private var observedClose: Int = 0
 
     override fun initialize() {
-        if (observedInitialize) {
-            fail("Unexpected call!")
-        }
-        observedInitialize = true
+        observedInitialize += 1
     }
 
     override fun synchronizeWithNode(remoteNode: RemoteNode, message: String) {
@@ -45,21 +42,16 @@ class ReplicatorClientStub : ReplicatorClient {
     }
 
     override fun close() {
-        if (observedClose) {
-            fail("Unexpected call!")
-        }
-        observedClose = true
+        observedClose += 1
     }
 
-    fun wasInitialized(): Boolean {
-        return observedInitialize
-    }
+    fun isInitialized() = observedInitialize > 0
+    fun isInitializedOnce() = observedInitialize == 1
 
     fun sentMessage(remoteNode: RemoteNode, message: String): Boolean {
         return observedRemoteNode == remoteNode && observedMessage == message
     }
 
-    fun wasClosed(): Boolean {
-        return observedClose
-    }
+    fun isClosed() = observedClose > 0
+    fun isClosedOnce() = observedClose == 1
 }

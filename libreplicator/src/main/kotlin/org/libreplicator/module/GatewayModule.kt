@@ -21,8 +21,9 @@ import dagger.Binds
 import dagger.Module
 import org.libreplicator.gateway.DefaultInternetGateway
 import org.libreplicator.gateway.api.InternetGateway
+import javax.inject.Singleton
 
 @Module
 interface GatewayModule {
-    @Binds fun bindInternetGateway(defaultInternetGateway: DefaultInternetGateway): InternetGateway
+    @Binds @Singleton fun bindInternetGateway(defaultInternetGateway: DefaultInternetGateway): InternetGateway
 }

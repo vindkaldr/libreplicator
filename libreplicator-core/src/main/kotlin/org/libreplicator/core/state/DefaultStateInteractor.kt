@@ -24,7 +24,7 @@ import org.libreplicator.api.LocalLog
 import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.core.state.interaction.StateInteraction
-import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.model.ReplicatorPayload
 import org.libreplicator.model.ReplicatorState
 import javax.inject.Inject
 
@@ -39,16 +39,16 @@ class DefaultStateInteractor @Inject constructor(
                     interaction.channel.send(replicatorState.getNodesWithMissingEventLogs())
                 }
                 is StateInteraction.ObserveRemoteMessage -> {
-                    val missingEventLogs = replicatorState.getMissingEventLogs(eventLogs = interaction.message.eventLogs)
-                    replicatorState.updateFromMessage(interaction.message)
+                    val missingEventLogs = replicatorState.getMissingEventLogs(eventLogs = interaction.payload.eventLogs)
+                    replicatorState.updateFromMessage(interaction.payload)
                     interaction.channel.send(missingEventLogs)
                 }
             }
         }
     }
 
-    override suspend fun getNodesWithMissingLogs(localLog: LocalLog): Map<RemoteNode, ReplicatorMessage> {
-        val channel = Channel<Map<RemoteNode, ReplicatorMessage>>()
+    override suspend fun getNodesWithMissingLogs(localLog: LocalLog): Map<RemoteNode, ReplicatorPayload> {
+        val channel = Channel<Map<RemoteNode, ReplicatorPayload>>()
 
         val interaction = StateInteraction.ObserveLocalEvent(localLog, channel)
         replicatorStateActor.send(interaction)
@@ -56,10 +56,10 @@ class DefaultStateInteractor @Inject constructor(
         return channel.receive()
     }
 
-    override suspend fun getMissingLogs(message: ReplicatorMessage): List<RemoteLog> {
+    override suspend fun getMissingLogs(payload: ReplicatorPayload): List<RemoteLog> {
         val channel = Channel<List<RemoteLog>>()
 
-        val interaction = StateInteraction.ObserveRemoteMessage(message, channel)
+        val interaction = StateInteraction.ObserveRemoteMessage(payload, channel)
         replicatorStateActor.send(interaction)
 
         return channel.receive()

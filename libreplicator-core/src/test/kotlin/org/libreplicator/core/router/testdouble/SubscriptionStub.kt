@@ -17,20 +17,15 @@
 
 package org.libreplicator.core.router.testdouble
 
-import org.junit.Assert.fail
 import org.libreplicator.api.Subscription
 
 class SubscriptionStub : Subscription {
-    private var observedUnsubscribe = false
+    private var unsubscriptionCount = 0
 
     override suspend fun unsubscribe() {
-        if (observedUnsubscribe) {
-            fail("Unexpected call!")
-        }
-        observedUnsubscribe = true
+        unsubscriptionCount += 1
     }
 
-    fun hasBeenUnsubscribedFrom(): Boolean {
-        return observedUnsubscribe
-    }
+    fun hasBeenUnsubscribedFrom() = unsubscriptionCount > 0
+    fun hasBeenUnsubscribedFromOnce() =unsubscriptionCount == 1
 }

@@ -15,13 +15,12 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module.replicator
+package org.libreplicator.core.transformer
 
-import dagger.Module
+import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.model.ReplicatorPayload
 
-@Module(includes = [
-    CoreModule::class,
-    CryptoModule::class,
-    JournalModule::class
-])
-interface ReplicatorModule
+interface PayloadWrapper {
+    fun wrap(replicatorPayload: ReplicatorPayload): ReplicatorMessage
+    fun unwrap(replicatorMessage: ReplicatorMessage): ReplicatorPayload
+}

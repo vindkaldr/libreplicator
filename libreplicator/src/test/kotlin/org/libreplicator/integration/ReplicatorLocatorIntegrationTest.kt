@@ -27,6 +27,8 @@ import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.testdouble.RemoteEventLogObserverMock
 
+private const val groupId = "groupId"
+
 class ReplicatorLocatorIntegrationTest {
     private companion object {
         private val LOG_1 = "log1"
@@ -40,9 +42,11 @@ class ReplicatorLocatorIntegrationTest {
     private val remoteReplicatorFactory = ReplicatorTestFactory(remoteNode)
 
     private val localReplicator = localReplicatorFactory.create(
-            remoteNodes = listOf(RemoteNode(remoteNode.nodeId)))
+        groupId = groupId,
+        remoteNodes = listOf(RemoteNode(remoteNode.nodeId)))
     private val remoteReplicator = remoteReplicatorFactory.create(
-            remoteNodes = listOf(RemoteNode(localNode.nodeId)))
+        groupId = groupId,
+        remoteNodes = listOf(RemoteNode(localNode.nodeId)))
 
     private val localLogObserver = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 1)
     private val remoteLogObserver = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 1)
