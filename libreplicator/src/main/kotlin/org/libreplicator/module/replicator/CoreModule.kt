@@ -25,8 +25,8 @@ import org.libreplicator.core.replicator.DefaultReplicator
 import org.libreplicator.core.router.MessageRouter
 import org.libreplicator.core.state.DefaultStateInteractor
 import org.libreplicator.core.state.StateInteractor
-import org.libreplicator.core.transformer.DefaultPayloadWrapper
-import org.libreplicator.core.transformer.PayloadWrapper
+import org.libreplicator.core.wrapper.DefaultPayloadWrapper
+import org.libreplicator.core.wrapper.PayloadWrapper
 import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.model.ReplicatorState

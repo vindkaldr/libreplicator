@@ -15,13 +15,13 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.core.transformer
+package org.libreplicator.core.wrapper
 
 import org.hamcrest.Matchers.equalTo
 import org.junit.Assert.assertThat
 import org.junit.Test
-import org.libreplicator.core.router.testdouble.CipherStub
-import org.libreplicator.core.router.testdouble.JsonMapperPayloadStub
+import org.libreplicator.core.wrapper.testdouble.CipherStub
+import org.libreplicator.core.wrapper.testdouble.JsonMapperStub
 import org.libreplicator.model.ReplicatorMessage
 import org.libreplicator.model.ReplicatorPayload
 import org.libreplicator.model.TimeTable
@@ -33,19 +33,19 @@ private const val encryptedSerializedPayload = "encryptedSerializedReplicatorMes
 private const val groupId = "groupId"
 private val message = ReplicatorMessage(groupId, encryptedSerializedPayload)
 
-private val jsonMapperStub = JsonMapperPayloadStub(objectToWrite = payload, stringToRead = serializedPayload)
+private val jsonMapperStub = JsonMapperStub(objectToWrite = payload, stringToRead = serializedPayload)
 private val cipherStub = CipherStub(contentToEncrypt = serializedPayload, contentToDecrypt = encryptedSerializedPayload)
+
+private val payloadWrapper: PayloadWrapper = DefaultPayloadWrapper(groupId, jsonMapperStub, cipherStub)
 
 class DefaultPayloadWrapperTest {
     @Test
-    fun `wrap writes and encrypts payload with group id`() {
-        val wrapper: PayloadWrapper = DefaultPayloadWrapper(groupId, jsonMapperStub, cipherStub)
-        assertThat(wrapper.wrap(payload), equalTo(message))
+    fun `wrap creates message from serialized and encrypted payload`() {
+        assertThat(payloadWrapper.wrap(payload), equalTo(message))
     }
 
     @Test
-    fun `unwrap decrypts and reads payload`() {
-        val wrapper: PayloadWrapper = DefaultPayloadWrapper(groupId, jsonMapperStub, cipherStub)
-        assertThat(wrapper.unwrap(message), equalTo(payload))
+    fun `unwrap returns decrypted and deserialized payload from message`() {
+        assertThat(payloadWrapper.unwrap(message), equalTo(payload))
     }
 }

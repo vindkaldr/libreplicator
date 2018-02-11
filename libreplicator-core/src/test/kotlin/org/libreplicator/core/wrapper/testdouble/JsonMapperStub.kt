@@ -15,24 +15,13 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.core.transformer
+package org.libreplicator.core.wrapper.testdouble
 
-import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.json.api.JsonMapper
-import org.libreplicator.model.ReplicatorMessage
-import org.libreplicator.model.ReplicatorPayload
-import javax.inject.Inject
+import kotlin.reflect.KClass
+import kotlin.reflect.full.cast
 
-class DefaultPayloadWrapper @Inject constructor(
-    private val groupId: String,
-    private val jsonMapper: JsonMapper,
-    private val cipher: Cipher
-) : PayloadWrapper {
-    override fun wrap(replicatorPayload: ReplicatorPayload): ReplicatorMessage {
-        return ReplicatorMessage(groupId, cipher.encrypt(jsonMapper.write(replicatorPayload)))
-    }
-
-    override fun unwrap(replicatorMessage: ReplicatorMessage): ReplicatorPayload {
-        return jsonMapper.read(cipher.decrypt(replicatorMessage.payload), ReplicatorPayload::class)
-    }
+class JsonMapperStub<T>(private val objectToWrite: T, private val stringToRead: String) : JsonMapper {
+    override fun write(any: Any) = stringToRead
+    override fun <T : Any> read(string: String, kotlinType: KClass<T>) = kotlinType.cast(objectToWrite)
 }

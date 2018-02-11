@@ -15,12 +15,11 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.core.transformer
+package org.libreplicator.core.wrapper.testdouble
 
-import org.libreplicator.model.ReplicatorMessage
-import org.libreplicator.model.ReplicatorPayload
+import org.libreplicator.crypto.api.Cipher
 
-interface PayloadWrapper {
-    fun wrap(replicatorPayload: ReplicatorPayload): ReplicatorMessage
-    fun unwrap(replicatorMessage: ReplicatorMessage): ReplicatorPayload
+class CipherStub(private val contentToEncrypt: String, private val contentToDecrypt: String) : Cipher {
+    override fun encrypt(content: String) = contentToDecrypt
+    override fun decrypt(encryptedContent: String) = contentToEncrypt
 }
