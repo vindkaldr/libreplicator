@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.core.state
+package org.libreplicator.core.interactor
 
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.channels.Channel
@@ -23,7 +23,7 @@ import kotlinx.coroutines.experimental.channels.actor
 import org.libreplicator.api.LocalLog
 import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.RemoteNode
-import org.libreplicator.core.state.interaction.StateInteraction
+import org.libreplicator.core.interactor.api.StateInteractor
 import org.libreplicator.model.ReplicatorPayload
 import org.libreplicator.model.ReplicatorState
 import javax.inject.Inject

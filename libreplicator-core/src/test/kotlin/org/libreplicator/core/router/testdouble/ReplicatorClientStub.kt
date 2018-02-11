@@ -19,7 +19,7 @@ package org.libreplicator.core.router.testdouble
 
 import org.junit.Assert.fail
 import org.libreplicator.api.RemoteNode
-import org.libreplicator.core.client.ReplicatorClient
+import org.libreplicator.core.client.api.ReplicatorClient
 
 class ReplicatorClientStub : ReplicatorClient {
     private var observedInitialize: Int = 0

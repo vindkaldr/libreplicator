@@ -20,8 +20,9 @@ package org.libreplicator.core.router
 import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Subscription
-import org.libreplicator.core.client.ReplicatorClient
-import org.libreplicator.core.server.ReplicatorServer
+import org.libreplicator.core.client.api.ReplicatorClient
+import org.libreplicator.core.router.api.MessageRouter
+import org.libreplicator.core.server.api.ReplicatorServer
 import org.libreplicator.crypto.api.CipherException
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonReadException

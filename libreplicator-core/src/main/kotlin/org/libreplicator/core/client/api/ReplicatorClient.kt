@@ -15,12 +15,12 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.core.wrapper
+package org.libreplicator.core.client.api
 
-import org.libreplicator.model.ReplicatorMessage
-import org.libreplicator.model.ReplicatorPayload
+import org.libreplicator.api.RemoteNode
+import java.io.Closeable
 
-interface PayloadWrapper {
-    fun wrap(payload: ReplicatorPayload): ReplicatorMessage
-    fun unwrap(message: ReplicatorMessage): ReplicatorPayload
+interface ReplicatorClient : Closeable {
+    fun initialize()
+    fun synchronizeWithNode(remoteNode: RemoteNode, message: String)
 }

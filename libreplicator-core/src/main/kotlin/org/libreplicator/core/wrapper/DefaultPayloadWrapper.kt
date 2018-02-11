@@ -17,6 +17,7 @@
 
 package org.libreplicator.core.wrapper
 
+import org.libreplicator.core.wrapper.api.PayloadWrapper
 import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.model.ReplicatorMessage

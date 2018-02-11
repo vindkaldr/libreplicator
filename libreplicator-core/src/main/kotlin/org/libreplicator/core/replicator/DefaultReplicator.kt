@@ -22,9 +22,9 @@ import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.Replicator
 import org.libreplicator.api.Subscription
-import org.libreplicator.core.router.MessageRouter
-import org.libreplicator.core.state.StateInteractor
-import org.libreplicator.core.wrapper.PayloadWrapper
+import org.libreplicator.core.router.api.MessageRouter
+import org.libreplicator.core.interactor.api.StateInteractor
+import org.libreplicator.core.wrapper.api.PayloadWrapper
 import org.libreplicator.log.api.trace
 import org.libreplicator.model.ReplicatorMessage
 import javax.inject.Inject

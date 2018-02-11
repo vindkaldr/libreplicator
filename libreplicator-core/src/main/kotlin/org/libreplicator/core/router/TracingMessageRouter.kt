@@ -20,6 +20,7 @@ package org.libreplicator.core.router
 import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Subscription
+import org.libreplicator.core.router.api.MessageRouter
 import org.libreplicator.log.api.trace
 import org.libreplicator.model.ReplicatorMessage
 

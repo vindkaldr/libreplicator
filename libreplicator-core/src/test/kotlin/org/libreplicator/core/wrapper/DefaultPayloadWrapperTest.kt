@@ -20,6 +20,7 @@ package org.libreplicator.core.wrapper
 import org.hamcrest.Matchers.equalTo
 import org.junit.Assert.assertThat
 import org.junit.Test
+import org.libreplicator.core.wrapper.api.PayloadWrapper
 import org.libreplicator.core.wrapper.testdouble.CipherStub
 import org.libreplicator.core.wrapper.testdouble.JsonMapperStub
 import org.libreplicator.model.ReplicatorMessage

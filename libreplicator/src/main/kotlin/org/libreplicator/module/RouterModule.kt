@@ -19,11 +19,11 @@ package org.libreplicator.module
 
 import dagger.Module
 import dagger.Provides
-import org.libreplicator.core.client.ReplicatorClient
+import org.libreplicator.core.client.api.ReplicatorClient
 import org.libreplicator.core.router.DefaultMessageRouter
-import org.libreplicator.core.router.MessageRouter
+import org.libreplicator.core.router.api.MessageRouter
 import org.libreplicator.core.router.TracingMessageRouter
-import org.libreplicator.core.server.ReplicatorServer
+import org.libreplicator.core.server.api.ReplicatorServer
 import org.libreplicator.json.api.JsonMapper
 import javax.inject.Singleton
 

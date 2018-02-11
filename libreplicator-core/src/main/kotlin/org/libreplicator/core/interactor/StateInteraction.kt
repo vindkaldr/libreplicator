@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.core.state.interaction
+package org.libreplicator.core.interactor
 
 import kotlinx.coroutines.experimental.channels.SendChannel
 import org.libreplicator.api.LocalLog

@@ -20,6 +20,7 @@ package org.libreplicator.core.server
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.Observer
 import org.libreplicator.api.Subscription
+import org.libreplicator.core.server.api.ReplicatorServer
 import org.libreplicator.gateway.api.InternetGateway
 import org.libreplicator.gateway.api.model.AddPortMapping
 import org.libreplicator.gateway.api.model.DeletePortMapping

@@ -18,6 +18,7 @@
 package org.libreplicator.core.client
 
 import org.libreplicator.api.RemoteNode
+import org.libreplicator.core.client.api.ReplicatorClient
 import org.libreplicator.httpclient.api.HttpClient
 import org.libreplicator.locator.api.NodeLocator
 import javax.inject.Inject
@@ -25,8 +26,8 @@ import javax.inject.Provider
 
 class DefaultReplicatorClient @Inject constructor(
         private val nodeLocator: NodeLocator,
-        private val httpClientProvider: Provider<HttpClient>) : ReplicatorClient {
-
+        private val httpClientProvider: Provider<HttpClient>
+) : ReplicatorClient {
     private companion object {
         private val SYNC_PATH = "/sync"
     }

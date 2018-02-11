@@ -20,7 +20,7 @@ package org.libreplicator.module
 import dagger.Binds
 import dagger.Module
 import org.libreplicator.core.client.DefaultReplicatorClient
-import org.libreplicator.core.client.ReplicatorClient
+import org.libreplicator.core.client.api.ReplicatorClient
 import javax.inject.Singleton
 
 @Module

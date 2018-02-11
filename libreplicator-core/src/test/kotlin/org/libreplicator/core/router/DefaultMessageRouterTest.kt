@@ -26,6 +26,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.libreplicator.api.RemoteNode
+import org.libreplicator.core.router.api.MessageRouter
 import org.libreplicator.core.router.testdouble.InvalidJsonMapperStub
 import org.libreplicator.core.router.testdouble.JsonMapperMessageStub
 import org.libreplicator.core.router.testdouble.ObserverDummy

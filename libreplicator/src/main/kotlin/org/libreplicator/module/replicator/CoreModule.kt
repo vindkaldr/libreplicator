@@ -22,11 +22,11 @@ import dagger.Provides
 import org.libreplicator.api.Replicator
 import org.libreplicator.component.replicator.ReplicatorScope
 import org.libreplicator.core.replicator.DefaultReplicator
-import org.libreplicator.core.router.MessageRouter
-import org.libreplicator.core.state.DefaultStateInteractor
-import org.libreplicator.core.state.StateInteractor
+import org.libreplicator.core.router.api.MessageRouter
+import org.libreplicator.core.interactor.DefaultStateInteractor
+import org.libreplicator.core.interactor.api.StateInteractor
 import org.libreplicator.core.wrapper.DefaultPayloadWrapper
-import org.libreplicator.core.wrapper.PayloadWrapper
+import org.libreplicator.core.wrapper.api.PayloadWrapper
 import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.model.ReplicatorState

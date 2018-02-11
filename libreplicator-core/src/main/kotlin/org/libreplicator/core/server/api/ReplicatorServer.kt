@@ -15,14 +15,12 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.core.state
+package org.libreplicator.core.server.api
 
-import org.libreplicator.api.LocalLog
-import org.libreplicator.api.RemoteLog
-import org.libreplicator.api.RemoteNode
-import org.libreplicator.model.ReplicatorPayload
+import org.libreplicator.api.Observable
+import org.libreplicator.api.Observer
+import org.libreplicator.api.Subscription
 
-interface StateInteractor {
-    suspend fun getNodesWithMissingLogs(localLog: LocalLog): Map<RemoteNode, ReplicatorPayload>
-    suspend fun getMissingLogs(payload: ReplicatorPayload): List<RemoteLog>
+interface ReplicatorServer : Observable<String> {
+    override suspend fun subscribe(observer: Observer<String>): Subscription
 }

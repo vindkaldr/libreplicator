@@ -15,12 +15,11 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.core.server
+package org.libreplicator.core.router.api
 
-import org.libreplicator.api.Observable
 import org.libreplicator.api.Observer
 import org.libreplicator.api.Subscription
 
-interface ReplicatorServer : Observable<String> {
-    override suspend fun subscribe(observer: Observer<String>): Subscription
+interface ScopedObservable<out T> {
+    suspend fun subscribe(scope: String, observer: Observer<T>): Subscription
 }

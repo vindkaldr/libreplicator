@@ -19,7 +19,7 @@ package org.libreplicator.core.router.testdouble
 
 import org.libreplicator.api.Observer
 import org.libreplicator.api.Subscription
-import org.libreplicator.core.server.ReplicatorServer
+import org.libreplicator.core.server.api.ReplicatorServer
 
 class ReplicatorServerStub constructor(private val subscription: Subscription) : ReplicatorServer {
     var observedObserver: Observer<String>? = null

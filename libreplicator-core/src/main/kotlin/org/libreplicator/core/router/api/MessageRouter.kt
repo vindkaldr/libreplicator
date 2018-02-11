@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.core.router
+package org.libreplicator.core.router.api
 
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.model.ReplicatorMessage
