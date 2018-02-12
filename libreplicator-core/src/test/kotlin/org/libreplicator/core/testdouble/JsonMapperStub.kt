@@ -15,13 +15,23 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.core.wrapper.testdouble
+package org.libreplicator.core.testdouble
 
 import org.libreplicator.json.api.JsonMapper
 import kotlin.reflect.KClass
 import kotlin.reflect.full.cast
 
-class JsonMapperStub<T>(private val objectToWrite: T, private val stringToRead: String) : JsonMapper {
-    override fun write(any: Any) = stringToRead
-    override fun <T : Any> read(string: String, kotlinType: KClass<T>) = kotlinType.cast(objectToWrite)
+class JsonMapperStub<T : Any>(
+    private val objectsToWrite: List<T>,
+    private val stringsToRead: List<String>
+) : JsonMapper {
+    constructor(objectToWrite: T, stringToRead: String) : this(listOf(objectToWrite), listOf(stringToRead))
+
+    override fun write(any: Any): String {
+        return stringsToRead[objectsToWrite.indexOf(any)]
+    }
+
+    override fun <T : Any> read(string: String, kotlinType: KClass<T>): T {
+        return kotlinType.cast(objectsToWrite[stringsToRead.indexOf(string)])
+    }
 }
