@@ -19,7 +19,11 @@ package org.libreplicator.core.wrapper.testdouble
 
 import org.libreplicator.crypto.api.Cipher
 
-class CipherStub(private val contentToEncrypt: String, private val contentToDecrypt: String) : Cipher {
-    override fun encrypt(content: String) = contentToDecrypt
-    override fun decrypt(encryptedContent: String) = contentToEncrypt
+class CipherStub private constructor(private val operation: Operation) : Cipher {
+    constructor(pair: Pair<String, String>) : this(Operation(pair.first, pair.second))
+
+    override fun encrypt(content: String) = operation.encryptedContent
+    override fun decrypt(encryptedContent: String) = operation.decryptedContent
+
+    private class Operation(val decryptedContent: String, val encryptedContent: String)
 }

@@ -34,8 +34,8 @@ private const val encryptedSerializedPayload = "encryptedSerializedReplicatorMes
 private const val groupId = "groupId"
 private val message = ReplicatorMessage(groupId, encryptedSerializedPayload)
 
-private val jsonMapperStub = JsonMapperStub(objectToWrite = payload, stringToRead = serializedPayload)
-private val cipherStub = CipherStub(contentToEncrypt = serializedPayload, contentToDecrypt = encryptedSerializedPayload)
+private val jsonMapperStub = JsonMapperStub(payload to serializedPayload)
+private val cipherStub = CipherStub(serializedPayload to encryptedSerializedPayload)
 
 private val payloadWrapper: PayloadWrapper = DefaultPayloadWrapper(groupId, jsonMapperStub, cipherStub)
 

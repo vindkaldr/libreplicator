@@ -28,12 +28,12 @@ import org.junit.Test
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.core.router.api.MessageRouter
 import org.libreplicator.core.router.testdouble.InvalidJsonMapperStub
-import org.libreplicator.core.testdouble.JsonMapperStub
 import org.libreplicator.core.router.testdouble.ObserverDummy
 import org.libreplicator.core.router.testdouble.ObserverStub
 import org.libreplicator.core.router.testdouble.ReplicatorClientStub
 import org.libreplicator.core.router.testdouble.ReplicatorServerStub
 import org.libreplicator.core.router.testdouble.SubscriptionStub
+import org.libreplicator.core.testdouble.JsonMapperStub
 import org.libreplicator.model.ReplicatorMessage
 
 private const val groupId = "groupId"
@@ -63,8 +63,8 @@ class DefaultMessageRouterTest {
     @Before
     fun setUp() {
         jsonMapperStub = JsonMapperStub(
-            objectsToWrite = listOf(message, otherMessage),
-            stringsToRead = listOf(serializedMessage, otherSerializedMessage)
+            message to serializedMessage,
+            otherMessage to otherSerializedMessage
         )
         replicatorClientStub = ReplicatorClientStub()
         subscriptionStub = SubscriptionStub()

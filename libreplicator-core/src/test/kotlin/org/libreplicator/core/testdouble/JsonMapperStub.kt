@@ -21,17 +21,14 @@ import org.libreplicator.json.api.JsonMapper
 import kotlin.reflect.KClass
 import kotlin.reflect.full.cast
 
-class JsonMapperStub<T : Any>(
-    private val objectsToWrite: List<T>,
-    private val stringsToRead: List<String>
-) : JsonMapper {
-    constructor(objectToWrite: T, stringToRead: String) : this(listOf(objectToWrite), listOf(stringToRead))
+class JsonMapperStub<T : Any> private constructor(private val operations: List<Operation<T>>) : JsonMapper {
+    constructor(vararg pairs: Pair<T, String>) : this(pairs.map { Operation(it.first, it.second) })
 
-    override fun write(any: Any): String {
-        return stringsToRead[objectsToWrite.indexOf(any)]
-    }
+    override fun write(any: Any) =
+        operations.first { it.deserializedObject == any }.serializedObject
 
-    override fun <T : Any> read(string: String, kotlinType: KClass<T>): T {
-        return kotlinType.cast(objectsToWrite[stringsToRead.indexOf(string)])
-    }
+    override fun <T : Any> read(string: String, kotlinType: KClass<T>) =
+        kotlinType.cast(operations.first { it.serializedObject == string }.deserializedObject)
+
+    private class Operation<out T>(val deserializedObject: T, val serializedObject: String)
 }
