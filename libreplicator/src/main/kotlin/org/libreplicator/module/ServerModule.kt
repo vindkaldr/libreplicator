@@ -22,7 +22,7 @@ import dagger.Provides
 import org.libreplicator.api.LocalNode
 import org.libreplicator.gateway.api.InternetGateway
 import org.libreplicator.httpserver.api.HttpServer
-import org.libreplicator.locator.api.NodeLocator
+import org.libreplicator.core.locator.api.NodeLocator
 import org.libreplicator.core.server.DefaultReplicatorServer
 import org.libreplicator.core.server.api.ReplicatorServer
 import javax.inject.Singleton

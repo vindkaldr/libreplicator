@@ -15,13 +15,15 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.locator.api
+package org.libreplicator.core.locator
 
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
+import org.libreplicator.core.locator.api.NodeLocator
+import javax.inject.Inject
 
-interface NodeLocator {
-    fun addNode(localNode: LocalNode)
-    fun removeNode(nodeId: String)
-    fun getNode(nodeId: String): RemoteNode?
+class DefaultNodeLocator @Inject constructor(): NodeLocator {
+    override fun addNode(localNode: LocalNode) {}
+    override fun removeNode(nodeId: String) {}
+    override fun getNode(nodeId: String): RemoteNode? = null
 }

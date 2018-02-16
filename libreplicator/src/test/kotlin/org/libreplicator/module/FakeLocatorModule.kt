@@ -21,7 +21,7 @@ import dagger.Module
 import dagger.Provides
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
-import org.libreplicator.locator.api.NodeLocator
+import org.libreplicator.core.locator.api.NodeLocator
 
 @Module
 class FakeLocatorModule {

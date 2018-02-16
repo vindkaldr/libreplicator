@@ -19,8 +19,8 @@ package org.libreplicator.module
 
 import dagger.Binds
 import dagger.Module
-import org.libreplicator.locator.DefaultNodeLocator
-import org.libreplicator.locator.api.NodeLocator
+import org.libreplicator.core.locator.DefaultNodeLocator
+import org.libreplicator.core.locator.api.NodeLocator
 import javax.inject.Singleton
 
 @Module

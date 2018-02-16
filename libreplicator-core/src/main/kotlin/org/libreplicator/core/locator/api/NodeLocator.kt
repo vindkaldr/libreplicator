@@ -15,9 +15,13 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    compile project(':libreplicator-api')
-    compile project(':libreplicator-locator-api')
+package org.libreplicator.core.locator.api
 
-    compile group: 'javax.inject', name: 'javax.inject', version: javaxInjectVersion
+import org.libreplicator.api.LocalNode
+import org.libreplicator.api.RemoteNode
+
+interface NodeLocator {
+    fun addNode(localNode: LocalNode)
+    fun removeNode(nodeId: String)
+    fun getNode(nodeId: String): RemoteNode?
 }
