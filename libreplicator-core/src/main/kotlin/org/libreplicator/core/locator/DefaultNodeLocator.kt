@@ -87,7 +87,7 @@ class DefaultNodeLocator @Inject constructor(
     }
 
     private fun closeSocket() {
-        multicastSocket?.close()
+        closeMulticastSocket(multicastSocket, settings.multicastAddress)
         multicastSocket = null
     }
 

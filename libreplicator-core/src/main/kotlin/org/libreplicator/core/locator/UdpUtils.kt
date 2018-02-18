@@ -29,6 +29,11 @@ fun createMulticastSocket(multicastAddress: InetAddress, multicastPort: Int): Mu
     return multicastSocket
 }
 
+fun closeMulticastSocket(multicastSocket: MulticastSocket?, multicastAddress: InetAddress) {
+    multicastSocket?.leaveGroup(multicastAddress)
+    multicastSocket?.close()
+}
+
 fun receiveMessage(multicastSocket: DatagramSocket?, bufferSizeInBytes: Int): String {
     return try {
         String(extractData(multicastSocket, bufferSizeInBytes) ?: byteArrayOf())
