@@ -27,7 +27,7 @@ class NodeLocatorSettings(
 ) {
     companion object {
         operator fun invoke(
-            multicastAddress: String = "ff08::1",
+            multicastAddress: String = "ff02::1",
             multicastPort: Int = 24816,
             multicastPeriodInMilliseconds: Long = 10 * 1000,
             bufferSizeInBytes: Int = 1024
