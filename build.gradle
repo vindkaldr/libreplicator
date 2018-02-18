@@ -39,6 +39,13 @@ subprojects {
         }
     }
 
+    test {
+        testLogging {
+            events "skipped", "failed"
+            exceptionFormat "full"
+        }
+    }
+
     task sourceJar(type: Jar) {
         from sourceSets.main.kotlin
     }
