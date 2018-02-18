@@ -21,7 +21,6 @@ import dagger.Component
 import org.libreplicator.core.router.api.MessageRouter
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.module.ClientModule
-import org.libreplicator.module.GatewayModule
 import org.libreplicator.module.HttpClientModule
 import org.libreplicator.module.HttpServerModule
 import org.libreplicator.module.JsonModule
@@ -33,7 +32,6 @@ import javax.inject.Singleton
 @Singleton
 @Component(modules = [
     ClientModule::class,
-    GatewayModule::class,
     HttpClientModule::class,
     HttpServerModule::class,
     JsonModule::class,

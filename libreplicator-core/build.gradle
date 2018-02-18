@@ -18,7 +18,6 @@
 dependencies {
     compile project(':libreplicator-api')
     compile project(':libreplicator-crypto-api')
-    compile project(':libreplicator-gateway-api')
     compile project(':libreplicator-httpclient-api')
     compile project(':libreplicator-httpserver-api')
     compile project(':libreplicator-json-api')

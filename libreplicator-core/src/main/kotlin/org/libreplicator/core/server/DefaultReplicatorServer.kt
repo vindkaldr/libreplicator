@@ -20,21 +20,14 @@ package org.libreplicator.core.server
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.Observer
 import org.libreplicator.api.Subscription
-import org.libreplicator.core.server.api.ReplicatorServer
-import org.libreplicator.gateway.api.InternetGateway
-import org.libreplicator.gateway.api.model.AddPortMapping
-import org.libreplicator.gateway.api.model.DeletePortMapping
-import org.libreplicator.gateway.api.model.InternetProtocol
-import org.libreplicator.httpserver.api.HttpServer
 import org.libreplicator.core.locator.api.NodeLocator
+import org.libreplicator.core.server.api.ReplicatorServer
+import org.libreplicator.httpserver.api.HttpServer
 import org.libreplicator.log.api.trace
 import javax.inject.Inject
 
-const val LIBREPLICATOR_DESCRIPTION = "libreplicator"
-
 class DefaultReplicatorServer @Inject constructor(
     private val httpServer: HttpServer,
-    private val internetGateway: InternetGateway,
     private val nodeLocator: NodeLocator,
     private val localNode: LocalNode
 ) : ReplicatorServer {
@@ -42,9 +35,6 @@ class DefaultReplicatorServer @Inject constructor(
         trace("Subscribing to server..")
 
         httpServer.start(localNode.port, "/sync", observer)
-        internetGateway.addPortMapping(AddPortMapping(localNode.port, InternetProtocol.TCP, localNode.port,
-            LIBREPLICATOR_DESCRIPTION
-        ))
         nodeLocator.acquire()
 
         return object : Subscription {
@@ -52,7 +42,6 @@ class DefaultReplicatorServer @Inject constructor(
                 trace("Unsubscribing from server..")
 
                 httpServer.stop()
-                internetGateway.deletePortMapping(DeletePortMapping(localNode.port, InternetProtocol.TCP))
                 nodeLocator.release()
             }
         }

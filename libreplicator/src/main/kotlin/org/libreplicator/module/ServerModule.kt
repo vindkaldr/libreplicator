@@ -20,21 +20,16 @@ package org.libreplicator.module
 import dagger.Module
 import dagger.Provides
 import org.libreplicator.api.LocalNode
-import org.libreplicator.gateway.api.InternetGateway
-import org.libreplicator.httpserver.api.HttpServer
 import org.libreplicator.core.locator.api.NodeLocator
 import org.libreplicator.core.server.DefaultReplicatorServer
 import org.libreplicator.core.server.api.ReplicatorServer
+import org.libreplicator.httpserver.api.HttpServer
 import javax.inject.Singleton
 
 @Module
 class ServerModule(private val localNode: LocalNode) {
     @Provides @Singleton
-    fun provideReplicatorServer(
-        server: HttpServer,
-        gateway: InternetGateway,
-        locator: NodeLocator
-    ): ReplicatorServer {
-        return DefaultReplicatorServer(server, gateway, locator, localNode)
+    fun provideReplicatorServer(server: HttpServer, locator: NodeLocator): ReplicatorServer {
+        return DefaultReplicatorServer(server, locator, localNode)
     }
 }
