@@ -25,44 +25,43 @@ import org.libreplicator.ReplicatorTestFactory
 import org.libreplicator.api.LocalLog
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
+import org.libreplicator.core.locator.api.NodeLocatorSettings
 import org.libreplicator.testdouble.RemoteEventLogObserverMock
 
+private val locatorSettings = NodeLocatorSettings(multicastPeriodInMilliseconds = 100)
+
+private val localNode = LocalNode("nodeId1", "localhost", 12345)
+private val localReplicatorFactory = replicatorFactory(localNode, locatorSettings)
+
+private val remoteNode = LocalNode("nodeId2", "localhost", 12346)
+private val remoteReplicatorFactory = replicatorFactory(remoteNode, locatorSettings)
+
 private const val groupId = "groupId"
+private val localReplicator = localReplicatorFactory.create(groupId, listOf(RemoteNode(remoteNode.nodeId)))
+private val remoteReplicator = remoteReplicatorFactory.create(groupId, listOf(RemoteNode(localNode.nodeId)))
+
+private const val log1 = "log1"
+private const val log2 = "log2"
+
+private val localLogObserver = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 1)
+private val remoteLogObserver = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 1)
 
 class ReplicatorLocatorIntegrationTest {
-    private companion object {
-        private val LOG_1 = "log1"
-        private val LOG_2 = "log2"
-    }
-
-    private val localNode = LocalNode("nodeId1", "localhost", 12345)
-    private val localReplicatorFactory = ReplicatorTestFactory(localNode)
-
-    private val remoteNode = LocalNode("nodeId2", "localhost", 12346)
-    private val remoteReplicatorFactory = ReplicatorTestFactory(remoteNode)
-
-    private val localReplicator = localReplicatorFactory.create(
-        groupId = groupId,
-        remoteNodes = listOf(RemoteNode(remoteNode.nodeId)))
-    private val remoteReplicator = remoteReplicatorFactory.create(
-        groupId = groupId,
-        remoteNodes = listOf(RemoteNode(localNode.nodeId)))
-
-    private val localLogObserver = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 1)
-    private val remoteLogObserver = RemoteEventLogObserverMock(numberOfExpectedEventLogs = 1)
-
-    @Test
+    @Test(timeout = 5000)
     fun replicator_shouldReplicateLogsBetweenNodes() = runBlocking {
         val localSubscription = localReplicator.subscribe(localLogObserver)
         val remoteSubscription = remoteReplicator.subscribe(remoteLogObserver)
 
-        localReplicator.replicate(LocalLog(LOG_1))
-        remoteReplicator.replicate(LocalLog(LOG_2))
+        localReplicator.replicate(LocalLog(log1))
+        remoteReplicator.replicate(LocalLog(log2))
 
-        assertThat(localLogObserver.getObservedLogs(), containsInAnyOrder(LOG_2))
-        assertThat(remoteLogObserver.getObservedLogs(), containsInAnyOrder(LOG_1))
+        assertThat(localLogObserver.getObservedLogs(), containsInAnyOrder(log2))
+        assertThat(remoteLogObserver.getObservedLogs(), containsInAnyOrder(log1))
 
         localSubscription.unsubscribe()
         remoteSubscription.unsubscribe()
     }
 }
+
+private fun replicatorFactory(node: LocalNode, settings: NodeLocatorSettings) =
+    ReplicatorTestFactory(node, settings)

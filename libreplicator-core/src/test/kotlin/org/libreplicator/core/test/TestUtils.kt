@@ -15,24 +15,28 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module
+package org.libreplicator.core.test
 
-import dagger.Module
-import dagger.Provides
-import org.libreplicator.api.LocalNode
-import org.libreplicator.core.locator.DefaultNodeLocator
-import org.libreplicator.core.locator.api.NodeLocator
-import org.libreplicator.core.locator.api.NodeLocatorSettings
-import org.libreplicator.json.api.JsonMapper
-import javax.inject.Singleton
+import org.junit.Assert
+import java.util.concurrent.Semaphore
+import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 
-@Module
-class LocatorModule(
-    private val localNode: LocalNode,
-    private val settings: NodeLocatorSettings
-) {
-    @Provides @Singleton
-    fun provideNodeLocator(jsonMapper: JsonMapper): NodeLocator {
-        return DefaultNodeLocator(localNode, settings, jsonMapper)
+fun withTimeout(assertions: () -> Unit) {
+    with(Semaphore(0)) {
+        thread {
+            while (!allAssertionPassed(assertions)) Thread.sleep(10)
+            release()
+        }
+        if (!tryAcquire(1, TimeUnit.SECONDS)) Assert.fail()
+    }
+}
+
+private fun allAssertionPassed(assertions: () -> Unit): Boolean {
+    return try {
+        assertions()
+        true
+    } catch (e: AssertionError) {
+        false
     }
 }

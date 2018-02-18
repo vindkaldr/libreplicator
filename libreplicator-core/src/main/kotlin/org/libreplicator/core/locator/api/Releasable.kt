@@ -15,24 +15,9 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.module
+package org.libreplicator.core.locator.api
 
-import dagger.Module
-import dagger.Provides
-import org.libreplicator.api.LocalNode
-import org.libreplicator.core.locator.DefaultNodeLocator
-import org.libreplicator.core.locator.api.NodeLocator
-import org.libreplicator.core.locator.api.NodeLocatorSettings
-import org.libreplicator.json.api.JsonMapper
-import javax.inject.Singleton
-
-@Module
-class LocatorModule(
-    private val localNode: LocalNode,
-    private val settings: NodeLocatorSettings
-) {
-    @Provides @Singleton
-    fun provideNodeLocator(jsonMapper: JsonMapper): NodeLocator {
-        return DefaultNodeLocator(localNode, settings, jsonMapper)
-    }
+interface Releasable<out T> {
+    fun acquire(): T
+    fun release()
 }

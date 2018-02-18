@@ -22,14 +22,20 @@ import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Replicator
 import org.libreplicator.component.DaggerLibReplicatorTestComponent
 import org.libreplicator.component.replicator.DaggerReplicatorTestComponent
+import org.libreplicator.core.locator.api.NodeLocatorSettings
+import org.libreplicator.module.FakeLocatorModule
 import org.libreplicator.module.ServerModule
 import org.libreplicator.module.replicator.CoreModule
 import org.libreplicator.module.replicator.CryptoModule
 import org.libreplicator.module.replicator.JournalModule
 
-class ReplicatorTestFactory(private val localNode: LocalNode) {
+class ReplicatorTestFactory(
+    private val localNode: LocalNode,
+    settings: NodeLocatorSettings = NodeLocatorSettings()
+) {
     private val libReplicatorTestComponent = DaggerLibReplicatorTestComponent.builder()
         .serverModule(ServerModule(localNode))
+        .fakeLocatorModule(FakeLocatorModule(localNode, settings))
         .build()
 
     fun create(

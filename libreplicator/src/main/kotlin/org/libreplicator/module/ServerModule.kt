@@ -28,7 +28,7 @@ import org.libreplicator.core.server.api.ReplicatorServer
 import javax.inject.Singleton
 
 @Module
-class ServerModule constructor(private val localNode: LocalNode) {
+class ServerModule(private val localNode: LocalNode) {
     @Provides @Singleton
     fun provideReplicatorServer(
         server: HttpServer,

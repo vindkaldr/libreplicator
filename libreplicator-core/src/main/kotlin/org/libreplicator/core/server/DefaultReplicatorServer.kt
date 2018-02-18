@@ -45,7 +45,7 @@ class DefaultReplicatorServer @Inject constructor(
         internetGateway.addPortMapping(AddPortMapping(localNode.port, InternetProtocol.TCP, localNode.port,
             LIBREPLICATOR_DESCRIPTION
         ))
-        nodeLocator.addNode(localNode)
+        nodeLocator.acquire()
 
         return object : Subscription {
             override suspend fun unsubscribe() {
@@ -53,7 +53,7 @@ class DefaultReplicatorServer @Inject constructor(
 
                 httpServer.stop()
                 internetGateway.deletePortMapping(DeletePortMapping(localNode.port, InternetProtocol.TCP))
-                nodeLocator.removeNode(localNode.nodeId)
+                nodeLocator.release()
             }
         }
     }

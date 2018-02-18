@@ -21,26 +21,33 @@ import dagger.Module
 import dagger.Provides
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
+import org.libreplicator.core.locator.DefaultNodeLocator
 import org.libreplicator.core.locator.api.NodeLocator
+import org.libreplicator.core.locator.api.NodeLocatorSettings
+import org.libreplicator.json.api.JsonMapper
+import java.lang.Thread.sleep
+import javax.inject.Singleton
 
 @Module
-class FakeLocatorModule {
-    private companion object {
-        private val nodeLocator = object : NodeLocator {
-            private val nodes = mutableMapOf<String, RemoteNode>()
-
-            override fun addNode(localNode: LocalNode) {
-                nodes[localNode.nodeId] = RemoteNode(localNode.nodeId, localNode.hostname, localNode.port)
-            }
-
-            override fun removeNode(nodeId: String) {
-                nodes.remove(nodeId)
-            }
-
-            override fun getNode(nodeId: String): RemoteNode? = nodes[nodeId]
-        }
+class FakeLocatorModule(
+    private val localNode: LocalNode,
+    private val settings: NodeLocatorSettings
+) {
+    @Provides @Singleton
+    fun provideNodeLocator(jsonMapper: JsonMapper): NodeLocator {
+        return BlockingNodeLocator(DefaultNodeLocator(localNode, settings, jsonMapper),settings)
     }
 
-    @Provides
-    fun provideNodeLocator() = nodeLocator
+    private class BlockingNodeLocator(
+        private val nodeLocator: NodeLocator,
+        private val settings: NodeLocatorSettings
+    ) : NodeLocator by nodeLocator {
+        override fun getNode(nodeId: String): RemoteNode? {
+            while (true) {
+                val node = nodeLocator.getNode(nodeId)
+                if (node != null) return node
+                sleep(settings.multicastPeriodInMilliseconds)
+            }
+        }
+    }
 }
