@@ -23,14 +23,9 @@ import java.net.InetAddress
 import java.net.MulticastSocket
 import java.net.SocketException
 
-fun createMulticastSocket(multicastAddress: InetAddress, multicastPort: Int): MulticastSocket {
-    val multicastSocket = MulticastSocket(multicastPort)
-    multicastSocket.joinGroup(multicastAddress)
-    return multicastSocket
-}
+fun createMulticastSocket(multicastPort: Int) = MulticastSocket(multicastPort)
 
-fun closeMulticastSocket(multicastSocket: MulticastSocket?, multicastAddress: InetAddress) {
-    multicastSocket?.leaveGroup(multicastAddress)
+fun closeMulticastSocket(multicastSocket: MulticastSocket?) {
     multicastSocket?.close()
 }
 
