@@ -1,8 +1,8 @@
 version: 2
 jobs:
-  build:
+  test:
     docker:
       - image: circleci/openjdk
     steps:
       - checkout
-      - run: echo "hello world"
+      - run: ./gradlew check
