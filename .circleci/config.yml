@@ -3,6 +3,6 @@ jobs:
   build:
     docker:
       - image: circleci/openjdk
-      steps:
-        - checkout
-        - run: echo "hello world"
+    steps:
+      - checkout
+      - run: echo "hello world"
