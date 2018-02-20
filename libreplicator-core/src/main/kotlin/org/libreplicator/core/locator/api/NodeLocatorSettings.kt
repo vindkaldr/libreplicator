@@ -17,7 +17,10 @@
 
 package org.libreplicator.core.locator.api
 
+import java.net.Inet4Address
+import java.net.Inet6Address
 import java.net.InetAddress
+import java.net.NetworkInterface
 
 class NodeLocatorSettings(
     val multicastAddress: InetAddress,
@@ -27,17 +30,41 @@ class NodeLocatorSettings(
 ) {
     companion object {
         operator fun invoke(
-            multicastAddress: String = "ff02::1",
+            multicastAddress: String = "",
             multicastPort: Int = 24816,
             multicastPeriodInMilliseconds: Long = 10 * 1000,
             bufferSizeInBytes: Int = 1024
         ): NodeLocatorSettings {
             return NodeLocatorSettings(
-                InetAddress.getByName(multicastAddress),
+                getMulticastAddress(multicastAddress, fallbackIpv6MulticastAddress = "ff02::1"),
                 multicastPort,
                 multicastPeriodInMilliseconds,
                 bufferSizeInBytes
             )
+        }
+
+        private fun getMulticastAddress(multicastAddress: String, fallbackIpv6MulticastAddress: String): InetAddress {
+            if (multicastAddress.isNotBlank()) return InetAddress.getByName(multicastAddress)
+            if (!isIpv6AddressAvailable()) return getIpv4BroadcastAddress()
+            return InetAddress.getByName(fallbackIpv6MulticastAddress)
+        }
+
+        private fun isIpv6AddressAvailable(): Boolean {
+            return NetworkInterface.getNetworkInterfaces().asSequence()
+                .map { it.interfaceAddresses }
+                .flatten()
+                .map { it.address }
+                .any { Inet6Address::class.isInstance(it) }
+        }
+
+        private fun getIpv4BroadcastAddress(): InetAddress {
+            return NetworkInterface.getNetworkInterfaces().asSequence()
+                .sortedBy { it.index }
+                .map { it.interfaceAddresses }
+                .flatten()
+                .filter { Inet4Address::class.isInstance(it) }
+                .map { it.broadcast }
+                .first { it != null }
         }
     }
 }
