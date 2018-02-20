@@ -35,16 +35,23 @@ class NodeLocatorSettings(
             bufferSizeInBytes: Int = 1024
         ): NodeLocatorSettings {
             return NodeLocatorSettings(
-                getMulticastAddress(multicastAddress, fallbackIpv6MulticastAddress = "ff02::1"),
+                getMulticastAddress(
+                    multicastAddress,
+                    fallbackIpv4BroadcastAddress = "255.255.255.255",
+                    fallbackIpv6MulticastAddress = "ff02::1"),
                 multicastPort,
                 multicastPeriodInMilliseconds,
                 bufferSizeInBytes
             )
         }
 
-        private fun getMulticastAddress(multicastAddress: String, fallbackIpv6MulticastAddress: String): InetAddress {
+        private fun getMulticastAddress(
+            multicastAddress: String,
+            fallbackIpv4BroadcastAddress: String,
+            fallbackIpv6MulticastAddress: String
+        ): InetAddress {
             if (multicastAddress.isNotBlank()) return getAddress(multicastAddress)
-            if (!isIpv6AddressAvailable()) return getFallbackBroadcastAddress()
+            if (!isIpv6AddressAvailable()) return getAddress(fallbackIpv4BroadcastAddress)
             return getAddress(fallbackIpv6MulticastAddress)
         }
 
@@ -56,15 +63,6 @@ class NodeLocatorSettings(
                 .flatten()
                 .map { it.address }
                 .any { Inet6Address::class.isInstance(it) }
-        }
-
-        private fun getFallbackBroadcastAddress(): InetAddress {
-            return NetworkInterface.getNetworkInterfaces().asSequence()
-                .sortedBy { it.index }
-                .map { it.interfaceAddresses }
-                .flatten()
-                .map { it.broadcast }
-                .first { it != null }
         }
     }
 }
