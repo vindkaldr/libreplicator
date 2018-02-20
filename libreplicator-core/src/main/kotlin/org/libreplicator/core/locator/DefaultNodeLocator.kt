@@ -39,7 +39,7 @@ class DefaultNodeLocator @Inject constructor(
 
     override fun acquire(): NodeLocator = apply {
         check(multicastSocket == null, { "Object already acquired!" })
-        multicastSocket = createMulticastSocket(settings.multicastPort)
+        multicastSocket = createMulticastSocket(settings.multicastAddress, settings.multicastPort)
         listenOnMulticastSocket()
         schedulePeriodicMulticast()
     }
@@ -87,7 +87,7 @@ class DefaultNodeLocator @Inject constructor(
     }
 
     private fun closeSocket() {
-        closeMulticastSocket(multicastSocket)
+        closeMulticastSocket(multicastSocket, settings.multicastAddress)
         multicastSocket = null
     }
 
