@@ -17,7 +17,6 @@
 
 package org.libreplicator.core.locator.api
 
-import java.net.Inet4Address
 import java.net.Inet6Address
 import java.net.InetAddress
 import java.net.NetworkInterface
@@ -44,10 +43,12 @@ class NodeLocatorSettings(
         }
 
         private fun getMulticastAddress(multicastAddress: String, fallbackIpv6MulticastAddress: String): InetAddress {
-            if (multicastAddress.isNotBlank()) return InetAddress.getByName(multicastAddress)
-            if (!isIpv6AddressAvailable()) return getIpv4BroadcastAddress()
-            return InetAddress.getByName(fallbackIpv6MulticastAddress)
+            if (multicastAddress.isNotBlank()) return getAddress(multicastAddress)
+            if (!isIpv6AddressAvailable()) return getFallbackBroadcastAddress()
+            return getAddress(fallbackIpv6MulticastAddress)
         }
+
+        private fun getAddress(multicastAddress: String) = InetAddress.getByName(multicastAddress)
 
         private fun isIpv6AddressAvailable(): Boolean {
             return NetworkInterface.getNetworkInterfaces().asSequence()
@@ -57,12 +58,11 @@ class NodeLocatorSettings(
                 .any { Inet6Address::class.isInstance(it) }
         }
 
-        private fun getIpv4BroadcastAddress(): InetAddress {
+        private fun getFallbackBroadcastAddress(): InetAddress {
             return NetworkInterface.getNetworkInterfaces().asSequence()
                 .sortedBy { it.index }
                 .map { it.interfaceAddresses }
                 .flatten()
-                .filter { Inet4Address::class.isInstance(it) }
                 .map { it.broadcast }
                 .first { it != null }
         }
