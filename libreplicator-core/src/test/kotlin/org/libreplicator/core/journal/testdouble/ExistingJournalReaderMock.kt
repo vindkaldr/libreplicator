@@ -15,11 +15,27 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.journal.api
+package org.libreplicator.core.journal.testdouble
 
-import org.libreplicator.api.Observer
-import org.libreplicator.model.ReplicatorState
+import org.junit.Assert
+import org.libreplicator.core.journal.file.FileHandler
+import java.nio.file.Path
 
-interface ReplicatorStateJournal : Observer<ReplicatorState> {
-    fun getReplicatorState(): ReplicatorState
+class ExistingJournalReaderMock(private val journal: Path, private val content: String) : FileHandler {
+    override fun createDirectory(parentPath: Path, directoryName: String): Path {
+        return parentPath.resolve(directoryName)
+    }
+
+    override fun readFirstLine(path: Path): String {
+        if (journal != path) {
+            Assert.fail("Unexpected call!")
+        }
+        return content
+    }
+
+    override fun write(path: Path, line: String) {
+    }
+
+    override fun move(source: Path, destination: Path) {
+    }
 }

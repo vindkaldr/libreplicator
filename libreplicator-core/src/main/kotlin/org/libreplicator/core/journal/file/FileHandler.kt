@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.journal.file
+package org.libreplicator.core.journal.file
 
 import java.nio.file.Path
 

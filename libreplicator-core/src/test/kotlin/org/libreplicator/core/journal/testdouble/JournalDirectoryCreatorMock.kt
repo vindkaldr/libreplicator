@@ -15,35 +15,37 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.journal.file
+package org.libreplicator.core.journal.testdouble
 
-import java.nio.file.Files
+import org.junit.Assert
+import org.libreplicator.core.journal.file.FileHandler
 import java.nio.file.Path
-import java.nio.file.StandardCopyOption
-import java.nio.file.StandardOpenOption
-import javax.inject.Inject
+import java.nio.file.Paths
 
-class DefaultFileHandler @Inject constructor() : FileHandler {
+class JournalDirectoryCreatorMock : FileHandler {
+    private var observedJournalsDirectory: Path? = null
+    private var observedJournalDirectoryName: String? = null
+
     override fun createDirectory(parentPath: Path, directoryName: String): Path {
-        val directoryPath = parentPath.resolve(directoryName)
-        directoryPath.toFile().mkdirs()
-        return directoryPath
+        if (observedJournalsDirectory != null || observedJournalDirectoryName != null) {
+            Assert.fail("Unexpected call!")
+        }
+        observedJournalsDirectory = parentPath
+        observedJournalDirectoryName = directoryName
+        return Paths.get("")
     }
 
     override fun readFirstLine(path: Path): String {
-        val allLines = Files.readAllLines(path)
-        if (allLines.isEmpty()) {
-            return ""
-        }
-        return allLines.first()
+        return ""
     }
 
     override fun write(path: Path, line: String) {
-        path.toFile().createNewFile()
-        Files.write(path, listOf(line), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.SYNC)
     }
 
     override fun move(source: Path, destination: Path) {
-        Files.move(source, destination, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE)
+    }
+
+    fun createdDirectoryWith(journalsDirectory: Path, journalDirectoryName: String): Boolean {
+        return observedJournalsDirectory == journalsDirectory && observedJournalDirectoryName == journalDirectoryName
     }
 }

@@ -15,31 +15,35 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.journal.testdouble
+package org.libreplicator.core.journal.file
 
-import org.junit.Assert
-import org.libreplicator.journal.file.FileHandler
+import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
+import java.nio.file.StandardOpenOption
+import javax.inject.Inject
 
-class ErroneousJournalReaderMock(
-        private val journal: Path,
-        private val exceptionToThrow: Throwable) : FileHandler {
-
+class DefaultFileHandler @Inject constructor() : FileHandler {
     override fun createDirectory(parentPath: Path, directoryName: String): Path {
-        return Paths.get("")
+        val directoryPath = parentPath.resolve(directoryName)
+        directoryPath.toFile().mkdirs()
+        return directoryPath
     }
 
     override fun readFirstLine(path: Path): String {
-        if (journal != path) {
-            Assert.fail("Unexpected call!")
+        val allLines = Files.readAllLines(path)
+        if (allLines.isEmpty()) {
+            return ""
         }
-        throw exceptionToThrow
+        return allLines.first()
     }
 
     override fun write(path: Path, line: String) {
+        path.toFile().createNewFile()
+        Files.write(path, listOf(line), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.SYNC)
     }
 
     override fun move(source: Path, destination: Path) {
+        Files.move(source, destination, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE)
     }
 }

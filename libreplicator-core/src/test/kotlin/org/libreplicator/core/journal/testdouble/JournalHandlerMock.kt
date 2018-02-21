@@ -15,10 +15,10 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.journal.testdouble
+package org.libreplicator.core.journal.testdouble
 
 import org.junit.Assert
-import org.libreplicator.journal.file.FileHandler
+import org.libreplicator.core.journal.file.FileHandler
 import java.nio.file.Path
 
 class JournalHandlerMock(

@@ -15,15 +15,11 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-dependencies {
-    compile project(':libreplicator-crypto-api')
-    compile project(':libreplicator-journal-api')
-    compile project(':libreplicator-json-api')
-    compile project(':libreplicator-log-api')
-    compile project(':libreplicator-model')
+package org.libreplicator.core.journal.api
 
-    compile group: 'javax.inject', name: 'javax.inject', version: javaxInjectVersion
+import org.libreplicator.api.Observer
+import org.libreplicator.model.ReplicatorState
 
-    testCompile group: 'junit', name: 'junit', version: junitVersion
-    testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrestVersion
+interface ReplicatorStateJournal : Observer<ReplicatorState> {
+    fun getReplicatorState(): ReplicatorState
 }

@@ -15,13 +15,13 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.journal
+package org.libreplicator.core.journal
 
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
+import org.libreplicator.core.journal.api.ReplicatorStateJournal
+import org.libreplicator.core.journal.file.FileHandler
 import org.libreplicator.crypto.api.Cipher
-import org.libreplicator.journal.api.ReplicatorStateJournal
-import org.libreplicator.journal.file.FileHandler
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.model.ReplicatorState
@@ -30,12 +30,12 @@ import java.nio.file.Path
 import javax.inject.Inject
 
 class DefaultReplicatorStateJournal @Inject constructor(
-        private val fileHandler: FileHandler,
-        private val jsonMapper: JsonMapper,
-        private val cipher: Cipher,
-        journalsDirectory: Path,
-        localNode: LocalNode,
-        remoteNodes: List<RemoteNode>) : ReplicatorStateJournal {
+    private val fileHandler: FileHandler,
+    private val jsonMapper: JsonMapper,
+    private val cipher: Cipher,
+    journalsDirectory: Path,
+    localNode: LocalNode,
+    remoteNodes: List<RemoteNode>) : ReplicatorStateJournal {
 
     private companion object {
         private val JOURNAL_FILE_NAME = "libreplicator-journal"

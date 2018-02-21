@@ -15,27 +15,29 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.journal.testdouble
+package org.libreplicator.core.journal.testdouble
 
 import org.junit.Assert
-import org.libreplicator.journal.file.FileHandler
-import java.nio.file.Path
+import org.libreplicator.json.api.JsonMapper
+import org.libreplicator.model.ReplicatorState
+import kotlin.reflect.KClass
 
-class ExistingJournalReaderMock(private val journal: Path, private val content: String) : FileHandler {
-    override fun createDirectory(parentPath: Path, directoryName: String): Path {
-        return parentPath.resolve(directoryName)
-    }
+class JsonMapperStub (
+        private val message: ReplicatorState,
+        private val deserializedMessage: String) : JsonMapper {
 
-    override fun readFirstLine(path: Path): String {
-        if (journal != path) {
+    override fun write(any: Any): String {
+        if (any != message) {
             Assert.fail("Unexpected call!")
         }
-        return content
+        return deserializedMessage
     }
 
-    override fun write(path: Path, line: String) {
-    }
-
-    override fun move(source: Path, destination: Path) {
+    override fun <T : Any> read(string: String, kotlinType: KClass<T>): T {
+        if (string != deserializedMessage || kotlinType != ReplicatorState::class) {
+            Assert.fail("Unexpected call!")
+        }
+        @Suppress("UNCHECKED_CAST")
+        return message as T
     }
 }

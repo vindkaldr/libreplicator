@@ -23,10 +23,10 @@ import kotlinx.coroutines.experimental.runBlocking
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.component.replicator.ReplicatorScope
+import org.libreplicator.core.journal.DefaultReplicatorStateJournal
+import org.libreplicator.core.journal.file.DefaultFileHandler
+import org.libreplicator.core.journal.file.FileHandler
 import org.libreplicator.crypto.api.Cipher
-import org.libreplicator.journal.DefaultReplicatorStateJournal
-import org.libreplicator.journal.file.DefaultFileHandler
-import org.libreplicator.journal.file.FileHandler
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.model.ReplicatorState
 import org.libreplicator.module.replicator.setting.ReplicatorJournalSettings
@@ -48,8 +48,10 @@ class JournalModule(
             return@runBlocking ReplicatorState(localNode, remoteNodes)
         }
 
-        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandler, jsonMapper, cipher,
-                journalSettings.directoryOfJournals, localNode, remoteNodes)
+        val replicatorStateJournal = DefaultReplicatorStateJournal(
+            fileHandler, jsonMapper, cipher,
+            journalSettings.directoryOfJournals, localNode, remoteNodes
+        )
         val replicatorState = replicatorStateJournal.getReplicatorState().copy(localNode, remoteNodes)
 
         replicatorState.subscribe(replicatorStateJournal)
