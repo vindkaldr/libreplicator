@@ -21,7 +21,7 @@ import java.net.Inet6Address
 import java.net.InetAddress
 import java.net.NetworkInterface
 
-class NodeLocatorSettings(
+class NodeLocatorSettings private constructor(
     val multicastAddress: InetAddress,
     val multicastPort: Int,
     val multicastPeriodInMilliseconds: Long,
@@ -38,7 +38,8 @@ class NodeLocatorSettings(
                 getMulticastAddress(
                     multicastAddress,
                     fallbackIpv4BroadcastAddress = "255.255.255.255",
-                    fallbackIpv6MulticastAddress = "ff02::1"),
+                    fallbackIpv6MulticastAddress = "ff02::1"
+                ),
                 multicastPort,
                 multicastPeriodInMilliseconds,
                 bufferSizeInBytes
