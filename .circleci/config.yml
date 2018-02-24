@@ -5,4 +5,4 @@ jobs:
       - image: circleci/openjdk
     steps:
       - checkout
-      - run: ./gradlew check
+      - run: mvn test

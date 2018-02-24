@@ -1,7 +1,6 @@
-# Gradle
-**/.gradle
+# Maven
+**/target
 
 # IntelliJ IDEA
 **/.idea
-**/build
-**/out
+**/*.iml

@@ -35,7 +35,7 @@ class FakeLocatorModule(
 ) {
     @Provides @Singleton
     fun provideNodeLocator(jsonMapper: JsonMapper): NodeLocator {
-        return BlockingNodeLocator(DefaultNodeLocator(localNode, settings, jsonMapper),settings)
+        return BlockingNodeLocator(DefaultNodeLocator(localNode, settings, jsonMapper), settings)
     }
 
     private class BlockingNodeLocator(
