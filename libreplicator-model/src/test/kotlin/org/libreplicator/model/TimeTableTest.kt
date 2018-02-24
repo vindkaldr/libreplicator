@@ -66,21 +66,10 @@ class TimeTableTest {
 
     @Test
     fun merge_shouldMergeTimeTablesWithEntries() {
-        timeTable[NODE_1, NODE_1] = 42L
-        timeTable[NODE_1, NODE_2] = 2L
-        timeTable[NODE_1, NODE_3] = 12L
-        timeTable[NODE_2, NODE_1] = 6L
-        timeTable[NODE_3, NODE_1] = 8L
+        arrangeTimeTable()
+        val otherTimeTable = createOtherTimeTable()
 
-        val timeTable2 = TimeTable()
-        timeTable2[NODE_2, NODE_1] = 9L
-        timeTable2[NODE_2, NODE_2] = 10L
-        timeTable2[NODE_2, NODE_3] = 3L
-        timeTable2[NODE_1, NODE_2] = 4L
-        timeTable2[NODE_1, NODE_3] = 7L
-        timeTable2[NODE_3, NODE_1] = 14L
-
-        timeTable.merge(NODE_1, ReplicatorPayload(NODE_2, listOf(), timeTable2))
+        timeTable.merge(NODE_1, ReplicatorPayload(NODE_2, listOf(), otherTimeTable))
 
         assertThat(timeTable[NODE_1, NODE_1], equalTo(42L))
         assertThat(timeTable[NODE_1, NODE_2], equalTo(10L))
@@ -91,5 +80,24 @@ class TimeTableTest {
         assertThat(timeTable[NODE_3, NODE_1], equalTo(14L))
         assertThat(timeTable[NODE_3, NODE_2], equalTo(0L))
         assertThat(timeTable[NODE_3, NODE_3], equalTo(0L))
+    }
+
+    private fun arrangeTimeTable() {
+        timeTable[NODE_1, NODE_1] = 42L
+        timeTable[NODE_1, NODE_2] = 2L
+        timeTable[NODE_1, NODE_3] = 12L
+        timeTable[NODE_2, NODE_1] = 6L
+        timeTable[NODE_3, NODE_1] = 8L
+    }
+
+    private fun createOtherTimeTable(): TimeTable {
+        val otherTimeTable = TimeTable()
+        otherTimeTable[NODE_2, NODE_1] = 9L
+        otherTimeTable[NODE_2, NODE_2] = 10L
+        otherTimeTable[NODE_2, NODE_3] = 3L
+        otherTimeTable[NODE_1, NODE_2] = 4L
+        otherTimeTable[NODE_1, NODE_3] = 7L
+        otherTimeTable[NODE_3, NODE_1] = 14L
+        return otherTimeTable
     }
 }
