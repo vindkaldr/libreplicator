@@ -21,6 +21,10 @@ import java.net.Inet6Address
 import java.net.InetAddress
 import java.net.NetworkInterface
 
+private const val DEFAULT_MULTICAST_PORT = 24816
+private const val DEFAULT_MULTICAST_PERIOD_IN_MILLISECONDS = 10_000L
+private const val DEFAULT_BUFFER_SIZE_IN_BYTES = 1024
+
 class NodeLocatorSettings private constructor(
     val multicastAddress: InetAddress,
     val multicastPort: Int,
@@ -29,10 +33,10 @@ class NodeLocatorSettings private constructor(
 ) {
     companion object {
         operator fun invoke(
-            multicastAddress: String = "",
-            multicastPort: Int = 24816,
-            multicastPeriodInMilliseconds: Long = 10 * 1000,
-            bufferSizeInBytes: Int = 1024
+                multicastAddress: String = "",
+                multicastPort: Int = DEFAULT_MULTICAST_PORT,
+                multicastPeriodInMilliseconds: Long = DEFAULT_MULTICAST_PERIOD_IN_MILLISECONDS,
+                bufferSizeInBytes: Int = DEFAULT_BUFFER_SIZE_IN_BYTES
         ): NodeLocatorSettings {
             return NodeLocatorSettings(
                 getMulticastAddress(
