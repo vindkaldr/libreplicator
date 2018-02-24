@@ -43,7 +43,11 @@ class JournalModule(
     }
 
     @Provides @ReplicatorScope
-    fun provideReplicatorState(fileHandler: FileHandler, jsonMapper: JsonMapper, cipher: Cipher): ReplicatorState = runBlocking {
+    fun provideReplicatorState(
+            fileHandler: FileHandler,
+            jsonMapper: JsonMapper,
+            cipher: Cipher
+    ): ReplicatorState = runBlocking {
         if (!journalSettings.isJournalingEnabled) {
             return@runBlocking ReplicatorState(localNode, remoteNodes)
         }

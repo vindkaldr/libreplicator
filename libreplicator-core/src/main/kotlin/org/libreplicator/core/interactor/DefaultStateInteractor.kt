@@ -39,7 +39,9 @@ class DefaultStateInteractor @Inject constructor(
                     interaction.channel.send(replicatorState.getNodesWithMissingEventLogs())
                 }
                 is StateInteraction.ObserveRemoteMessage -> {
-                    val missingEventLogs = replicatorState.getMissingEventLogs(eventLogs = interaction.payload.eventLogs)
+                    val missingEventLogs = replicatorState.getMissingEventLogs(
+                            eventLogs = interaction.payload.eventLogs
+                    )
                     replicatorState.updateFromMessage(interaction.payload)
                     interaction.channel.send(missingEventLogs)
                 }
