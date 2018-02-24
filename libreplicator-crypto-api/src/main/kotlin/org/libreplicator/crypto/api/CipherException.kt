@@ -17,4 +17,4 @@
 
 package org.libreplicator.crypto.api
 
-class CipherException : Throwable()
+class CipherException(override val message: String) : Throwable()

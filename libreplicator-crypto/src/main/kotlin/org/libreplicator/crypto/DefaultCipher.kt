@@ -19,10 +19,12 @@ package org.libreplicator.crypto
 
 import org.bouncycastle.crypto.BufferedBlockCipher
 import org.bouncycastle.crypto.CipherParameters
+import org.bouncycastle.crypto.InvalidCipherTextException
 import org.bouncycastle.crypto.engines.AESEngine
 import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator
 import org.bouncycastle.crypto.modes.CBCBlockCipher
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher
+import org.bouncycastle.util.encoders.DecoderException
 import org.bouncycastle.util.encoders.Hex
 import org.libreplicator.crypto.api.CipherException
 import org.libreplicator.crypto.api.Cipher
@@ -55,8 +57,11 @@ class DefaultCipher(private val sharedSecret: String) : Cipher {
 
             return String(cipherContent(cipher, Hex.decode(encryptedContent.toByteArray())))
         }
-        catch (throwable: Throwable) {
-            throw CipherException()
+        catch (e: DecoderException) {
+            throw CipherException("Invalid content!")
+        }
+        catch (e: InvalidCipherTextException) {
+            throw CipherException("Invalid secret!")
         }
     }
 
