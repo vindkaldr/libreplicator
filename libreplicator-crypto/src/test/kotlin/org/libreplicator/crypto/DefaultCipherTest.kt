@@ -24,16 +24,14 @@ import org.junit.Test
 import org.libreplicator.crypto.api.CipherException
 import org.libreplicator.crypto.api.Cipher
 
+private const val SHARED_SECRET = "sharedSecret"
+private const val CORRUPTED_SHARED_SECRET = "corruptedSharedSecret"
+
+private const val CONTENT = "content"
+private const val ENCRYPTED_CONTENT = "3e6870c7402fd311a09b8cbcdb9b03c2"
+private const val CORRUPTED_ENCRYPTED_CONTENT = "corruptedEncryptedContent"
+
 class DefaultCipherTest {
-    private companion object {
-        private val SHARED_SECRET = "sharedSecret"
-        private val CORRUPTED_SHARED_SECRET = "corruptedSharedSecret"
-
-        private val CONTENT = "content"
-        private val ENCRYPTED_CONTENT = "3e6870c7402fd311a09b8cbcdb9b03c2"
-        private val CORRUPTED_ENCRYPTED_CONTENT = "corruptedEncryptedContent"
-    }
-
     @Test
     fun encrypt_encryptsContent() {
         val cipher: Cipher = DefaultCipher(SHARED_SECRET)
