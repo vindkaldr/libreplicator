@@ -32,14 +32,13 @@ import java.net.SocketTimeoutException
 import java.net.URI
 import javax.inject.Inject
 
-class DefaultHttpClient @Inject constructor() : HttpClient {
-    private companion object {
-        private val HTTP_SCHEME = "http"
-    }
+private const val HTTP_SCHEME = "http"
+private const val SOCKET_TIMEOUT = 1000
 
+class DefaultHttpClient @Inject constructor() : HttpClient {
     private val httpClient: CloseableHttpClient = HttpClients.custom()
             .setDefaultRequestConfig(RequestConfig.custom()
-                    .setSocketTimeout(1000)
+                    .setSocketTimeout(SOCKET_TIMEOUT)
                     .build())
             .build()
 
