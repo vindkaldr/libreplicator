@@ -80,6 +80,7 @@
         <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
         <maven.resources.plugin.version>3.0.2</maven.resources.plugin.version>
         <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
+        <license.plugin.version>3.0</license.plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -218,6 +219,27 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>${license.plugin.version}</version>
+                <configuration>
+                    <header>.license/header.txt</header>
+                    <headerDefinitions>
+                        <headerDefinition>.license/format/kotlin.xml</headerDefinition>
+                        <headerDefinition>.license/format/xml.xml</headerDefinition>
+                    </headerDefinitions>
+                    <mapping>
+                        <kt>KOTLIN_STYLE</kt>
+                    </mapping>
+                    <excludes>
+                        <exclude>.idea/**/*</exclude>
+                        <exclude>.target/**/*</exclude>
+                        <exclude>LICENSE.txt</exclude>
+                        <exclude>README.md</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
