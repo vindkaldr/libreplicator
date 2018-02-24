@@ -22,4 +22,12 @@ jobs:
       - image: circleci/openjdk
     steps:
       - checkout
-      - run: mvn test
+      - run:
+          name: Check license headers
+          command: mvn license:check
+      - run:
+          name: Compile code
+          command: mvn compile
+      - run:
+          name: Run tests
+          command: mvn test
