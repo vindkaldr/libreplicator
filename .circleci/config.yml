@@ -26,6 +26,9 @@ jobs:
           name: Check license headers
           command: mvn license:check
       - run:
+          name: Check code style
+          command: mvn antrun:run@detekt
+      - run:
           name: Compile code
           command: mvn compile
       - run:
