@@ -31,19 +31,17 @@ import org.libreplicator.model.ReplicatorPayload
 import org.libreplicator.model.ReplicatorState
 import org.libreplicator.model.TimeTable
 
+private val REPLICATOR_MESSAGE = ReplicatorPayload("nodeId", listOf(), TimeTable())
+private const val SERIALIZED_REPLICATOR_MESSAGE = "{\"nodeId\":\"nodeId\",\"eventLogs\":[],\"timeTable\":{}}"
+
+private val REPLICATOR_STATE = ReplicatorState(LocalNode("", "", 0), listOf(RemoteNode("")), mutableSetOf(), TimeTable())
+private const val SERIALIZED_REPLICATOR_STATE = "{\"logs\":[],\"timeTable\":{}}"
+private val DESERIALIZED_REPLICATOR_STATE = ReplicatorState(null, null, mutableSetOf(), TimeTable())
+
+private val TIME_TABLE = TimeTable(mutableMapOf("nodeId1" to mutableMapOf("nodeId2" to 2L)))
+private const val SERIALIZED_TIME_TABLE = "{\"nodeId1\":{\"nodeId2\":2}}"
+
 class DefaultJsonMapperTest {
-    private companion object {
-        private val REPLICATOR_MESSAGE = ReplicatorPayload("nodeId", listOf(), TimeTable())
-        private val SERIALIZED_REPLICATOR_MESSAGE = "{\"nodeId\":\"nodeId\",\"eventLogs\":[],\"timeTable\":{}}"
-
-        private val REPLICATOR_STATE = ReplicatorState(LocalNode("", "", 0), listOf(RemoteNode("")), mutableSetOf(), TimeTable())
-        private val SERIALIZED_REPLICATOR_STATE = "{\"logs\":[],\"timeTable\":{}}"
-        private val DESERIALIZED_REPLICATOR_STATE = ReplicatorState(null, null, mutableSetOf(), TimeTable())
-
-        private val TIME_TABLE = TimeTable(mutableMapOf("nodeId1" to mutableMapOf("nodeId2" to 2L)))
-        private val SERIALIZED_TIME_TABLE = "{\"nodeId1\":{\"nodeId2\":2}}"
-    }
-
     private lateinit var jsonMapper: JsonMapper
 
     @Before

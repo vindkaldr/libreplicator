@@ -22,6 +22,7 @@ import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonMixin
 import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.json.api.JsonWriteException
+import java.io.IOException
 import javax.inject.Inject
 import kotlin.reflect.KClass
 
@@ -35,8 +36,8 @@ class DefaultJsonMapper @Inject constructor(private val jsonMixins: Set<JsonMixi
         try {
             return objectMapper.writeValueAsString(any)
         }
-        catch (throwable: Throwable) {
-            throw JsonWriteException(throwable)
+        catch (e: IOException) {
+            throw JsonWriteException(e)
         }
     }
 
@@ -44,8 +45,8 @@ class DefaultJsonMapper @Inject constructor(private val jsonMixins: Set<JsonMixi
         try {
             return objectMapper.readValue(string, kotlinType.javaObjectType)
         }
-        catch (throwable: Throwable) {
-            throw JsonReadException(throwable)
+        catch (e: IOException) {
+            throw JsonReadException(e)
         }
     }
 }
