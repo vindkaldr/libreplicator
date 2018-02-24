@@ -29,18 +29,17 @@ import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 import javax.inject.Inject
 
+private const val JOURNAL_FILE_NAME = "libreplicator-journal"
+private const val LATEST_JOURNAL_FILE_NAME = "latest-libreplicator-journal"
+
 class DefaultReplicatorStateJournal @Inject constructor(
     private val fileHandler: FileHandler,
     private val jsonMapper: JsonMapper,
     private val cipher: Cipher,
     journalsDirectory: Path,
     localNode: LocalNode,
-    remoteNodes: List<RemoteNode>) : ReplicatorStateJournal {
-
-    private companion object {
-        private val JOURNAL_FILE_NAME = "libreplicator-journal"
-        private val LATEST_JOURNAL_FILE_NAME = "latest-libreplicator-journal"
-    }
+    remoteNodes: List<RemoteNode>
+) : ReplicatorStateJournal {
     private val journalDirectory = fileHandler.createDirectory(journalsDirectory,
             createJournalDirectoryName(localNode, remoteNodes))
 
@@ -51,13 +50,10 @@ class DefaultReplicatorStateJournal @Inject constructor(
         return try {
             jsonMapper.read(cipher.decrypt(fileHandler.readFirstLine(latestJournalFile)), ReplicatorState::class)
         }
-        catch (jsonReadException: JsonReadException) {
-            ReplicatorState()
-        }
         catch (noSuchFileException: NoSuchFileException) {
             ReplicatorState()
         }
-        catch (throwable: Throwable) {
+        catch (jsonReadException: JsonReadException) {
             ReplicatorState()
         }
     }

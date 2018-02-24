@@ -37,38 +37,29 @@ import org.libreplicator.model.ReplicatorState
 import java.nio.file.NoSuchFileException
 import java.nio.file.Paths
 
+private val JOURNALS_DIRECTORY = Paths.get(".")
+
+private val LOCAL_NODE = LocalNode("localNode", "", 0)
+private val REMOTE_NODE_1 = RemoteNode("remoteNode1", "", 0)
+private val REMOTE_NODE_2 = RemoteNode("remoteNode2", "", 0)
+
+private val JOURNAL_DIRECTORY_NAME = "${LOCAL_NODE.nodeId}:${REMOTE_NODE_1.nodeId}:${REMOTE_NODE_2.nodeId}"
+private val JOURNAL_DIRECTORY = JOURNALS_DIRECTORY.resolve(JOURNAL_DIRECTORY_NAME)
+
+private const val JOURNAL_FILE_NAME = "libreplicator-journal"
+private val JOURNAL_FILE = JOURNAL_DIRECTORY.resolve(JOURNAL_FILE_NAME)
+
+private const val LATEST_JOURNAL_FILE_NAME = "latest-libreplicator-journal"
+private val LATEST_JOURNAL_FILE = JOURNAL_DIRECTORY.resolve(LATEST_JOURNAL_FILE_NAME)
+
+private const val SERIALIZED_REPLICATOR_STATE = "serializedReplicatorState"
+private val REPLICATOR_STATE = ReplicatorState(
+        LOCAL_NODE,
+        listOf(REMOTE_NODE_1, REMOTE_NODE_2),
+        mutableSetOf(RemoteLog(LOCAL_NODE.nodeId, 0, ""))
+)
+
 class DefaultReplicatorStateJournalTest {
-    private companion object {
-        private val JOURNALS_DIRECTORY = Paths.get(".")
-
-        private val LOCAL_NODE = LocalNode("localNode", "", 0)
-        private val REMOTE_NODE_1 = RemoteNode("remoteNode1", "", 0)
-        private val REMOTE_NODE_2 = RemoteNode("remoteNode2", "", 0)
-
-        private val JOURNAL_DIRECTORY_NAME = "${LOCAL_NODE.nodeId}:${REMOTE_NODE_1.nodeId}:${REMOTE_NODE_2.nodeId}"
-        private val JOURNAL_DIRECTORY = JOURNALS_DIRECTORY.resolve(
-            JOURNAL_DIRECTORY_NAME
-        )
-
-        private val JOURNAL_FILE_NAME = "libreplicator-journal"
-        private val JOURNAL_FILE = JOURNAL_DIRECTORY.resolve(
-            JOURNAL_FILE_NAME
-        )
-
-        private val LATEST_JOURNAL_FILE_NAME = "latest-libreplicator-journal"
-        private val LATEST_JOURNAL_FILE = JOURNAL_DIRECTORY.resolve(
-            LATEST_JOURNAL_FILE_NAME
-        )
-
-        private val SERIALIZED_REPLICATOR_STATE = "serializedReplicatorState"
-        private val REPLICATOR_STATE = ReplicatorState(
-            LOCAL_NODE, listOf(
-                REMOTE_NODE_1,
-                REMOTE_NODE_2
-            ),
-                mutableSetOf(RemoteLog(LOCAL_NODE.nodeId, 0, "")))
-    }
-
     private val jsonMapperStub: JsonMapper = JsonMapperStub(
         REPLICATOR_STATE,
         SERIALIZED_REPLICATOR_STATE
@@ -83,32 +74,33 @@ class DefaultReplicatorStateJournalTest {
     fun constructing_setsUp_journalDirectory() {
         val fileHandlerMock = JournalDirectoryCreatorMock()
 
-        DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub, cipherStub,
-            JOURNALS_DIRECTORY,
-            LOCAL_NODE, listOf(
-                REMOTE_NODE_1,
-                REMOTE_NODE_2
-            ))
+        DefaultReplicatorStateJournal(
+                fileHandlerMock,
+                jsonMapperStub,
+                cipherStub,
+                JOURNALS_DIRECTORY,
+                LOCAL_NODE,
+                listOf(REMOTE_NODE_1, REMOTE_NODE_2)
+        )
 
-        assertTrue(fileHandlerMock.createdDirectoryWith(
-            JOURNALS_DIRECTORY,
-            JOURNAL_DIRECTORY_NAME
-        ))
+        assertTrue(fileHandlerMock.createdDirectoryWith(JOURNALS_DIRECTORY, JOURNAL_DIRECTORY_NAME))
     }
 
     @Test
     fun getReplicatorState_returnsInitialState_whenJournalNotPresent() {
         val fileHandlerMock = ErroneousJournalReaderMock(
-            journal = LATEST_JOURNAL_FILE,
+            journal = Paths.get(LATEST_JOURNAL_FILE_NAME),
             exceptionToThrow = NoSuchFileException("")
         )
 
-        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub, cipherStub,
-            JOURNALS_DIRECTORY,
-            LOCAL_NODE, listOf(
-                REMOTE_NODE_1,
-                REMOTE_NODE_2
-            ))
+        val replicatorStateJournal = DefaultReplicatorStateJournal(
+                fileHandlerMock,
+                jsonMapperStub,
+                cipherStub,
+                JOURNALS_DIRECTORY,
+                LOCAL_NODE,
+                listOf(REMOTE_NODE_1, REMOTE_NODE_2)
+        )
 
         assertThat(replicatorStateJournal.getReplicatorState(), equalTo(ReplicatorState()))
     }
@@ -116,33 +108,18 @@ class DefaultReplicatorStateJournalTest {
     @Test
     fun getReplicatorState_returnsInitialState_whenJournalNotReadable() {
         val fileHandlerMock = ErroneousJournalReaderMock(
-            journal = LATEST_JOURNAL_FILE,
+            journal = Paths.get(LATEST_JOURNAL_FILE_NAME),
             exceptionToThrow = JsonReadException(NoSuchFileException(""))
         )
 
-        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub, cipherStub,
-            JOURNALS_DIRECTORY,
-            LOCAL_NODE, listOf(
-                REMOTE_NODE_1,
-                REMOTE_NODE_2
-            ))
-
-        assertThat(replicatorStateJournal.getReplicatorState(), equalTo(ReplicatorState()))
-    }
-
-    @Test
-    fun getReplicatorState_returnsInitialState_whenProblemEncountered() {
-        val fileHandlerMock = ErroneousJournalReaderMock(
-            journal = LATEST_JOURNAL_FILE,
-            exceptionToThrow = Throwable()
+        val replicatorStateJournal = DefaultReplicatorStateJournal(
+                fileHandlerMock,
+                jsonMapperStub,
+                cipherStub,
+                JOURNALS_DIRECTORY,
+                LOCAL_NODE,
+                listOf(REMOTE_NODE_1, REMOTE_NODE_2)
         )
-
-        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub, cipherStub,
-            JOURNALS_DIRECTORY,
-            LOCAL_NODE, listOf(
-                REMOTE_NODE_1,
-                REMOTE_NODE_2
-            ))
 
         assertThat(replicatorStateJournal.getReplicatorState(), equalTo(ReplicatorState()))
     }
@@ -154,12 +131,14 @@ class DefaultReplicatorStateJournalTest {
             content = SERIALIZED_REPLICATOR_STATE
         )
 
-        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub, cipherStub,
-            JOURNALS_DIRECTORY,
-            LOCAL_NODE, listOf(
-                REMOTE_NODE_1,
-                REMOTE_NODE_2
-            ))
+        val replicatorStateJournal = DefaultReplicatorStateJournal(
+                fileHandlerMock,
+                jsonMapperStub,
+                cipherStub,
+                JOURNALS_DIRECTORY,
+                LOCAL_NODE,
+                listOf(REMOTE_NODE_1, REMOTE_NODE_2)
+        )
 
         assertThat(replicatorStateJournal.getReplicatorState(), equalTo(REPLICATOR_STATE))
     }
@@ -172,27 +151,20 @@ class DefaultReplicatorStateJournalTest {
             journalDirectory = JOURNAL_DIRECTORY
         )
 
-        val replicatorStateJournal = DefaultReplicatorStateJournal(fileHandlerMock, jsonMapperStub, cipherStub,
-            JOURNALS_DIRECTORY,
-            LOCAL_NODE, listOf(
-                REMOTE_NODE_1,
-                REMOTE_NODE_2
-            ))
+        val replicatorStateJournal = DefaultReplicatorStateJournal(
+                fileHandlerMock,
+                jsonMapperStub,
+                cipherStub,
+                JOURNALS_DIRECTORY,
+                LOCAL_NODE,
+                listOf(REMOTE_NODE_1, REMOTE_NODE_2)
+        )
 
-        assertTrue(fileHandlerMock.createdDirectory(
-            JOURNALS_DIRECTORY,
-            JOURNAL_DIRECTORY_NAME
-        ))
+        assertTrue(fileHandlerMock.createdDirectory(JOURNALS_DIRECTORY, JOURNAL_DIRECTORY_NAME))
 
         replicatorStateJournal.observe(REPLICATOR_STATE)
 
-        assertTrue(fileHandlerMock.wroteJournal(
-            JOURNAL_FILE,
-            SERIALIZED_REPLICATOR_STATE
-        ))
-        assertTrue(fileHandlerMock.movedJournal(
-            JOURNAL_FILE,
-            LATEST_JOURNAL_FILE
-        ))
+        assertTrue(fileHandlerMock.wroteJournal(JOURNAL_FILE, SERIALIZED_REPLICATOR_STATE))
+        assertTrue(fileHandlerMock.movedJournal(JOURNAL_FILE, LATEST_JOURNAL_FILE))
     }
 }
