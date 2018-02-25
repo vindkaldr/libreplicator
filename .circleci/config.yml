@@ -72,9 +72,6 @@ jobs:
           keys:
             - build_cache
       - run:
-          name: Compile code
-          command: mvn compile
-      - run:
           name: Run tests
           command: mvn test
       - save_cache:
