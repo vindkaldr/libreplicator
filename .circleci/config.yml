@@ -35,7 +35,7 @@ jobs:
       - image: circleci/openjdk
     working_directory: /home/circleci/libreplicator
     steps:
-      - attach_workspace:
+      - attach_workspace: &attach_workspace
           at: /home/circleci
       - restore_cache:
           keys:
@@ -52,8 +52,7 @@ jobs:
       - image: circleci/openjdk
     working_directory: /home/circleci/libreplicator
     steps:
-      - attach_workspace:
-          at: /home/circleci
+      - attach_workspace: *attach_workspace
       - restore_cache:
           keys:
             - dependency_cache_{{ .Environment.CIRCLE_JOB }}_{{ checksum "sha1sums.txt" }}
@@ -69,8 +68,7 @@ jobs:
       - image: circleci/openjdk
     working_directory: /home/circleci/libreplicator
     steps:
-      - attach_workspace:
-          at: /home/circleci
+      - attach_workspace: *attach_workspace
       - restore_cache:
           keys:
             - dependency_cache_{{ .Environment.CIRCLE_JOB }}_{{ checksum "sha1sums.txt" }}
