@@ -18,7 +18,7 @@
 version: 2
 jobs:
   checkout_code:
-    docker:
+    docker: &docker_image
       - image: circleci/openjdk
     working_directory: /home/circleci/libreplicator
     steps:
@@ -31,8 +31,7 @@ jobs:
           paths:
             - libreplicator
   check_license_headers:
-    docker:
-      - image: circleci/openjdk
+    docker: *docker_image
     working_directory: /home/circleci/libreplicator
     steps:
       - attach_workspace: &attach_workspace
@@ -48,8 +47,7 @@ jobs:
           paths:
             - /home/circleci/.m2
   check_code_style:
-    docker:
-      - image: circleci/openjdk
+    docker: *docker_image
     working_directory: /home/circleci/libreplicator
     steps:
       - attach_workspace: *attach_workspace
@@ -59,8 +57,7 @@ jobs:
           command: mvn antrun:run@detekt --non-recursive
       - save_cache: *save_dependency_cache
   run_tests:
-    docker:
-      - image: circleci/openjdk
+    docker: *docker_image
     working_directory: /home/circleci/libreplicator
     steps:
       - attach_workspace: *attach_workspace
