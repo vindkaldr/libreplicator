@@ -20,40 +20,40 @@ jobs:
   checkout_code:
     docker:
       - image: circleci/openjdk
-    working_directory: ~/libreplicator
+    working_directory: /home/circleci/libreplicator
     steps:
       - checkout
       - persist_to_workspace:
-          root: ~
+          root: /home/circleci
           paths:
             - libreplicator
   check_license_headers:
     docker:
       - image: circleci/openjdk
-    working_directory: ~/libreplicator
+    working_directory: /home/circleci/libreplicator
     steps:
       - attach_workspace:
-          at: ~
+          at: /home/circleci
       - run:
           name: Check license headers
           command: mvn license:check
   check_code_style:
     docker:
       - image: circleci/openjdk
-    working_directory: ~/libreplicator
+    working_directory: /home/circleci/libreplicator
     steps:
       - attach_workspace:
-          at: ~
+          at: /home/circleci
       - run:
           name: Check code style
           command: mvn antrun:run@detekt --non-recursive
   build:
     docker:
       - image: circleci/openjdk
-    working_directory: ~/libreplicator
+    working_directory: /home/circleci/libreplicator
     steps:
       - attach_workspace:
-          at: ~
+          at: /home/circleci
       - run:
           name: Compile code
           command: mvn compile
