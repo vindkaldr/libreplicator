@@ -39,12 +39,12 @@ jobs:
           at: /home/circleci
       - restore_cache:
           keys:
-            - {{ .Environment.CIRCLE_JOB }}_cache_{{ checksum "sha1sums.txt" }}
+            - dependency_cache_{{ .Environment.CIRCLE_JOB }}_{{ checksum "sha1sums.txt" }}
       - run:
           name: Check license headers
           command: mvn license:check
       - save_cache:
-          key: {{ .Environment.CIRCLE_JOB }}_cache_{{ checksum "sha1sums.txt" }}
+          key: dependency_cache_{{ .Environment.CIRCLE_JOB }}_{{ checksum "sha1sums.txt" }}
           paths:
             - /home/circleci/.m2
   check_code_style:
@@ -56,12 +56,12 @@ jobs:
           at: /home/circleci
       - restore_cache:
           keys:
-            - {{ .Environment.CIRCLE_JOB }}_cache_{{ checksum "sha1sums.txt" }}
+            - dependency_cache_{{ .Environment.CIRCLE_JOB }}_{{ checksum "sha1sums.txt" }}
       - run:
           name: Check code style
           command: mvn antrun:run@detekt --non-recursive
       - save_cache:
-          key: {{ .Environment.CIRCLE_JOB }}_cache_{{ checksum "sha1sums.txt" }}
+          key: dependency_cache_{{ .Environment.CIRCLE_JOB }}_{{ checksum "sha1sums.txt" }}
           paths:
             - /home/circleci/.m2
   run_tests:
@@ -73,12 +73,12 @@ jobs:
           at: /home/circleci
       - restore_cache:
           keys:
-            - {{ .Environment.CIRCLE_JOB }}_cache_{{ checksum "sha1sums.txt" }}
+            - dependency_cache_{{ .Environment.CIRCLE_JOB }}_{{ checksum "sha1sums.txt" }}
       - run:
           name: Run tests
           command: mvn test
       - save_cache:
-          key: {{ .Environment.CIRCLE_JOB }}_cache_{{ checksum "sha1sums.txt" }}
+          key: dependency_cache_{{ .Environment.CIRCLE_JOB }}_{{ checksum "sha1sums.txt" }}
           paths:
             - /home/circleci/.m2
 workflows:
