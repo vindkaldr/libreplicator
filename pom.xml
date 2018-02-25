@@ -59,7 +59,7 @@
 
     <scm><url>https://github.com/vindkaldr/libreplicator</url></scm>
     <issueManagement><url>https://github.com/vindkaldr/libreplicator/issues</url></issueManagement>
-    <ciManagement><url>https://circleci.com/gh/vindkaldr/libreplicator</url></ciManagement>
+    <ciManagement><url>https://circleci.com/gh/vindkaldr/workflows/libreplicator</url></ciManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
