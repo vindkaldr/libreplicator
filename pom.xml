@@ -255,8 +255,8 @@
                     <excludes>
                         <exclude>.idea/**/*</exclude>
                         <exclude>.target/**/*</exclude>
-                        <exclude>LICENSE.txt</exclude>
-                        <exclude>README.md</exclude>
+                        <exclude>*.txt</exclude>
+                        <exclude>*.md</exclude>
                     </excludes>
                 </configuration>
             </plugin>
