@@ -37,13 +37,13 @@ jobs:
     steps:
       - attach_workspace: &attach_workspace
           at: /home/circleci
-      - restore_cache:
+      - restore_cache: &restore_dependency_cache
           keys:
             - dependency_cache_{{ .Environment.CIRCLE_JOB }}_{{ checksum "sha1sums.txt" }}
       - run:
           name: Check license headers
           command: mvn license:check
-      - save_cache:
+      - save_cache: &save_dependency_cache
           key: dependency_cache_{{ .Environment.CIRCLE_JOB }}_{{ checksum "sha1sums.txt" }}
           paths:
             - /home/circleci/.m2
@@ -53,32 +53,22 @@ jobs:
     working_directory: /home/circleci/libreplicator
     steps:
       - attach_workspace: *attach_workspace
-      - restore_cache:
-          keys:
-            - dependency_cache_{{ .Environment.CIRCLE_JOB }}_{{ checksum "sha1sums.txt" }}
+      - restore_cache: *restore_dependency_cache
       - run:
           name: Check code style
           command: mvn antrun:run@detekt --non-recursive
-      - save_cache:
-          key: dependency_cache_{{ .Environment.CIRCLE_JOB }}_{{ checksum "sha1sums.txt" }}
-          paths:
-            - /home/circleci/.m2
+      - save_cache: *save_dependency_cache
   run_tests:
     docker:
       - image: circleci/openjdk
     working_directory: /home/circleci/libreplicator
     steps:
       - attach_workspace: *attach_workspace
-      - restore_cache:
-          keys:
-            - dependency_cache_{{ .Environment.CIRCLE_JOB }}_{{ checksum "sha1sums.txt" }}
+      - restore_cache: *restore_dependency_cache
       - run:
           name: Run tests
           command: mvn test
-      - save_cache:
-          key: dependency_cache_{{ .Environment.CIRCLE_JOB }}_{{ checksum "sha1sums.txt" }}
-          paths:
-            - /home/circleci/.m2
+      - save_cache: *save_dependency_cache
 workflows:
   version: 2
   check_and_test:
