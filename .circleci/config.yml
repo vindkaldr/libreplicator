@@ -27,7 +27,7 @@ jobs:
           command: mvn license:check
       - run:
           name: Check code style
-          command: mvn antrun:run@detekt
+          command: mvn antrun:run@detekt --non-recursive
       - run:
           name: Compile code
           command: mvn compile
