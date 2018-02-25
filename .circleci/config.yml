@@ -83,7 +83,7 @@ jobs:
             - /home/circleci/.m2
 workflows:
   version: 2
-  check_compile_and_test:
+  check_and_test:
     jobs:
       - checkout_code
       - check_license_headers:
