@@ -27,7 +27,7 @@ jobs:
           name: Generate checksums of build files
           command: sha1sum pom.xml **/pom.xml > sha1sums.txt
       - persist_to_workspace:
-          root: /home/circleci
+          root: &workspace_directory /home/circleci
           paths:
             - libreplicator
   check_license_headers:
@@ -35,7 +35,7 @@ jobs:
     working_directory: *working_directory
     steps:
       - attach_workspace: &attach_workspace
-          at: /home/circleci
+          at: *workspace_directory
       - restore_cache: &restore_dependency_cache
           keys:
             - dependency_cache_{{ .Environment.CIRCLE_JOB }}_{{ checksum "sha1sums.txt" }}
