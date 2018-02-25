@@ -20,7 +20,7 @@ jobs:
   checkout_code:
     docker: &docker_image
       - image: circleci/openjdk
-    working_directory: /home/circleci/libreplicator
+    working_directory: &working_directory /home/circleci/libreplicator
     steps:
       - checkout
       - run:
@@ -32,7 +32,7 @@ jobs:
             - libreplicator
   check_license_headers:
     docker: *docker_image
-    working_directory: /home/circleci/libreplicator
+    working_directory: *working_directory
     steps:
       - attach_workspace: &attach_workspace
           at: /home/circleci
@@ -48,7 +48,7 @@ jobs:
             - /home/circleci/.m2
   check_code_style:
     docker: *docker_image
-    working_directory: /home/circleci/libreplicator
+    working_directory: *working_directory
     steps:
       - attach_workspace: *attach_workspace
       - restore_cache: *restore_dependency_cache
@@ -58,7 +58,7 @@ jobs:
       - save_cache: *save_dependency_cache
   run_tests:
     docker: *docker_image
-    working_directory: /home/circleci/libreplicator
+    working_directory: *working_directory
     steps:
       - attach_workspace: *attach_workspace
       - restore_cache: *restore_dependency_cache
