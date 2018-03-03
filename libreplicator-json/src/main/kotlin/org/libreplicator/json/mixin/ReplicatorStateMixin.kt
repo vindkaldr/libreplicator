@@ -20,7 +20,7 @@ package org.libreplicator.json.mixin
 import com.fasterxml.jackson.annotation.JsonGetter
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.libreplicator.api.RemoteLog
-import org.libreplicator.model.TimeTable
+import org.libreplicator.core.model.TimeTable
 
 class ReplicatorStateMixin(
         @get:JsonGetter var logs: MutableSet<RemoteLog>,
