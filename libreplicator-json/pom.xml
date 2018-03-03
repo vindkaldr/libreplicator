@@ -38,7 +38,7 @@
         </dependency>
         <dependency>
             <groupId>org.libreplicator</groupId>
-            <artifactId>libreplicator-model</artifactId>
+            <artifactId>libreplicator-core</artifactId>
             <version>${project.version}</version>
         </dependency>
 

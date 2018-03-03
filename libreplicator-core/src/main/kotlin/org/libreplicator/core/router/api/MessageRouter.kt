@@ -18,7 +18,7 @@
 package org.libreplicator.core.router.api
 
 import org.libreplicator.api.RemoteNode
-import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.core.model.ReplicatorMessage
 
 interface MessageRouter : ScopedObservable<ReplicatorMessage> {
     fun routeMessage(remoteNode: RemoteNode, message: ReplicatorMessage)

@@ -15,9 +15,9 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.model.time.testdouble
+package org.libreplicator.core.model.time.testdouble
 
-import org.libreplicator.model.time.TimeProvider
+import org.libreplicator.core.model.time.TimeProvider
 
 class MockTimeProvider private constructor(val times: List<Long>) : TimeProvider {
     private val timesIterator = times.iterator()

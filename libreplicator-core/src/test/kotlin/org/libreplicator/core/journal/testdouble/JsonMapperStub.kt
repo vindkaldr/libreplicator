@@ -19,7 +19,7 @@ package org.libreplicator.core.journal.testdouble
 
 import org.junit.Assert
 import org.libreplicator.json.api.JsonMapper
-import org.libreplicator.model.ReplicatorState
+import org.libreplicator.core.model.ReplicatorState
 import kotlin.reflect.KClass
 
 class JsonMapperStub (

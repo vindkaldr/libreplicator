@@ -25,8 +25,8 @@ import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonMixin
 import org.libreplicator.json.mixin.ReplicatorStateMixin
 import org.libreplicator.json.mixin.TimeTableMixin
-import org.libreplicator.model.ReplicatorState
-import org.libreplicator.model.TimeTable
+import org.libreplicator.core.model.ReplicatorState
+import org.libreplicator.core.model.TimeTable
 import javax.inject.Singleton
 
 @Module

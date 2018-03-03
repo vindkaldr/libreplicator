@@ -24,8 +24,8 @@ import org.libreplicator.api.LocalLog
 import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.core.interactor.api.StateInteractor
-import org.libreplicator.model.ReplicatorPayload
-import org.libreplicator.model.ReplicatorState
+import org.libreplicator.core.model.ReplicatorPayload
+import org.libreplicator.core.model.ReplicatorState
 import javax.inject.Inject
 
 class DefaultStateInteractor @Inject constructor(

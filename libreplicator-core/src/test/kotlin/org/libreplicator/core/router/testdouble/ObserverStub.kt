@@ -19,7 +19,7 @@ package org.libreplicator.core.router.testdouble
 
 import org.junit.Assert.fail
 import org.libreplicator.api.Observer
-import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.core.model.ReplicatorMessage
 
 class ObserverStub : Observer<ReplicatorMessage> {
     var observedMessage: ReplicatorMessage? = null

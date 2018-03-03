@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.model
+package org.libreplicator.core.model
 
 import org.libreplicator.api.LocalLog
 import org.libreplicator.api.LocalNode
@@ -25,9 +25,9 @@ import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Subscription
-import org.libreplicator.model.time.TimeProviderInteractor
-import org.libreplicator.model.time.epoch.EpochTimeProvider
-import org.libreplicator.model.time.unique.UniqueTimeProvider
+import org.libreplicator.core.model.time.TimeProviderInteractor
+import org.libreplicator.core.model.time.epoch.EpochTimeProvider
+import org.libreplicator.core.model.time.unique.UniqueTimeProvider
 
 data class ReplicatorState constructor(
         private val localNode: LocalNode? = null,

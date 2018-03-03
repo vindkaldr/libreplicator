@@ -15,21 +15,6 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.model.testdouble
+package org.libreplicator.core.model
 
-import org.libreplicator.api.Observer
-import org.libreplicator.common.test.ObjectObserver
-import org.libreplicator.model.ReplicatorState
-
-class StateObserverMock constructor(numberOfExpectedStates: Int = 0): Observer<ReplicatorState> {
-    private val objectObserver: ObjectObserver<ReplicatorState> =
-            ObjectObserver(numberOfExpectedObjects = numberOfExpectedStates)
-
-    override suspend fun observe(observable: ReplicatorState) {
-        objectObserver.observe(observable)
-    }
-
-    fun getObservedStates(): List<ReplicatorState> {
-        return objectObserver.getObservedObjects()
-    }
-}
+data class ReplicatorMessage(val groupId: String, val payload: String)

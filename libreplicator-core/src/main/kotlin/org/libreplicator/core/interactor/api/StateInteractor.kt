@@ -20,7 +20,7 @@ package org.libreplicator.core.interactor.api
 import org.libreplicator.api.LocalLog
 import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.RemoteNode
-import org.libreplicator.model.ReplicatorPayload
+import org.libreplicator.core.model.ReplicatorPayload
 
 interface StateInteractor {
     suspend fun getNodesWithMissingLogs(localLog: LocalLog): Map<RemoteNode, ReplicatorPayload>

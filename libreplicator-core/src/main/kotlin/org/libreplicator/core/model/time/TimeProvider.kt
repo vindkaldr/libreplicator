@@ -15,10 +15,8 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.model.time
+package org.libreplicator.core.model.time
 
-import kotlinx.coroutines.experimental.channels.SendChannel
-
-sealed class TimeProviderInteraction {
-    class GetTime(val channel: SendChannel<Long>) : TimeProviderInteraction()
+interface TimeProvider {
+    suspend fun getTime(): Long
 }

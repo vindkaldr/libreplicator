@@ -20,8 +20,8 @@ package org.libreplicator.core.wrapper
 import org.libreplicator.core.wrapper.api.PayloadWrapper
 import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.json.api.JsonMapper
-import org.libreplicator.model.ReplicatorMessage
-import org.libreplicator.model.ReplicatorPayload
+import org.libreplicator.core.model.ReplicatorMessage
+import org.libreplicator.core.model.ReplicatorPayload
 import javax.inject.Inject
 
 class DefaultPayloadWrapper @Inject constructor(

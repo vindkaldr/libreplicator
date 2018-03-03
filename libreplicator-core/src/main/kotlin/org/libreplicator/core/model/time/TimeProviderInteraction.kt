@@ -15,10 +15,10 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.model.time.testdouble
+package org.libreplicator.core.model.time
 
-import org.libreplicator.model.time.TimeProvider
+import kotlinx.coroutines.experimental.channels.SendChannel
 
-class DummyTimeProvider(private val timeToReturn: Long) : TimeProvider {
-    override suspend fun getTime() = timeToReturn
+sealed class TimeProviderInteraction {
+    class GetTime(val channel: SendChannel<Long>) : TimeProviderInteraction()
 }

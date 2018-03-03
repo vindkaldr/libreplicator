@@ -15,8 +15,10 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.model
+package org.libreplicator.core.model.time.testdouble
 
-import org.libreplicator.api.RemoteLog
+import org.libreplicator.core.model.time.TimeProvider
 
-data class ReplicatorPayload(val nodeId: String, val eventLogs: List<RemoteLog>, val timeTable: TimeTable)
+class DummyTimeProvider(private val timeToReturn: Long) : TimeProvider {
+    override suspend fun getTime() = timeToReturn
+}

@@ -26,7 +26,7 @@ import org.libreplicator.core.router.api.MessageRouter
 import org.libreplicator.core.interactor.api.StateInteractor
 import org.libreplicator.core.wrapper.api.PayloadWrapper
 import org.libreplicator.log.api.trace
-import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.core.model.ReplicatorMessage
 import javax.inject.Inject
 
 class DefaultReplicator @Inject constructor(

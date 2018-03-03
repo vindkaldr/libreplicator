@@ -34,7 +34,7 @@ import org.libreplicator.core.router.testdouble.ReplicatorClientStub
 import org.libreplicator.core.router.testdouble.ReplicatorServerStub
 import org.libreplicator.core.router.testdouble.SubscriptionStub
 import org.libreplicator.core.testdouble.JsonMapperStub
-import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.core.model.ReplicatorMessage
 
 private const val groupId = "groupId"
 private const val otherGroupId = "otherGroupId"

@@ -29,7 +29,7 @@ import org.libreplicator.core.wrapper.DefaultPayloadWrapper
 import org.libreplicator.core.wrapper.api.PayloadWrapper
 import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.json.api.JsonMapper
-import org.libreplicator.model.ReplicatorState
+import org.libreplicator.core.model.ReplicatorState
 
 @Module
 class CoreModule(private val groupId: String) {

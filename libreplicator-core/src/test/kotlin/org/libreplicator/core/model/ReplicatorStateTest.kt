@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.model
+package org.libreplicator.core.model
 
 import kotlinx.coroutines.experimental.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
@@ -27,7 +27,7 @@ import org.libreplicator.api.LocalLog
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.RemoteNode
-import org.libreplicator.model.testdouble.StateObserverMock
+import org.libreplicator.core.model.testdouble.StateObserverMock
 
 class ReplicatorStateTest {
     private companion object {

@@ -15,6 +15,10 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.model
+package org.libreplicator.core.model.time.epoch
 
-data class ReplicatorMessage(val groupId: String, val payload: String)
+import org.libreplicator.core.model.time.TimeProvider
+
+class EpochTimeProvider : TimeProvider {
+    override suspend fun getTime() = System.currentTimeMillis()
+}

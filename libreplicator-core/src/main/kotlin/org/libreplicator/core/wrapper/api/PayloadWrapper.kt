@@ -17,8 +17,8 @@
 
 package org.libreplicator.core.wrapper.api
 
-import org.libreplicator.model.ReplicatorMessage
-import org.libreplicator.model.ReplicatorPayload
+import org.libreplicator.core.model.ReplicatorMessage
+import org.libreplicator.core.model.ReplicatorPayload
 
 interface PayloadWrapper {
     fun wrap(payload: ReplicatorPayload): ReplicatorMessage

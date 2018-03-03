@@ -22,7 +22,7 @@ import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Subscription
 import org.libreplicator.core.router.api.MessageRouter
 import org.libreplicator.log.api.trace
-import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.core.model.ReplicatorMessage
 
 class TracingMessageRouter(private val messageRouter: MessageRouter) : MessageRouter {
     override fun routeMessage(remoteNode: RemoteNode, message: ReplicatorMessage) {

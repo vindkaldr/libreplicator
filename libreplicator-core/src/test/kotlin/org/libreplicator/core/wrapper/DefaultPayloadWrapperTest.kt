@@ -23,9 +23,9 @@ import org.junit.Test
 import org.libreplicator.core.testdouble.JsonMapperStub
 import org.libreplicator.core.wrapper.api.PayloadWrapper
 import org.libreplicator.core.wrapper.testdouble.CipherStub
-import org.libreplicator.model.ReplicatorMessage
-import org.libreplicator.model.ReplicatorPayload
-import org.libreplicator.model.TimeTable
+import org.libreplicator.core.model.ReplicatorMessage
+import org.libreplicator.core.model.ReplicatorPayload
+import org.libreplicator.core.model.TimeTable
 
 private val payload = ReplicatorPayload("", emptyList(), TimeTable())
 private const val serializedPayload = "serializedReplicatorPayload"

@@ -28,7 +28,7 @@ import org.libreplicator.core.journal.file.DefaultFileHandler
 import org.libreplicator.core.journal.file.FileHandler
 import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.json.api.JsonMapper
-import org.libreplicator.model.ReplicatorState
+import org.libreplicator.core.model.ReplicatorState
 import org.libreplicator.module.replicator.setting.ReplicatorJournalSettings
 
 @Module

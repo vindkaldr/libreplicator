@@ -27,7 +27,7 @@ import org.libreplicator.crypto.api.CipherException
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonReadException
 import org.libreplicator.log.api.warn
-import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.core.model.ReplicatorMessage
 import javax.inject.Inject
 
 class DefaultMessageRouter @Inject constructor(

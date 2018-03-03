@@ -33,7 +33,7 @@ import org.libreplicator.core.journal.testdouble.JsonMapperStub
 import org.libreplicator.crypto.api.Cipher
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonReadException
-import org.libreplicator.model.ReplicatorState
+import org.libreplicator.core.model.ReplicatorState
 import java.nio.file.NoSuchFileException
 import java.nio.file.Paths
 

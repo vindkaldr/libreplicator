@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.model
+package org.libreplicator.core.model
 
 import java.lang.Math.max
 

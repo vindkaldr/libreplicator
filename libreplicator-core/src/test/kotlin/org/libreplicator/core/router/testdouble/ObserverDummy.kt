@@ -18,7 +18,7 @@
 package org.libreplicator.core.router.testdouble
 
 import org.libreplicator.api.Observer
-import org.libreplicator.model.ReplicatorMessage
+import org.libreplicator.core.model.ReplicatorMessage
 
 class ObserverDummy : Observer<ReplicatorMessage> {
     override suspend fun observe(observable: ReplicatorMessage) {

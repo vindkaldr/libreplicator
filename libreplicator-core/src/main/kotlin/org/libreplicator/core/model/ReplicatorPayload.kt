@@ -15,10 +15,8 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.model.time.epoch
+package org.libreplicator.core.model
 
-import org.libreplicator.model.time.TimeProvider
+import org.libreplicator.api.RemoteLog
 
-class EpochTimeProvider : TimeProvider {
-    override suspend fun getTime() = System.currentTimeMillis()
-}
+data class ReplicatorPayload(val nodeId: String, val eventLogs: List<RemoteLog>, val timeTable: TimeTable)

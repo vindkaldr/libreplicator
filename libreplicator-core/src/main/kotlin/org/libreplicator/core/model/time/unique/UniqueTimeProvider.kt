@@ -15,9 +15,9 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.model.time.unique
+package org.libreplicator.core.model.time.unique
 
-import org.libreplicator.model.time.TimeProvider
+import org.libreplicator.core.model.time.TimeProvider
 
 class UniqueTimeProvider(private val timeProvider: TimeProvider) : TimeProvider {
     private var lastReturnedTime = 0L

@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.model.time
+package org.libreplicator.core.model.time
 
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.async
@@ -23,8 +23,8 @@ import kotlinx.coroutines.experimental.runBlocking
 import org.hamcrest.Matchers.equalTo
 import org.junit.Assert.assertThat
 import org.junit.Test
-import org.libreplicator.model.time.testdouble.DummyTimeProvider
-import org.libreplicator.model.time.testdouble.MockTimeProvider
+import org.libreplicator.core.model.time.testdouble.DummyTimeProvider
+import org.libreplicator.core.model.time.testdouble.MockTimeProvider
 
 class TimeProviderInteractorTest {
     @Test
