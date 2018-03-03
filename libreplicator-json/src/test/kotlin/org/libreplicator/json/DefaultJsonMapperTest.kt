@@ -23,13 +23,13 @@ import org.junit.Before
 import org.junit.Test
 import org.libreplicator.api.LocalNode
 import org.libreplicator.api.RemoteNode
+import org.libreplicator.core.model.ReplicatorPayload
+import org.libreplicator.core.model.ReplicatorState
+import org.libreplicator.core.model.TimeTable
 import org.libreplicator.json.api.JsonMapper
 import org.libreplicator.json.api.JsonMixin
 import org.libreplicator.json.mixin.ReplicatorStateMixin
 import org.libreplicator.json.mixin.TimeTableMixin
-import org.libreplicator.model.ReplicatorPayload
-import org.libreplicator.model.ReplicatorState
-import org.libreplicator.model.TimeTable
 
 private val REPLICATOR_MESSAGE = ReplicatorPayload("nodeId", listOf(), TimeTable())
 private const val SERIALIZED_REPLICATOR_MESSAGE = "{\"nodeId\":\"nodeId\",\"eventLogs\":[],\"timeTable\":{}}"
