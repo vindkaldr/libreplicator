@@ -25,9 +25,9 @@ import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Subscription
-import org.libreplicator.core.model.time.TimeProviderInteractor
-import org.libreplicator.core.model.time.epoch.EpochTimeProvider
-import org.libreplicator.core.model.time.unique.UniqueTimeProvider
+import org.libreplicator.core.time.TimeProviderInteractor
+import org.libreplicator.core.time.EpochTimeProvider
+import org.libreplicator.core.time.UniqueTimeProvider
 
 data class ReplicatorState constructor(
         private val localNode: LocalNode? = null,

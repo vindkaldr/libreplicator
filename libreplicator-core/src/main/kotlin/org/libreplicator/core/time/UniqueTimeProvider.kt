@@ -15,26 +15,19 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.core.model.time
+package org.libreplicator.core.time
 
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.channels.actor
+import org.libreplicator.core.time.api.TimeProvider
 
-class TimeProviderInteractor(private val timeProvider: TimeProvider) : TimeProvider {
-    private val actor = actor<TimeProviderInteraction>(CommonPool) {
-        for (interaction in channel) {
-            when (interaction) {
-                is TimeProviderInteraction.GetTime -> {
-                    interaction.channel.send(timeProvider.getTime())
-                }
-            }
-        }
-    }
+class UniqueTimeProvider(private val timeProvider: TimeProvider) : TimeProvider {
+    private var lastReturnedTime = 0L
 
     override suspend fun getTime(): Long {
-        val channel = Channel<Long>()
-        actor.send(TimeProviderInteraction.GetTime(channel))
-        return channel.receive()
+        var time = timeProvider.getTime()
+        while (time <= lastReturnedTime) {
+            time++
+        }
+        lastReturnedTime = time
+        return time
     }
 }

@@ -15,15 +15,8 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.core.model.time.testdouble
+package org.libreplicator.core.time.api
 
-import org.libreplicator.core.model.time.TimeProvider
-
-class MockTimeProvider private constructor(val times: List<Long>) : TimeProvider {
-    private val timesIterator = times.iterator()
-
-    constructor(timesToReturn: LongArray) : this(timesToReturn.toList())
-    constructor(lastTimeToReturn: Long) : this(LongRange(1, lastTimeToReturn).toList())
-
-    override suspend fun getTime() = timesIterator.next()
+interface TimeProvider {
+    suspend fun getTime(): Long
 }

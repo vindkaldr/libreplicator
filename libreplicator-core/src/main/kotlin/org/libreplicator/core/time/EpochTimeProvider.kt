@@ -15,10 +15,10 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.libreplicator.core.model.time
+package org.libreplicator.core.time
 
-import kotlinx.coroutines.experimental.channels.SendChannel
+import org.libreplicator.core.time.api.TimeProvider
 
-sealed class TimeProviderInteraction {
-    class GetTime(val channel: SendChannel<Long>) : TimeProviderInteraction()
+class EpochTimeProvider : TimeProvider {
+    override suspend fun getTime() = System.currentTimeMillis()
 }
