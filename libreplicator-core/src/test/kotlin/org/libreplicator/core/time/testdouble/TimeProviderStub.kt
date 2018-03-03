@@ -19,11 +19,11 @@ package org.libreplicator.core.time.testdouble
 
 import org.libreplicator.core.time.api.TimeProvider
 
-class MockTimeProvider private constructor(val times: List<Long>) : TimeProvider {
+fun constantTimeProviderOf(time: Long) = TimeProviderStub(generateSequence { time })
+fun timeProviderOf(vararg times: Long) = TimeProviderStub(times.asSequence())
+fun timeProviderUntil(lastTime: Long) = TimeProviderStub((1..lastTime).asSequence())
+
+class TimeProviderStub constructor(val times: Sequence<Long>) : TimeProvider {
     private val timesIterator = times.iterator()
-
-    constructor(timesToReturn: LongArray) : this(timesToReturn.toList())
-    constructor(lastTimeToReturn: Long) : this(LongRange(1, lastTimeToReturn).toList())
-
     override suspend fun getTime() = timesIterator.next()
 }

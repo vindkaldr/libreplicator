@@ -17,7 +17,6 @@
 
 package org.libreplicator.common.test
 
-import org.junit.Assert
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 
@@ -36,7 +35,7 @@ class ObjectObserver<T> constructor(private val numberOfExpectedObjects: Int = 0
 
     fun getObservedObjects(): List<T> {
         if (!semaphore.tryAcquire(numberOfExpectedObjects, TIMEOUT_IN_SECONDS, TimeUnit.SECONDS)) {
-            Assert.fail("Timeout reached!")
+            throw AssertionError("Timeout reached!")
         }
         return observedObjects
     }

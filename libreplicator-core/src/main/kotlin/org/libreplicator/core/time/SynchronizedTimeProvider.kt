@@ -17,25 +17,26 @@
 
 package org.libreplicator.core.time
 
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.channels.Channel
+import kotlinx.coroutines.experimental.CompletableDeferred
 import kotlinx.coroutines.experimental.channels.actor
 import org.libreplicator.core.time.api.TimeProvider
 
-class TimeProviderInteractor(private val timeProvider: TimeProvider) : TimeProvider {
-    private val actor = actor<TimeProviderInteraction>(CommonPool) {
-        for (interaction in channel) {
-            when (interaction) {
-                is TimeProviderInteraction.GetTime -> {
-                    interaction.channel.send(timeProvider.getTime())
-                }
+class SynchronizedTimeProvider(private val timeProvider: TimeProvider) : TimeProvider {
+    private val timeProviderActor = actor<TimeProviderMessage> {
+        for (message in channel) {
+            when (message) {
+                is TimeProviderMessage.GetTime -> message.deferred.complete(timeProvider.getTime())
             }
         }
     }
 
     override suspend fun getTime(): Long {
-        val channel = Channel<Long>()
-        actor.send(TimeProviderInteraction.GetTime(channel))
-        return channel.receive()
+        val deferred = CompletableDeferred<Long>()
+        timeProviderActor.send(TimeProviderMessage.GetTime(deferred))
+        return deferred.await()
+    }
+
+    private sealed class TimeProviderMessage {
+        class GetTime(val deferred: CompletableDeferred<Long>) : TimeProviderMessage()
     }
 }

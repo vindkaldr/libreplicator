@@ -23,11 +23,8 @@ class UniqueTimeProvider(private val timeProvider: TimeProvider) : TimeProvider 
     private var lastReturnedTime = 0L
 
     override suspend fun getTime(): Long {
-        var time = timeProvider.getTime()
-        while (time <= lastReturnedTime) {
-            time++
-        }
-        lastReturnedTime = time
-        return time
+        return generateSequence(timeProvider.getTime()) { it + 1 }
+                .first { it > lastReturnedTime }
+                .also { lastReturnedTime = it }
     }
 }

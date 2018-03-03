@@ -25,7 +25,7 @@ import org.libreplicator.api.Observer
 import org.libreplicator.api.RemoteLog
 import org.libreplicator.api.RemoteNode
 import org.libreplicator.api.Subscription
-import org.libreplicator.core.time.TimeProviderInteractor
+import org.libreplicator.core.time.SynchronizedTimeProvider
 import org.libreplicator.core.time.EpochTimeProvider
 import org.libreplicator.core.time.UniqueTimeProvider
 
@@ -35,7 +35,7 @@ data class ReplicatorState constructor(
         private var logs: MutableSet<RemoteLog> = mutableSetOf(),
         private var timeTable: TimeTable = TimeTable()
 ): Observable<ReplicatorState> {
-    private val timeProvider = TimeProviderInteractor(UniqueTimeProvider(EpochTimeProvider()))
+    private val timeProvider = SynchronizedTimeProvider(UniqueTimeProvider(EpochTimeProvider()))
 
     private var observer: Observer<ReplicatorState> = object : Observer<ReplicatorState> {
         override suspend fun observe(observable: ReplicatorState) {}
